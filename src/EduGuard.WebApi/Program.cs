@@ -76,7 +76,8 @@ app.MapGet("/", () => new
     {
         "Module 1: Authentication & User Management (Active)",
         "Module 2: School & Student Management (Active)",
-        "Module 3: Attendance Management (Active)"
+        "Module 3: Attendance Management (Active)",
+        "Module 4: Academic Performance & Learning Loss Monitoring (Active)"
     }
 });
 
