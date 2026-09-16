@@ -3,7 +3,7 @@
 [![.NET 10](https://img.shields.io/badge/.NET-10.0-purple.svg)](https://dotnet.microsoft.com/)
 [![Architecture](https://img.shields.io/badge/Architecture-Clean%20Architecture-blue.svg)](https://learn.microsoft.com/en-us/dotnet/architecture/modern-web-apps-azure/common-web-application-architectures#clean-architecture)
 [![Build Status](https://img.shields.io/badge/Build-Passing-brightgreen.svg)]()
-[![Tests](https://img.shields.io/badge/Tests-12%20Passed-success.svg)]()
+[![Tests](https://img.shields.io/badge/Tests-17%20Passed-success.svg)]()
 
 > **Problem Statement**: High dropout rates in schools hinder educational progress, especially in marginalized and rural communities. **EduGuard** is an Early Warning & Retention System (EWIS) engineered in C# (.NET 10) to proactively identify at-risk students, diagnose root causes (attendance patterns, academic struggles, socioeconomic hardship), and orchestrate targeted interventions before students disengage permanently.
 
@@ -49,15 +49,27 @@ EduGuard/
 
 ---
 
+## 📅 Module 3: Attendance Management (Completed)
+- **Daily Attendance Capture**: Bulk section attendance marking (`Present`, `Absent`, `Late`, `HalfDay`, `Excused`) with diagnostic absence reason tracking (`Illness`, `DomesticChores`, `AgriculturalOrSeasonalLabor`, `TransportFailure`).
+- **Attendance Percentage Engine**: Real-time aggregation:
+  $$\text{Attendance Rate} = \frac{\text{Present Days} + 0.5 \times \text{HalfDays}}{\text{Total Working Days}} \times 100$$
+  Tracks cumulative rate, rolling 30-day rate, and current consecutive absent streaks.
+- **Chronic Absenteeism Detection**: Automatically flags students whose cumulative attendance drops below **85%** (a prime leading indicator of dropout risk).
+- **Consecutive Absence Streak Alerter**: Triggers high-priority counselor alerts when a student misses **3 or more consecutive unexcused school days**.
+- **Attendance Trends & Calendar**: Day-by-day student monthly calendar grids, section daily statistics, and long-term trajectory analysis (`Improving`, `Stable`, `Declining`, `CriticalDrop`).
+- **Alert Resolution Workflow**: Counselors record intervention notes and mark alerts resolved directly into the student timeline.
+
+---
+
 ## 🧪 Testing & Verification
 
-All 12 automated unit tests across Module 1 and Module 2 run and pass in under 1 second:
+All **17 automated unit tests** across Module 1, Module 2, and Module 3 run and pass in **1 second**:
 
 ```bash
 dotnet test EduGuard.slnx
 ```
 ```text
-Passed!  - Failed: 0, Passed: 12, Skipped: 0, Total: 12, Duration: 937 ms - EduGuard.UnitTests.dll (net10.0)
+Passed!  - Failed: 0, Passed: 17, Skipped: 0, Total: 17, Duration: 1 s - EduGuard.UnitTests.dll (net10.0)
 ```
 
 ---
