@@ -27,6 +27,11 @@ public class InMemoryEduGuardDataStore : IEduGuardDataStore
     private readonly ConcurrentDictionary<string, AttendanceRecord> _attendance = new(); // key: studentId:yyyyMMdd
     private readonly ConcurrentDictionary<Guid, AbsenceAlert> _alerts = new();
 
+    // Module 4 stores
+    private readonly ConcurrentDictionary<Guid, Subject> _subjects = new();
+    private readonly ConcurrentDictionary<Guid, Assessment> _assessments = new();
+    private readonly ConcurrentDictionary<string, StudentExamMark> _marks = new(); // key: assessmentId:studentId
+
     // ==================== Users ====================
     public Task<User?> GetUserByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
@@ -514,6 +519,80 @@ public class InMemoryEduGuardDataStore : IEduGuardDataStore
     {
         alert.UpdatedAtUtc = DateTime.UtcNow;
         _alerts[alert.Id] = alert;
+        return Task.CompletedTask;
+    }
+
+    // ==================== Subjects ====================
+    public Task<Subject?> GetSubjectByIdAsync(Guid id, CancellationToken cancellationToken = default)
+    {
+        _subjects.TryGetValue(id, out var subject);
+        return Task.FromResult(subject);
+    }
+
+    public Task<List<Subject>> GetSubjectsBySchoolAsync(Guid schoolId, CancellationToken cancellationToken = default)
+    {
+        var items = _subjects.Values
+            .Where(s => s.SchoolId == schoolId)
+            .OrderBy(s => s.Name)
+            .ToList();
+        return Task.FromResult(items);
+    }
+
+    public Task AddSubjectAsync(Subject subject, CancellationToken cancellationToken = default)
+    {
+        _subjects[subject.Id] = subject;
+        return Task.CompletedTask;
+    }
+
+    // ==================== Assessments ====================
+    public Task<Assessment?> GetAssessmentByIdAsync(Guid id, CancellationToken cancellationToken = default)
+    {
+        _assessments.TryGetValue(id, out var assessment);
+        return Task.FromResult(assessment);
+    }
+
+    public Task<List<Assessment>> QueryAssessmentsAsync(Func<Assessment, bool> predicate, CancellationToken cancellationToken = default)
+    {
+        var items = _assessments.Values
+            .Where(predicate)
+            .OrderByDescending(a => a.ExamDate)
+            .ToList();
+        return Task.FromResult(items);
+    }
+
+    public Task AddAssessmentAsync(Assessment assessment, CancellationToken cancellationToken = default)
+    {
+        _assessments[assessment.Id] = assessment;
+        return Task.CompletedTask;
+    }
+
+    // ==================== Student Exam Marks ====================
+    public Task<StudentExamMark?> GetMarkByIdAsync(Guid id, CancellationToken cancellationToken = default)
+    {
+        var mark = _marks.Values.FirstOrDefault(m => m.Id == id);
+        return Task.FromResult(mark);
+    }
+
+    public Task<List<StudentExamMark>> GetMarksByAssessmentAsync(Guid assessmentId, CancellationToken cancellationToken = default)
+    {
+        var items = _marks.Values
+            .Where(m => m.AssessmentId == assessmentId)
+            .ToList();
+        return Task.FromResult(items);
+    }
+
+    public Task<List<StudentExamMark>> GetMarksByStudentAsync(Guid studentId, CancellationToken cancellationToken = default)
+    {
+        var items = _marks.Values
+            .Where(m => m.StudentId == studentId)
+            .ToList();
+        return Task.FromResult(items);
+    }
+
+    public Task AddOrUpdateMarkAsync(StudentExamMark mark, CancellationToken cancellationToken = default)
+    {
+        string key = $"{mark.AssessmentId}:{mark.StudentId}";
+        _marks[key] = mark;
         return Task.CompletedTask;
     }
 }

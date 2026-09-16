@@ -95,4 +95,20 @@ public interface IEduGuardDataStore
     Task<List<AbsenceAlert>> GetActiveAlertsBySchoolAsync(Guid schoolId, CancellationToken cancellationToken = default);
     Task AddAbsenceAlertAsync(AbsenceAlert alert, CancellationToken cancellationToken = default);
     Task UpdateAbsenceAlertAsync(AbsenceAlert alert, CancellationToken cancellationToken = default);
+
+    // Subjects
+    Task<Subject?> GetSubjectByIdAsync(Guid id, CancellationToken cancellationToken = default);
+    Task<List<Subject>> GetSubjectsBySchoolAsync(Guid schoolId, CancellationToken cancellationToken = default);
+    Task AddSubjectAsync(Subject subject, CancellationToken cancellationToken = default);
+
+    // Assessments
+    Task<Assessment?> GetAssessmentByIdAsync(Guid id, CancellationToken cancellationToken = default);
+    Task<List<Assessment>> QueryAssessmentsAsync(Func<Assessment, bool> predicate, CancellationToken cancellationToken = default);
+    Task AddAssessmentAsync(Assessment assessment, CancellationToken cancellationToken = default);
+
+    // Student Exam Marks
+    Task<StudentExamMark?> GetMarkByIdAsync(Guid id, CancellationToken cancellationToken = default);
+    Task<List<StudentExamMark>> GetMarksByAssessmentAsync(Guid assessmentId, CancellationToken cancellationToken = default);
+    Task<List<StudentExamMark>> GetMarksByStudentAsync(Guid studentId, CancellationToken cancellationToken = default);
+    Task AddOrUpdateMarkAsync(StudentExamMark mark, CancellationToken cancellationToken = default);
 }

@@ -32,6 +32,11 @@ builder.Services.AddScoped<IAttendanceService, AttendanceService>();
 builder.Services.AddScoped<IAttendanceAnalyticsService, AttendanceAnalyticsService>();
 builder.Services.AddScoped<IAbsencePatternDetector, AbsencePatternDetector>();
 
+// Module 4: Academic Performance Services
+builder.Services.AddScoped<IAcademicService, AcademicService>();
+builder.Services.AddScoped<IMarksService, MarksService>();
+builder.Services.AddScoped<IPerformanceAnalyticsService, PerformanceAnalyticsService>();
+
 // Configure CORS for web frontends
 builder.Services.AddCors(options =>
 {
