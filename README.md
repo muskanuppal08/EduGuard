@@ -3,7 +3,7 @@
 [![.NET 10](https://img.shields.io/badge/.NET-10.0-purple.svg)](https://dotnet.microsoft.com/)
 [![Architecture](https://img.shields.io/badge/Architecture-Clean%20Architecture-blue.svg)](https://learn.microsoft.com/en-us/dotnet/architecture/modern-web-apps-azure/common-web-application-architectures#clean-architecture)
 [![Build Status](https://img.shields.io/badge/Build-Passing-brightgreen.svg)]()
-[![Tests](https://img.shields.io/badge/Tests-7%20Passed-success.svg)]()
+[![Tests](https://img.shields.io/badge/Tests-12%20Passed-success.svg)]()
 
 > **Problem Statement**: High dropout rates in schools hinder educational progress, especially in marginalized and rural communities. **EduGuard** is an Early Warning & Retention System (EWIS) engineered in C# (.NET 10) to proactively identify at-risk students, diagnose root causes (attendance patterns, academic struggles, socioeconomic hardship), and orchestrate targeted interventions before students disengage permanently.
 
@@ -11,7 +11,7 @@
 
 ## 🏛 Clean Architecture Overview
 
-The solution is structured into four decoupled layers following Clean Architecture and Domain-Driven Design (DDD) principles:
+The solution is structured into decoupled layers following Clean Architecture and Domain-Driven Design (DDD) principles:
 
 ```
 EduGuard/
@@ -19,68 +19,55 @@ EduGuard/
 ├── src/
 │   ├── EduGuard.Domain/            # Entities, Value Objects, Enums, Core Domain Rules
 │   ├── EduGuard.Application/       # DTOs, Service Interfaces, CQRS, Risk Engine
-│   ├── EduGuard.Infrastructure/    # Persistence, Security, Token Services, External Adapters
+│   ├── EduGuard.Infrastructure/    # Persistence, Security, Token Services, Data Seeder
 │   └── EduGuard.WebApi/            # Controllers, Middleware, Auth Policies, App Entrypoint
 ├── tests/
-│   └── EduGuard.UnitTests/         # Unit and Integration test suite
+│   └── EduGuard.UnitTests/         # Automated unit and integration test suite
 ```
 
 ---
 
-## 🚀 Module 1: Authentication & User Management (Implemented)
-
-### Features
-- **Authentication**: Secure credential verification with PBKDF2 (SHA-256, 100,000 iterations) + random 128-bit salt, account lockout after 5 consecutive failed attempts, JWT access token generation, and Refresh Token rotation.
-- **Roles**: Multi-tier hierarchy (`SuperAdmin`, `DistrictAdmin`, `SchoolPrincipal`, `Teacher`, `Counselor`, `StudentParent`).
-- **Permissions**: Claim-based permission enforcement with `[RequirePermission(...)]` filter.
-- **Profiles**: Profile management, user activation/deactivation, staff registration.
-
-### Default Seed Account
-- **Username**: `admin`
-- **Email**: `admin@eduguard.org`
-- **Password**: `AdminPassword123!`
-- **Role**: `SuperAdmin` (Full system permissions)
-
-### API Endpoints
-| Method | Endpoint | Description | Auth Required |
-|---|---|---|---|
-| `POST` | `/api/v1/auth/login` | Authenticates user & issues JWT + Refresh token | No |
-| `POST` | `/api/v1/auth/refresh-token` | Rotates refresh token & issues new access token | No |
-| `POST` | `/api/v1/auth/revoke-token` | Revokes specific refresh token | Yes |
-| `POST` | `/api/v1/auth/revoke-all` | Revokes all active sessions for current user | Yes |
-| `POST` | `/api/v1/auth/register-staff` | Registers staff member (Teacher/Counselor/Principal) | Yes (`users.manage`) |
-| `POST` | `/api/v1/auth/change-password` | Updates user password | Yes |
-| `GET` | `/api/v1/roles` | Retrieves all roles and mapped permissions | Yes (`roles.manage`) |
-| `GET` | `/api/v1/roles/{roleName}` | Retrieves specific role details | Yes (`roles.manage`) |
-| `POST` | `/api/v1/roles` | Creates a custom role | Yes (`roles.manage`) |
-| `POST` | `/api/v1/roles/assign` | Assigns a role to a user | Yes (`roles.manage`) |
-| `DELETE` | `/api/v1/roles/users/{id}/roles/{role}` | Removes a role from a user | Yes (`roles.manage`) |
-| `GET` | `/api/v1/roles/permissions` | Lists all system permissions | Yes (`roles.manage`) |
-| `PUT` | `/api/v1/roles/{role}/permissions` | Updates permissions for a role | Yes (`roles.manage`) |
-| `GET` | `/api/v1/users/me` | Retrieves profile of currently logged-in user | Yes |
-| `PUT` | `/api/v1/users/me` | Updates current user's profile | Yes |
-| `GET` | `/api/v1/users/{userId}` | Admin retrieves user by ID | Yes (`users.manage`) |
-| `GET` | `/api/v1/users` | Paginated user search with role/school filters | Yes (`users.manage`) |
-| `PUT` | `/api/v1/users/{userId}/status` | Activates or deactivates user account | Yes (`users.manage`) |
+## 🚀 Module 1: Authentication & User Management (Completed)
+- **Authentication**: Secure credential verification with PBKDF2 (SHA-256, 100,000 iterations) + random 128-bit salt, account lockout after 5 consecutive failed attempts, HMAC-SHA256 JWT access token generation, and rotatable 64-byte Refresh Tokens.
+- **Roles & Permissions**: Multi-tier roles (`SuperAdmin`, `DistrictAdmin`, `SchoolPrincipal`, `Teacher`, `Counselor`, `StudentParent`) and claim-based authorization filter `[RequirePermission(...)]`.
+- **Profiles**: Staff onboarding, user profile editing, school assignments, and account activation/deactivation.
 
 ---
 
-## 🛠 Running the Project
+## 🏫 Module 2: School & Student Management (Completed)
+- **Schools**: School registration, district/block tracking, rural/urban classification, and `IsMarginalizedArea` markers.
+- **Classes & Sections**: Academic year calendar management, grades/standards (e.g., Grade 9), sections (e.g., 9-A), and class teacher assignments.
+- **Students & Socioeconomic Vulnerability Tracking**: Captures critical dropout risk indicators:
+  - Below Poverty Line (`IsBPL`)
+  - First-Generation Learner (`IsFirstGenerationLearner`)
+  - Travel distance to school in km (`DistanceToSchoolKm`) & `TransportMode`
+  - Single Parent / Orphan status (`IsSingleParentOrOrphan`)
+  - Family income tier & guardian occupation
+- **Enrollment & Lifecycle**: Class enrollments, batch student promotions across terms, and retention re-enrollment.
+- **Dropout Diagnostic Recording**: Captures dropout events with date, primary root cause (`FinancialHardship`, `DistanceAndTransport`, `ChildLaborOrFamilyWork`, `EarlyMarriageOrFamilyIssues`, `AcademicDifficulty`, `HealthIllness`, `SeasonalMigration`), and audit remarks.
+- **Longitudinal Student Timeline**: Chronological event history (Enrollment $\rightarrow$ Promotion $\rightarrow$ Counselor Notes $\rightarrow$ Dropout $\rightarrow$ Re-Enrollment).
 
-### Prerequisites
-- [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0)
+---
 
-### Build Solution
-```bash
-dotnet build EduGuard.slnx
-```
+## 🧪 Testing & Verification
 
-### Run Unit Tests
+All 12 automated unit tests across Module 1 and Module 2 run and pass in under 1 second:
+
 ```bash
 dotnet test EduGuard.slnx
 ```
+```text
+Passed!  - Failed: 0, Passed: 12, Skipped: 0, Total: 12, Duration: 937 ms - EduGuard.UnitTests.dll (net10.0)
+```
 
-### Run Web API Server
+---
+
+## 🛠 Running the Application
+
 ```bash
+# Build the solution
+dotnet build EduGuard.slnx
+
+# Run Web API server
 dotnet run --project src/EduGuard.WebApi/EduGuard.WebApi.csproj
 ```
