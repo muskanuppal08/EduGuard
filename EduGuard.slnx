@@ -1,0 +1,11 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/EduGuard.Application/EduGuard.Application.csproj" />
+    <Project Path="src/EduGuard.Domain/EduGuard.Domain.csproj" />
+    <Project Path="src/EduGuard.Infrastructure/EduGuard.Infrastructure.csproj" />
+    <Project Path="src/EduGuard.WebApi/EduGuard.WebApi.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/EduGuard.UnitTests/EduGuard.UnitTests.csproj" />
+  </Folder>
+</Solution>
