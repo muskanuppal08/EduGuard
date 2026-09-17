@@ -66,8 +66,12 @@ app.UseCors();
 // JWT Authentication Middleware
 app.UseMiddleware<JwtAuthenticationMiddleware>();
 
-// Root Welcome & Health Endpoint
-app.MapGet("/", () => new
+// Serve Static Files (Integrated Web UI Dashboard)
+app.UseDefaultFiles();
+app.UseStaticFiles();
+
+// System Health Endpoint
+app.MapGet("/api/health", () => new
 {
     System = "EduGuard - Student Dropout Analysis & Retention Platform",
     Version = "1.0.0",
