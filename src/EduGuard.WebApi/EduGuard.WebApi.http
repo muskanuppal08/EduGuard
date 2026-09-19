@@ -1,0 +1,89 @@
+@host = http://localhost:5065
+
+### 0. Health & Welcome Check (Verify API is Running)
+GET {{host}}/
+Accept: application/json
+
+### 1. Module 1: Admin Login (Generates JWT Token)
+# Run this first! Copy the "accessToken" from the response into the @token variable below.
+# @name login
+POST {{host}}/api/v1/auth/login
+Content-Type: application/json
+
+{
+  "usernameOrEmail": "admin",
+  "password": "AdminPassword123!"
+}
+
+### Store the token from login response
+@token = {{login.response.body.data.accessToken}}
+
+### 2. Module 1: Get Current User Profile
+GET {{host}}/api/v1/users/profile
+Authorization: Bearer {{token}}
+Accept: application/json
+
+### 3. Module 1: Get All Configured Roles & Permissions
+GET {{host}}/api/v1/roles
+Authorization: Bearer {{token}}
+Accept: application/json
+
+### 4. Module 2: List Schools (Includes Rural / Marginalized status)
+# @name getSchools
+GET {{host}}/api/v1/schools
+Authorization: Bearer {{token}}
+Accept: application/json
+
+### 5. Module 2: List All Registered Students (Includes BPL & Socioeconomic Factors)
+# @name getStudents
+GET {{host}}/api/v1/students
+Authorization: Bearer {{token}}
+Accept: application/json
+
+### 6. Module 2: Get Vulnerable Student Profile (Sunita Kumari - ADM-2025-002)
+GET {{host}}/api/v1/students/admission/ADM-2025-002
+Authorization: Bearer {{token}}
+Accept: application/json
+
+### 7. Module 3: Get Attendance Roster for Grade 9-A
+# Uses Section ID from the seeded student
+GET {{host}}/api/v1/attendance/roster?sectionId={{getStudents.response.body.data.items[0].currentSectionId}}&date=2025-04-10
+Authorization: Bearer {{token}}
+Accept: application/json
+
+### 8. Module 3: Get Chronic Absenteeism Alerts (< 85% Attendance)
+GET {{host}}/api/v1/attendance/alerts/chronic-absentees?schoolId={{getSchools.response.body.data.items[0].id}}
+Authorization: Bearer {{token}}
+Accept: application/json
+
+### 9. Module 4: Get Subjects Configured for School
+GET {{host}}/api/academics/subjects/school/{{getSchools.response.body.data.items[0].id}}
+Authorization: Bearer {{token}}
+Accept: application/json
+
+### 10. Module 4: Get Scheduled Assessments (Midterms & Quarterlies)
+# @name getAssessments
+GET {{host}}/api/academics/assessments
+Authorization: Bearer {{token}}
+Accept: application/json
+
+### 11. Module 4: Get Grading Roster for Mathematics Midterm
+GET {{host}}/api/academics/assessments/{{getAssessments.response.body.data[0].id}}/roster
+Authorization: Bearer {{token}}
+Accept: application/json
+
+### 12. Module 4: Get Student Report Card with GPA & Core Subject Failures
+# Sunita Kumari (Student 2 - Failed Math and Science)
+GET {{host}}/api/academics/analytics/report-card/{{getStudents.response.body.data.items[1].id}}
+Authorization: Bearer {{token}}
+Accept: application/json
+
+### 13. Module 4: Get Academic Trajectory (Triggers Academic Shock Alert: 40% -> 20%)
+GET {{host}}/api/academics/analytics/trajectory/{{getStudents.response.body.data.items[1].id}}
+Authorization: Bearer {{token}}
+Accept: application/json
+
+### 14. Module 4: Get At-Risk Academic Students in School (Core Subject Failure)
+GET {{host}}/api/academics/analytics/at-risk/school/{{getSchools.response.body.data.items[0].id}}
+Authorization: Bearer {{token}}
+Accept: application/json

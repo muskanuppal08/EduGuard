@@ -331,8 +331,214 @@ public class DataSeeder
                 CreatedAtUtc = DateTime.UtcNow
             }, cancellationToken);
 
+            // Seed Attendance for Student 1 (Regular, ~95%)
+            var baseDate = new DateOnly(2025, 4, 7);
+            for (int i = 0; i < 20; i++)
+            {
+                var curDate = baseDate.AddDays(i);
+                if (curDate.DayOfWeek == DayOfWeek.Saturday || curDate.DayOfWeek == DayOfWeek.Sunday) continue;
 
-            _logger.LogInformation("Seeded sample school, classes, and students for {SchoolName}", sampleSchool.Name);
+                await _dataStore.AddOrUpdateAttendanceRecordAsync(new AttendanceRecord
+                {
+                    Id = Guid.NewGuid(),
+                    StudentId = student1.Id,
+                    SectionId = section9A.Id,
+                    SchoolId = sampleSchool.Id,
+                    Date = curDate,
+                    Status = (i == 5) ? AttendanceStatus.Late : AttendanceStatus.Present,
+                    Reason = AbsenceReason.None,
+                    CreatedAtUtc = DateTime.UtcNow
+                }, cancellationToken);
+            }
+
+            // Seed Attendance for Student 2 (Chronically Absent + 4 Consecutive Absences, ~70%)
+            for (int i = 0; i < 20; i++)
+            {
+                var curDate = baseDate.AddDays(i);
+                if (curDate.DayOfWeek == DayOfWeek.Saturday || curDate.DayOfWeek == DayOfWeek.Sunday) continue;
+
+                // Mark absent on specific days and the last 4 consecutive days
+                bool isAbsent = (i >= 16) || (i == 3) || (i == 8);
+                var status = isAbsent ? AttendanceStatus.Absent : AttendanceStatus.Present;
+                var reason = isAbsent ? AbsenceReason.AgriculturalOrSeasonalLabor : AbsenceReason.None;
+
+                await _dataStore.AddOrUpdateAttendanceRecordAsync(new AttendanceRecord
+                {
+                    Id = Guid.NewGuid(),
+                    StudentId = student2.Id,
+                    SectionId = section9A.Id,
+                    SchoolId = sampleSchool.Id,
+                    Date = curDate,
+                    Status = status,
+                    Reason = reason,
+                    Remarks = isAbsent ? "Assisting family during peak seasonal agricultural sowing" : null,
+                    CreatedAtUtc = DateTime.UtcNow
+                }, cancellationToken);
+            }
+
+            _logger.LogInformation("Seeded sample students and attendance history for {SchoolName}", sampleSchool.Name);
+
+            // ==================== Module 4: Seed Subjects, Assessments & Marks ====================
+            var mathSubject = new Subject
+            {
+                Id = Guid.NewGuid(),
+                SchoolId = sampleSchool.Id,
+                SubjectCode = "MATH-101",
+                Name = "Mathematics",
+                IsCoreSubject = true,
+                Description = "Core Secondary School Mathematics",
+                CreatedAtUtc = DateTime.UtcNow
+            };
+            var scienceSubject = new Subject
+            {
+                Id = Guid.NewGuid(),
+                SchoolId = sampleSchool.Id,
+                SubjectCode = "SCI-101",
+                Name = "General Science",
+                IsCoreSubject = true,
+                Description = "Core Secondary School Science",
+                CreatedAtUtc = DateTime.UtcNow
+            };
+            var socialSubject = new Subject
+            {
+                Id = Guid.NewGuid(),
+                SchoolId = sampleSchool.Id,
+                SubjectCode = "SOC-101",
+                Name = "Social Studies",
+                IsCoreSubject = false,
+                Description = "General Social Studies & History",
+                CreatedAtUtc = DateTime.UtcNow
+            };
+
+            await _dataStore.AddSubjectAsync(mathSubject, cancellationToken);
+            await _dataStore.AddSubjectAsync(scienceSubject, cancellationToken);
+            await _dataStore.AddSubjectAsync(socialSubject, cancellationToken);
+
+            // Seed Assessments
+            var mathMidterm = new Assessment
+            {
+                Id = Guid.NewGuid(),
+                SchoolId = sampleSchool.Id,
+                SectionId = section9A.Id,
+                SubjectId = mathSubject.Id,
+                AcademicYearId = academicYear.Id,
+                Title = "Class 9 Mathematics Midterm Exam",
+                Category = AssessmentCategory.Midterm,
+                ExamDate = new DateOnly(2025, 6, 15),
+                MaxMarks = 100.0m,
+                PassingMarks = 35.0m,
+                CreatedAtUtc = DateTime.UtcNow
+            };
+            var mathQuarterly = new Assessment
+            {
+                Id = Guid.NewGuid(),
+                SchoolId = sampleSchool.Id,
+                SectionId = section9A.Id,
+                SubjectId = mathSubject.Id,
+                AcademicYearId = academicYear.Id,
+                Title = "Class 9 Mathematics Quarterly Assessment",
+                Category = AssessmentCategory.Quarterly,
+                ExamDate = new DateOnly(2025, 8, 20),
+                MaxMarks = 100.0m,
+                PassingMarks = 35.0m,
+                CreatedAtUtc = DateTime.UtcNow
+            };
+            var scienceMidterm = new Assessment
+            {
+                Id = Guid.NewGuid(),
+                SchoolId = sampleSchool.Id,
+                SectionId = section9A.Id,
+                SubjectId = scienceSubject.Id,
+                AcademicYearId = academicYear.Id,
+                Title = "Class 9 General Science Midterm Exam",
+                Category = AssessmentCategory.Midterm,
+                ExamDate = new DateOnly(2025, 6, 16),
+                MaxMarks = 100.0m,
+                PassingMarks = 35.0m,
+                CreatedAtUtc = DateTime.UtcNow
+            };
+
+            await _dataStore.AddAssessmentAsync(mathMidterm, cancellationToken);
+            await _dataStore.AddAssessmentAsync(mathQuarterly, cancellationToken);
+            await _dataStore.AddAssessmentAsync(scienceMidterm, cancellationToken);
+
+            // Student 1 (Aarav): High performer across subjects
+            await _dataStore.AddOrUpdateMarkAsync(new StudentExamMark
+            {
+                Id = Guid.NewGuid(),
+                AssessmentId = mathMidterm.Id,
+                StudentId = student1.Id,
+                MarksObtained = 88.0m,
+                GradeLetter = "A",
+                GradePoint = 3.7m,
+                IsPass = true,
+                CreatedAtUtc = DateTime.UtcNow
+            }, cancellationToken);
+
+            await _dataStore.AddOrUpdateMarkAsync(new StudentExamMark
+            {
+                Id = Guid.NewGuid(),
+                AssessmentId = mathQuarterly.Id,
+                StudentId = student1.Id,
+                MarksObtained = 92.0m,
+                GradeLetter = "A+",
+                GradePoint = 4.0m,
+                IsPass = true,
+                CreatedAtUtc = DateTime.UtcNow
+            }, cancellationToken);
+
+            await _dataStore.AddOrUpdateMarkAsync(new StudentExamMark
+            {
+                Id = Guid.NewGuid(),
+                AssessmentId = scienceMidterm.Id,
+                StudentId = student1.Id,
+                MarksObtained = 85.0m,
+                GradeLetter = "A",
+                GradePoint = 3.7m,
+                IsPass = true,
+                CreatedAtUtc = DateTime.UtcNow
+            }, cancellationToken);
+
+            // Student 2 (Sunita): Academic shock drop (40% -> 20%) and 2 core subject failures
+            await _dataStore.AddOrUpdateMarkAsync(new StudentExamMark
+            {
+                Id = Guid.NewGuid(),
+                AssessmentId = mathMidterm.Id,
+                StudentId = student2.Id,
+                MarksObtained = 40.0m,
+                GradeLetter = "D",
+                GradePoint = 1.0m,
+                IsPass = true,
+                CreatedAtUtc = DateTime.UtcNow
+            }, cancellationToken);
+
+            await _dataStore.AddOrUpdateMarkAsync(new StudentExamMark
+            {
+                Id = Guid.NewGuid(),
+                AssessmentId = mathQuarterly.Id,
+                StudentId = student2.Id,
+                MarksObtained = 20.0m, // 20% drop -> triggers Academic Shock & subject failure
+                GradeLetter = "F",
+                GradePoint = 0.0m,
+                IsPass = false,
+                Remarks = "Severe performance drop following prolonged agricultural absence",
+                CreatedAtUtc = DateTime.UtcNow
+            }, cancellationToken);
+
+            await _dataStore.AddOrUpdateMarkAsync(new StudentExamMark
+            {
+                Id = Guid.NewGuid(),
+                AssessmentId = scienceMidterm.Id,
+                StudentId = student2.Id,
+                MarksObtained = 28.0m, // Failed second core subject
+                GradeLetter = "F",
+                GradePoint = 0.0m,
+                IsPass = false,
+                Remarks = "Needs urgent academic remediation",
+                CreatedAtUtc = DateTime.UtcNow
+            }, cancellationToken);
+
+            _logger.LogInformation("Seeded sample academic subjects, assessments, and marks");
         }
 
         _logger.LogInformation("EduGuard data seeding completed successfully.");
