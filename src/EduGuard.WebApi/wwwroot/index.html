@@ -40,22 +40,22 @@
         <div class="hidden md:flex items-center space-x-4">
           <div class="text-right">
             <div class="text-xs text-indigo-200 font-medium">Active School</div>
-            <div id="school-name-banner" class="text-sm font-semibold text-white">Kutra Tribal High School</div>
+            <div id="school-name-banner" class="text-sm font-semibold text-white">Govt High School, Birmitrapur</div>
           </div>
           <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-400/20 text-amber-300 border border-amber-400/30">
             Marginalized / Rural
           </span>
           <div class="border-l border-indigo-700 h-8"></div>
-          <!-- User Profile -->
+          <!-- User Profile & Role Switcher -->
           <div class="flex items-center space-x-2">
-            <div class="w-8 h-8 rounded-full bg-indigo-600 flex items-center justify-center font-bold text-sm">SA</div>
+            <div id="user-avatar" class="w-8 h-8 rounded-full bg-indigo-600 flex items-center justify-center font-bold text-sm">SA</div>
             <div class="text-left text-xs">
               <div id="user-display-name" class="font-medium">System Admin</div>
-              <span class="text-indigo-300">SuperAdmin</span>
+              <span id="user-display-role" class="text-indigo-300 font-mono text-[11px] bg-indigo-800/80 px-1.5 py-0.5 rounded">SuperAdmin</span>
             </div>
           </div>
-          <button id="btn-relogin" onclick="loginDemo()" class="text-xs bg-indigo-800 hover:bg-indigo-700 px-3 py-1.5 rounded-md border border-indigo-600 transition">
-            Reconnect Token
+          <button id="btn-open-login" onclick="openLoginModal()" class="text-xs bg-amber-400 hover:bg-amber-300 text-slate-900 font-bold px-3 py-1.5 rounded-md shadow-sm transition flex items-center gap-1.5">
+            <span>👤</span> Switch Role / Login
           </button>
         </div>
       </div>
@@ -73,6 +73,9 @@
         </button>
         <button onclick="switchTab('academics')" id="tab-academics" class="tab-btn px-3 py-1.5 rounded-md text-indigo-200 hover:text-white hover:bg-indigo-800/60 transition">
           🎓 Module 4: Academics & Learning Shock
+        </button>
+        <button onclick="switchTab('student-portal')" id="tab-student-portal" class="tab-btn px-3 py-1.5 rounded-md text-indigo-200 hover:text-white hover:bg-indigo-800/60 transition">
+          📢 Student Portal & Grievance
         </button>
       </nav>
     </div>
@@ -551,7 +554,259 @@
       </div>
     </section>
 
+    <!-- ==================== TAB 5: STUDENT PORTAL & GRIEVANCE (PUSH COMPLAINT) ==================== -->
+    <section id="content-student-portal" class="space-y-6 hidden">
+      <!-- Student Header Banner -->
+      <div class="bg-gradient-to-r from-teal-600 via-emerald-600 to-indigo-700 rounded-2xl p-6 text-white shadow-md">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="bg-white/20 text-white text-xs font-semibold px-2.5 py-0.5 rounded-full">Student &amp; Guardian Access</span>
+              <span class="text-xs text-white/80">Govt High School, Birmitrapur</span>
+            </div>
+            <h1 class="text-2xl font-bold mt-1">Student Portal: Priya Kumari</h1>
+            <p class="text-xs text-white/80 mt-0.5">Admission No: <strong>ADM-2025-001</strong> | Class: <strong>Grade 9 - Section A</strong> | Roll: <strong>#1</strong></p>
+          </div>
+          <div class="flex flex-wrap gap-2 text-xs">
+            <span class="px-2.5 py-1 rounded-full bg-white/20 font-medium">🔴 BPL Card Holder</span>
+            <span class="px-2.5 py-1 rounded-full bg-white/20 font-medium">🚶 6.5 km Commute (Walking)</span>
+            <span class="px-2.5 py-1 rounded-full bg-white/20 font-medium">🎓 First-Generation Learner</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Cards Grid: Attendance Summary & Academic Performance -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Student Attendance Summary -->
+        <div class="bg-white rounded-xl border border-slate-200 p-5 shadow-sm space-y-4">
+          <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+            <h3 class="font-bold text-slate-800 text-sm flex items-center gap-2">
+              <span>📅</span> My Attendance Summary (Term 1)
+            </h3>
+            <span class="text-xs font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">Good Standing</span>
+          </div>
+          <div class="grid grid-cols-3 gap-3 text-center">
+            <div class="p-3 bg-slate-50 rounded-lg border border-slate-100">
+              <div class="text-2xl font-extrabold text-emerald-600">92.5%</div>
+              <div class="text-xs text-slate-500 mt-1">Attendance Rate</div>
+            </div>
+            <div class="p-3 bg-slate-50 rounded-lg border border-slate-100">
+              <div class="text-2xl font-extrabold text-slate-800">37 / 40</div>
+              <div class="text-xs text-slate-500 mt-1">Working Days</div>
+            </div>
+            <div class="p-3 bg-slate-50 rounded-lg border border-slate-100">
+              <div class="text-2xl font-extrabold text-slate-800">0 Days</div>
+              <div class="text-xs text-slate-500 mt-1">Current Streak</div>
+            </div>
+          </div>
+          <div class="text-xs text-slate-500 bg-slate-50 p-3 rounded-lg flex items-center gap-2">
+            <span>ℹ️</span> Reminder: Minimum required attendance to appear in annual exams is <strong>75%</strong>. You are currently well above the chronic threshold (85%).
+          </div>
+        </div>
+
+        <!-- Student Academic Report Card -->
+        <div class="bg-white rounded-xl border border-slate-200 p-5 shadow-sm space-y-4">
+          <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+            <h3 class="font-bold text-slate-800 text-sm flex items-center gap-2">
+              <span>🎓</span> My Academic Report Card
+            </h3>
+            <span class="text-xs font-bold text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded-full border border-indigo-200">GPA: 3.5 / 4.0</span>
+          </div>
+          <div class="space-y-2 text-xs">
+            <div class="flex justify-between items-center p-2 rounded-lg bg-slate-50 border border-slate-100">
+              <div>
+                <span class="font-bold text-slate-800">Mathematics (Core)</span>
+                <span class="text-slate-400 text-[11px] block">Midterm Examination</span>
+              </div>
+              <div class="text-right">
+                <span class="font-bold text-slate-800">78 / 100</span>
+                <span class="ml-2 font-bold px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800 text-[11px]">B+ (3.3)</span>
+              </div>
+            </div>
+            <div class="flex justify-between items-center p-2 rounded-lg bg-slate-50 border border-slate-100">
+              <div>
+                <span class="font-bold text-slate-800">Science (Core)</span>
+                <span class="text-slate-400 text-[11px] block">Midterm Examination</span>
+              </div>
+              <div class="text-right">
+                <span class="font-bold text-slate-800">84 / 100</span>
+                <span class="ml-2 font-bold px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800 text-[11px]">A (3.7)</span>
+              </div>
+            </div>
+            <div class="flex justify-between items-center p-2 rounded-lg bg-slate-50 border border-slate-100">
+              <div>
+                <span class="font-bold text-slate-800">English Language</span>
+                <span class="text-slate-400 text-[11px] block">Midterm Examination</span>
+              </div>
+              <div class="text-right">
+                <span class="font-bold text-slate-800">72 / 100</span>
+                <span class="ml-2 font-bold px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800 text-[11px]">B+ (3.3)</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PUSH GRIEVANCE / ASSISTANCE REQUEST COMPLAINT BOX -->
+      <div class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm space-y-4">
+        <div class="border-b border-slate-100 pb-3 flex flex-col sm:flex-row justify-between sm:items-center gap-2">
+          <div>
+            <h3 class="text-base font-bold text-slate-900 flex items-center gap-2">
+              <span>📢</span> Submit Student Grievance / Push Complaint
+            </h3>
+            <p class="text-xs text-slate-500 mt-0.5">Facing commute hardship, financial distress, illness, or learning loss? Push a complaint directly to your School Retention Counselor.</p>
+          </div>
+          <span class="text-xs px-2.5 py-1 bg-amber-50 text-amber-800 font-semibold rounded-full border border-amber-200 self-start sm:self-auto">
+            Direct Line to Counselor
+          </span>
+        </div>
+
+        <form id="form-grievance" onsubmit="submitGrievance(event)" class="space-y-4">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1">Issue Category *</label>
+              <select id="grievance-category" class="w-full text-xs px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:border-indigo-500 bg-white">
+                <option value="CommuteDistance">🚌 Commute Hardship (Walking &gt;5 km / Road Impassable / Route Unsafe)</option>
+                <option value="FinancialDistress">💰 Financial Hardship (BPL / Books / Exam Fees / Uniform assistance)</option>
+                <option value="MedicalHealth">🏥 Health &amp; Medical Leave (Illness / Family Domestic Duty)</option>
+                <option value="AcademicRemedial">📚 Academic Difficulty (Requesting Remedial Extra Classes in Core Subjects)</option>
+                <option value="SafetyConcern">⚠️ School Safety, Harassment, or Bullying</option>
+                <option value="OtherHardship">📝 Other Personal / Family Hardship</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1">Urgency Level</label>
+              <select id="grievance-urgency" class="w-full text-xs px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:border-indigo-500 bg-white">
+                <option value="Standard">Standard (Counselor review within 3 days)</option>
+                <option value="High">High (Immediate counselor call or home visit required)</option>
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Detailed Description of Hardship / Complaint *</label>
+            <textarea id="grievance-description" rows="3" required placeholder="Describe your challenge in detail (e.g. 'Heavy monsoon rains made the 6.5km unpaved forest road impassable on foot this week; requesting bicycle support or temporary transport allowance to prevent missing classes...')" class="w-full text-xs px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:border-indigo-500"></textarea>
+          </div>
+
+          <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-3 pt-2">
+            <div class="flex items-center gap-2">
+              <input id="grievance-urgent-check" type="checkbox" class="rounded text-indigo-600 focus:ring-indigo-500">
+              <label for="grievance-urgent-check" class="text-xs text-slate-600">I confirm that this grievance is genuine and requires student welfare support.</label>
+            </div>
+            <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold px-5 py-2.5 rounded-lg shadow transition flex items-center justify-center gap-2">
+              <span>🚀</span> Push Complaint to Counselor
+            </button>
+          </div>
+        </form>
+
+        <!-- Feedback Banner -->
+        <div id="grievance-success-banner" class="hidden p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-xs text-emerald-800 space-y-1">
+          <div class="font-bold flex items-center gap-1.5">
+            <span>✅</span> Grievance Lodged Successfully!
+          </div>
+          <p id="grievance-success-msg">Your complaint has been appended to your student longitudinal timeline and routed to Retention Counselor Dr. Ananya Roy for immediate assessment.</p>
+        </div>
+
+        <!-- Timeline of Logged Grievances -->
+        <div class="pt-4 border-t border-slate-100">
+          <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Recently Submitted Grievances &amp; Status:</h4>
+          <div id="grievance-history-list" class="space-y-2">
+            <div class="p-3 bg-slate-50 rounded-lg border border-slate-200 text-xs flex justify-between items-center">
+              <div>
+                <span class="font-bold text-slate-800">🚌 Commute Hardship: Rainwashed Forest Road (&gt;6km)</span>
+                <span class="text-slate-400 block text-[11px]">Logged by Priya Kumari | Sep 18, 2026</span>
+              </div>
+              <span class="px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 font-semibold text-[11px]">Under Review (Counselor)</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
   </main>
+
+  <!-- ==================== LOGIN / ROLE SWITCHER MODAL ==================== -->
+  <div id="login-modal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
+    <div class="bg-white rounded-2xl max-w-xl w-full p-6 shadow-2xl border border-slate-200 space-y-5">
+      <div class="flex justify-between items-start border-b border-slate-100 pb-3">
+        <div>
+          <h2 class="text-xl font-bold text-slate-900 flex items-center gap-2">
+            <span>🔐</span> EduGuard Portal Authentication
+          </h2>
+          <p class="text-xs text-slate-500 mt-0.5">Select a role persona to test different permissions, or login with custom credentials.</p>
+        </div>
+        <button onclick="closeLoginModal()" class="text-slate-400 hover:text-slate-600 font-bold text-xl">&times;</button>
+      </div>
+
+      <!-- Quick Role Switch Cards -->
+      <div class="space-y-2">
+        <div class="text-xs font-bold text-slate-400 uppercase tracking-wider">Quick Switch Personas (1-Click Test):</div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <!-- Card 1: Student -->
+          <button onclick="loginAsRole('student', 'StudentPassword123!')" class="text-left p-3.5 rounded-xl border border-emerald-200 hover:border-emerald-500 bg-emerald-50/50 hover:bg-emerald-50 transition group">
+            <div class="flex items-center justify-between">
+              <span class="text-xl">🎓</span>
+              <span class="text-xs font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">Student/Parent</span>
+            </div>
+            <div class="font-bold text-sm text-slate-900 mt-2 group-hover:text-emerald-700">Priya Kumari (Student)</div>
+            <div class="text-xs text-slate-500 mt-0.5">Push grievances, view own attendance &amp; report card</div>
+            <div class="text-[11px] text-emerald-600 font-mono mt-2">student / StudentPassword123!</div>
+          </button>
+
+          <!-- Card 2: Teacher -->
+          <button onclick="loginAsRole('teacher', 'TeacherPassword123!')" class="text-left p-3.5 rounded-xl border border-blue-200 hover:border-blue-500 bg-blue-50/50 hover:bg-blue-50 transition group">
+            <div class="flex items-center justify-between">
+              <span class="text-xl">👩‍🏫</span>
+              <span class="text-xs font-bold px-2 py-0.5 rounded-full bg-blue-100 text-blue-800">Teacher</span>
+            </div>
+            <div class="font-bold text-sm text-slate-900 mt-2 group-hover:text-blue-700">Sunil Sharma (Grade 9-A)</div>
+            <div class="text-xs text-slate-500 mt-0.5">Daily section roster marking &amp; exam marks entry</div>
+            <div class="text-[11px] text-blue-600 font-mono mt-2">teacher / TeacherPassword123!</div>
+          </button>
+
+          <!-- Card 3: Counselor -->
+          <button onclick="loginAsRole('counselor', 'CounselorPassword123!')" class="text-left p-3.5 rounded-xl border border-amber-200 hover:border-amber-500 bg-amber-50/50 hover:bg-amber-50 transition group">
+            <div class="flex items-center justify-between">
+              <span class="text-xl">🩺</span>
+              <span class="text-xs font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-800">Counselor</span>
+            </div>
+            <div class="font-bold text-sm text-slate-900 mt-2 group-hover:text-amber-700">Dr. Ananya Roy (Retention)</div>
+            <div class="text-xs text-slate-500 mt-0.5">Chronic absence (&lt;85%), streaks &amp; grievances</div>
+            <div class="text-[11px] text-amber-600 font-mono mt-2">counselor / CounselorPassword123!</div>
+          </button>
+
+          <!-- Card 4: Super Admin -->
+          <button onclick="loginAsRole('admin', 'AdminPassword123!')" class="text-left p-3.5 rounded-xl border border-purple-200 hover:border-purple-500 bg-purple-50/50 hover:bg-purple-50 transition group">
+            <div class="flex items-center justify-between">
+              <span class="text-xl">👑</span>
+              <span class="text-xs font-bold px-2 py-0.5 rounded-full bg-purple-100 text-purple-800">SuperAdmin</span>
+            </div>
+            <div class="font-bold text-sm text-slate-900 mt-2 group-hover:text-purple-700">System Administrator</div>
+            <div class="text-xs text-slate-500 mt-0.5">Full oversight of all schools, users &amp; analytics</div>
+            <div class="text-[11px] text-purple-600 font-mono mt-2">admin / AdminPassword123!</div>
+          </button>
+        </div>
+      </div>
+
+      <!-- Manual Login Option -->
+      <div class="pt-3 border-t border-slate-100">
+        <div class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Or Manual Login:</div>
+        <form onsubmit="handleManualLogin(event)" class="space-y-3">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            <input id="login-username" type="text" placeholder="Username or Email" class="w-full text-xs px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:border-indigo-500">
+            <input id="login-password" type="password" placeholder="Password" class="w-full text-xs px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:border-indigo-500">
+          </div>
+          <div class="flex justify-between items-center">
+            <span id="login-feedback" class="text-xs text-rose-600 font-medium hidden"></span>
+            <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold px-4 py-2 rounded-lg transition ml-auto">
+              Sign In with JWT &rarr;
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
 
   <!-- MODAL FOR CASE FILE DETAILS -->
   <div id="student-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
@@ -587,26 +842,167 @@
 
   <!-- FOOTER -->
   <footer class="bg-white border-t border-slate-200 py-4 text-center text-xs text-slate-400">
-    EduGuard &copy; 2026 | Built for Marginalized Communities Retention & Dropout Prevention (.NET 10 WebApi)
+    EduGuard &copy; 2026 | Built for Marginalized Communities Retention &amp; Dropout Prevention (.NET 10 WebApi)
   </footer>
 
   <!-- INTERACTIVE JS ENGINE -->
   <script>
     const API_BASE = window.location.origin;
+    let currentUser = null;
 
     // Tab Navigation
     function switchTab(tab) {
-      ['overview', 'students', 'attendance', 'academics'].forEach(t => {
-        document.getElementById(`content-${t}`).classList.add('hidden');
-        document.getElementById(`tab-${t}`).classList.remove('bg-indigo-800', 'text-white');
-        document.getElementById(`tab-${t}`).classList.add('text-indigo-200');
+      ['overview', 'students', 'attendance', 'academics', 'student-portal'].forEach(t => {
+        const content = document.getElementById(`content-${t}`);
+        const btn = document.getElementById(`tab-${t}`);
+        if (content) content.classList.add('hidden');
+        if (btn) {
+          btn.classList.remove('bg-indigo-800', 'text-white');
+          btn.classList.add('text-indigo-200');
+        }
       });
-      document.getElementById(`content-${tab}`).classList.remove('hidden');
-      document.getElementById(`tab-${tab}`).classList.add('bg-indigo-800', 'text-white');
-      document.getElementById(`tab-${tab}`).classList.remove('text-indigo-200');
+      const activeContent = document.getElementById(`content-${tab}`);
+      const activeBtn = document.getElementById(`tab-${tab}`);
+      if (activeContent) activeContent.classList.remove('hidden');
+      if (activeBtn) {
+        activeBtn.classList.add('bg-indigo-800', 'text-white');
+        activeBtn.classList.remove('text-indigo-200');
+      }
     }
 
-    // Modal
+    // Login Modal Controls
+    function openLoginModal() {
+      const modal = document.getElementById('login-modal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function closeLoginModal() {
+      const modal = document.getElementById('login-modal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    // Role-based Login Execution
+    async function loginAsRole(username, password) {
+      try {
+        const res = await fetch(`${API_BASE}/api/v1/auth/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ usernameOrEmail: username, password: password })
+        });
+        const json = await res.json();
+        if (res.ok && json.success) {
+          localStorage.setItem('eduguard_token', json.data.accessToken);
+          localStorage.setItem('eduguard_user', JSON.stringify(json.data.user));
+          currentUser = json.data.user;
+          updateUserDisplay(currentUser);
+          closeLoginModal();
+
+          // Role-specific landing view
+          const roles = currentUser.roles || [];
+          if (roles.includes('StudentParent')) {
+            switchTab('student-portal');
+          } else if (roles.includes('Teacher')) {
+            switchTab('attendance');
+          } else if (roles.includes('Counselor')) {
+            switchTab('overview');
+          } else {
+            switchTab('overview');
+          }
+        } else {
+          alert('Login failed: ' + (json.message || 'Invalid credentials'));
+        }
+      } catch (err) {
+        console.warn('API Offline:', err);
+        // Fallback demo state
+        const demoMap = {
+          student: { fullName: 'Priya Kumari', roles: ['StudentParent'], avatar: 'PK' },
+          teacher: { fullName: 'Sunil Sharma', roles: ['Teacher'], avatar: 'SS' },
+          counselor: { fullName: 'Dr. Ananya Roy', roles: ['Counselor'], avatar: 'AR' },
+          admin: { fullName: 'System Administrator', roles: ['SuperAdmin'], avatar: 'SA' }
+        };
+        const demoUser = demoMap[username] || demoMap.admin;
+        updateUserDisplay(demoUser);
+        closeLoginModal();
+        if (username === 'student') switchTab('student-portal');
+        else if (username === 'teacher') switchTab('attendance');
+        else switchTab('overview');
+      }
+    }
+
+    // Manual Credentials Form
+    async function handleManualLogin(e) {
+      e.preventDefault();
+      const u = document.getElementById('login-username').value.trim();
+      const p = document.getElementById('login-password').value.trim();
+      if (!u || !p) return;
+      await loginAsRole(u, p);
+    }
+
+    // Update Header with User Identity
+    function updateUserDisplay(user) {
+      if (!user) return;
+      document.getElementById('user-display-name').innerText = user.fullName || 'User';
+      const role = (user.roles && user.roles.length > 0) ? user.roles[0] : 'User';
+      const roleEl = document.getElementById('user-display-role');
+      roleEl.innerText = role;
+
+      const initials = (user.fullName || 'SA').split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+      document.getElementById('user-avatar').innerText = user.avatar || initials;
+
+      // Color code role pill
+      roleEl.className = 'font-mono text-[11px] px-1.5 py-0.5 rounded ' + 
+        (role === 'SuperAdmin' ? 'bg-purple-800 text-purple-200' :
+         role === 'Teacher' ? 'bg-blue-800 text-blue-200' :
+         role === 'Counselor' ? 'bg-amber-800 text-amber-200' :
+         'bg-emerald-800 text-emerald-200');
+    }
+
+    // Push Student Grievance
+    async function submitGrievance(e) {
+      e.preventDefault();
+      const cat = document.getElementById('grievance-category').value;
+      const urg = document.getElementById('grievance-urgency').value;
+      const desc = document.getElementById('grievance-description').value.trim();
+      const isUrgent = document.getElementById('grievance-urgent-check').checked;
+
+      if (!desc) return;
+
+      const catLabels = {
+        CommuteDistance: '🚌 Commute Hardship (>5km)',
+        FinancialDistress: '💰 Financial Hardship (BPL/Fees)',
+        MedicalHealth: '🏥 Health & Medical Leave',
+        AcademicRemedial: '📚 Academic Learning Difficulty',
+        SafetyConcern: '⚠️ School Safety & Bullying',
+        OtherHardship: '📝 Personal Hardship'
+      };
+
+      // Add to UI List immediately
+      const list = document.getElementById('grievance-history-list');
+      const item = document.createElement('div');
+      item.className = 'p-3 bg-slate-50 rounded-lg border border-slate-200 text-xs flex justify-between items-center';
+      item.innerHTML = `
+        <div>
+          <span class="font-bold text-slate-800">${catLabels[cat] || cat}: ${desc.substring(0, 45)}...</span>
+          <span class="text-slate-400 block text-[11px]">Logged just now | Urgency: ${urg}</span>
+        </div>
+        <span class="px-2 py-0.5 rounded-full ${urg === 'High' || isUrgent ? 'bg-rose-100 text-rose-800' : 'bg-amber-100 text-amber-800'} font-semibold text-[11px]">
+          ${urg === 'High' || isUrgent ? 'Urgent Review' : 'Under Review'}
+        </span>
+      `;
+      list.prepend(item);
+
+      // Show Confirmation
+      const banner = document.getElementById('grievance-success-banner');
+      banner.classList.remove('hidden');
+
+      // Reset Form
+      document.getElementById('grievance-description').value = '';
+      document.getElementById('grievance-urgent-check').checked = false;
+    }
+
+    // Student Case File Modal
     function viewStudentModal(name, adm, dist, risk, summary) {
       document.getElementById('modal-student-name').innerText = name;
       document.getElementById('modal-student-adm').innerText = 'Admission No: ' + adm;
@@ -624,31 +1020,9 @@
       modal.classList.remove('flex');
     }
 
-    // Auto-Login / Token retrieval
-    async function loginDemo() {
-      try {
-        const res = await fetch(`${API_BASE}/api/v1/auth/login`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ usernameOrEmail: 'admin', password: 'AdminPassword123!' })
-        });
-        if (res.ok) {
-          const json = await res.json();
-          localStorage.setItem('eduguard_token', json.data.accessToken);
-          document.getElementById('user-display-name').innerText = json.data.user.fullName;
-          alert('Successfully reconnected to EduGuard Backend API with JWT Token!');
-        }
-      } catch (err) {
-        console.warn('API Offline or not reachable:', err);
-      }
-    }
-
-    // Initialize on load
+    // Default connection on load
     window.addEventListener('DOMContentLoaded', () => {
-      // Auto-connect token if not present
-      if (!localStorage.getItem('eduguard_token')) {
-        loginDemo();
-      }
+      loginAsRole('admin', 'AdminPassword123!');
     });
   </script>
 </body>

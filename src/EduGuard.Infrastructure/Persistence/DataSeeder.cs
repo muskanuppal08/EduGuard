@@ -97,20 +97,26 @@ public class DataSeeder
             {
                 SystemPermission.SchoolsRead,
                 SystemPermission.StudentsRead,
+                SystemPermission.StudentsHistoryRead,
                 SystemPermission.AttendanceRead,
                 SystemPermission.AttendanceRecord,
+                SystemPermission.AttendanceAnalytics,
                 SystemPermission.AcademicsRead,
                 SystemPermission.AcademicsRecord,
+                SystemPermission.AcademicsReports,
                 SystemPermission.DropoutAlertsRead
             },
             [UserRoleType.Counselor] = new()
             {
                 SystemPermission.SchoolsRead,
                 SystemPermission.StudentsRead,
+                SystemPermission.StudentsWrite,
                 SystemPermission.StudentsHistoryRead,
                 SystemPermission.AttendanceRead,
+                SystemPermission.AttendanceRecord,
                 SystemPermission.AttendanceAnalytics,
                 SystemPermission.AcademicsRead,
+                SystemPermission.AcademicsReports,
                 SystemPermission.DropoutAlertsRead,
                 SystemPermission.DropoutRiskCalculate,
                 SystemPermission.InterventionsManage
@@ -118,8 +124,12 @@ public class DataSeeder
             [UserRoleType.StudentParent] = new()
             {
                 SystemPermission.SchoolsRead,
+                SystemPermission.StudentsRead,
+                SystemPermission.StudentsHistoryRead,
+                SystemPermission.StudentsWrite,
                 SystemPermission.AttendanceRead,
-                SystemPermission.AcademicsRead
+                SystemPermission.AcademicsRead,
+                SystemPermission.AcademicsReports
             }
         };
 
@@ -131,52 +141,11 @@ public class DataSeeder
             }
         }
 
-        // 3. Seed Default SuperAdmin User
-        const string adminUsername = "admin";
-        const string adminEmail = "admin@eduguard.org";
-        var existingAdmin = await _dataStore.GetUserByUsernameOrEmailAsync(adminUsername, cancellationToken);
-        if (existingAdmin == null)
-        {
-            var (hash, salt) = _passwordHasher.HashPassword("AdminPassword123!");
-            var adminUser = new User
-            {
-                Id = Guid.NewGuid(),
-                Username = adminUsername,
-                Email = adminEmail,
-                FullName = "System Administrator",
-                PasswordHash = hash,
-                PasswordSalt = salt,
-                PhoneNumber = "+1234567890",
-                IsActive = true,
-                CreatedAtUtc = DateTime.UtcNow
-            };
-
-            await _dataStore.AddUserAsync(adminUser, cancellationToken);
-
-            // Assign SuperAdmin role
-            if (roleMap.TryGetValue(UserRoleType.SuperAdmin, out var superRole))
-            {
-                await _dataStore.AddUserRoleAsync(new UserRole
-                {
-                    UserId = adminUser.Id,
-                    RoleId = superRole.Id,
-                    AssignedAtUtc = DateTime.UtcNow
-                }, cancellationToken);
-            }
-
-            // Create Profile
-            await _dataStore.UpsertProfileAsync(new UserProfile
-            {
-                Id = Guid.NewGuid(),
-                UserId = adminUser.Id,
-                Designation = "Chief System Administrator",
-                Department = "Ministry / Central Administration",
-                PreferredLanguage = "en",
-                CreatedAtUtc = DateTime.UtcNow
-            }, cancellationToken);
-
-            _logger.LogInformation("Default SuperAdmin user created: {Username} / {Email}", adminUsername, adminEmail);
-        }
+        // 3. Seed Default Users across Roles (Admin, Teacher, Counselor, Student)
+        await SeedUserIfNotExistsAsync("admin", "admin@eduguard.org", "AdminPassword123!", "System Administrator", UserRoleType.SuperAdmin, "Chief System Administrator", "Central Ministry & Districts", roleMap, cancellationToken);
+        await SeedUserIfNotExistsAsync("teacher", "teacher@eduguard.org", "TeacherPassword123!", "Sunil Sharma (Teacher)", UserRoleType.Teacher, "Class Teacher (Grade 9-A)", "Faculty of Sciences", roleMap, cancellationToken);
+        await SeedUserIfNotExistsAsync("counselor", "counselor@eduguard.org", "CounselorPassword123!", "Dr. Ananya Roy (Counselor)", UserRoleType.Counselor, "Student Retention & Welfare Counselor", "Student Welfare Cell", roleMap, cancellationToken);
+        await SeedUserIfNotExistsAsync("student", "student@eduguard.org", "StudentPassword123!", "Priya Kumari (Student)", UserRoleType.StudentParent, "Enrolled Student (Grade 9-A)", "Student Body", roleMap, cancellationToken);
 
         // 4. Seed Sample School (Marginalized / Rural Focus)
         var sampleSchool = await _dataStore.GetSchoolByCodeAsync("SCH-RUR-001", cancellationToken);
@@ -542,5 +511,59 @@ public class DataSeeder
         }
 
         _logger.LogInformation("EduGuard data seeding completed successfully.");
+    }
+
+    private async Task SeedUserIfNotExistsAsync(
+        string username,
+        string email,
+        string password,
+        string fullName,
+        string roleName,
+        string designation,
+        string department,
+        Dictionary<string, Role> roleMap,
+        CancellationToken cancellationToken)
+    {
+        var existing = await _dataStore.GetUserByUsernameOrEmailAsync(username, cancellationToken);
+        if (existing == null)
+        {
+            var (hash, salt) = _passwordHasher.HashPassword(password);
+            var user = new User
+            {
+                Id = Guid.NewGuid(),
+                Username = username,
+                Email = email,
+                FullName = fullName,
+                PasswordHash = hash,
+                PasswordSalt = salt,
+                PhoneNumber = "+919876543210",
+                IsActive = true,
+                CreatedAtUtc = DateTime.UtcNow
+            };
+
+            await _dataStore.AddUserAsync(user, cancellationToken);
+
+            if (roleMap.TryGetValue(roleName, out var role))
+            {
+                await _dataStore.AddUserRoleAsync(new UserRole
+                {
+                    UserId = user.Id,
+                    RoleId = role.Id,
+                    AssignedAtUtc = DateTime.UtcNow
+                }, cancellationToken);
+            }
+
+            await _dataStore.UpsertProfileAsync(new UserProfile
+            {
+                Id = Guid.NewGuid(),
+                UserId = user.Id,
+                Designation = designation,
+                Department = department,
+                PreferredLanguage = "en",
+                CreatedAtUtc = DateTime.UtcNow
+            }, cancellationToken);
+
+            _logger.LogInformation("Seeded default user: {Username} / {Email} with role {RoleName}", username, email, roleName);
+        }
     }
 }
