@@ -50,6 +50,17 @@ public class RegisterStaffDto
     public string? Department { get; set; }
 }
 
+public class RegisterPublicUserDto
+{
+    public string Email { get; set; } = string.Empty;
+    public string Username { get; set; } = string.Empty;
+    public string FullName { get; set; } = string.Empty;
+    public string Password { get; set; } = string.Empty;
+    public string? Role { get; set; }
+    public Guid? SchoolId { get; set; }
+    public string? PhoneNumber { get; set; }
+}
+
 public class ChangePasswordDto
 {
     public string CurrentPassword { get; set; } = string.Empty;

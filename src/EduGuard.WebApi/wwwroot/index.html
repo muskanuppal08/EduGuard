@@ -54,6 +54,9 @@
               <span id="user-display-role" class="text-indigo-300 font-mono text-[11px] bg-indigo-800/80 px-1.5 py-0.5 rounded">SuperAdmin</span>
             </div>
           </div>
+          <button id="btn-open-grievance" onclick="openGrievanceModal()" class="text-xs bg-emerald-500 hover:bg-emerald-400 text-white font-bold px-3 py-1.5 rounded-md shadow-sm transition flex items-center gap-1.5">
+            <span>📝</span> Log Request / Grievance
+          </button>
           <button id="btn-open-login" onclick="openLoginModal()" class="text-xs bg-amber-400 hover:bg-amber-300 text-slate-900 font-bold px-3 py-1.5 rounded-md shadow-sm transition flex items-center gap-1.5">
             <span>👤</span> Switch Role / Login
           </button>
@@ -63,19 +66,19 @@
       <!-- NAVIGATION TABS -->
       <nav class="flex space-x-1 sm:space-x-4 pb-2 text-sm font-medium overflow-x-auto">
         <button onclick="switchTab('overview')" id="tab-overview" class="tab-btn px-3 py-1.5 rounded-md text-white bg-indigo-800 font-semibold shadow-sm transition">
-          📊 Executive Dashboard
+          📊 Executive Overview
         </button>
         <button onclick="switchTab('students')" id="tab-students" class="tab-btn px-3 py-1.5 rounded-md text-indigo-200 hover:text-white hover:bg-indigo-800/60 transition">
-          👥 Module 2: Students & Vulnerability
+          👥 Students &amp; Vulnerability
         </button>
         <button onclick="switchTab('attendance')" id="tab-attendance" class="tab-btn px-3 py-1.5 rounded-md text-indigo-200 hover:text-white hover:bg-indigo-800/60 transition">
-          📅 Module 3: Attendance & Chronic Alerts
+          📅 Attendance &amp; Alerts
         </button>
         <button onclick="switchTab('academics')" id="tab-academics" class="tab-btn px-3 py-1.5 rounded-md text-indigo-200 hover:text-white hover:bg-indigo-800/60 transition">
-          🎓 Module 4: Academics & Learning Shock
+          🎓 Academics &amp; Performance
         </button>
         <button onclick="switchTab('student-portal')" id="tab-student-portal" class="tab-btn px-3 py-1.5 rounded-md text-indigo-200 hover:text-white hover:bg-indigo-800/60 transition">
-          📢 Student Portal & Grievance
+          📢 Helpdesk &amp; Requests
         </button>
       </nav>
     </div>
@@ -160,7 +163,7 @@
         <!-- Recent Alerts Feed -->
         <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5">
           <div class="flex items-center justify-between pb-3 border-b border-slate-100">
-            <h3 class="font-bold text-slate-900 text-sm">Active Dropout Alerts (Module 3 & 4)</h3>
+            <h3 class="font-bold text-slate-900 text-sm">Active Early Warning Alerts (Attendance &amp; Academics)</h3>
             <span class="text-xs text-slate-400">Live Threshold Engine</span>
           </div>
           <div class="mt-4 space-y-3">
@@ -190,40 +193,40 @@
           </div>
         </div>
 
-        <!-- System Architecture & Module Map -->
+        <!-- Platform Capabilities Overview -->
         <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5">
           <div class="flex items-center justify-between pb-3 border-b border-slate-100">
-            <h3 class="font-bold text-slate-900 text-sm">4 Core Modules Architecture</h3>
-            <span class="text-xs text-emerald-600 font-semibold">Clean Architecture</span>
+            <h3 class="font-bold text-slate-900 text-sm">Platform Retention Capabilities</h3>
+            <span class="text-xs text-emerald-600 font-semibold">Active Pipeline</span>
           </div>
           <div class="mt-4 space-y-2.5 text-xs">
             <div class="flex items-center justify-between p-2.5 bg-slate-50 rounded-lg">
               <div class="flex items-center gap-2">
                 <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
-                <span class="font-semibold text-slate-700">Module 1: Authentication & RBAC</span>
+                <span class="font-semibold text-slate-700">Authentication &amp; Role-Based Access</span>
               </div>
-              <span class="text-slate-500">PBKDF2 Hashing, JWT Tokens, System Admin</span>
+              <span class="text-slate-500">PBKDF2 SHA-512, JWT Access &amp; Refresh Tokens</span>
             </div>
             <div class="flex items-center justify-between p-2.5 bg-slate-50 rounded-lg">
               <div class="flex items-center gap-2">
                 <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
-                <span class="font-semibold text-slate-700">Module 2: School & Student Profiles</span>
+                <span class="font-semibold text-slate-700">Student Vulnerability Profiling</span>
               </div>
-              <span class="text-slate-500">BPL, Distance, First-Gen, Socioeconomic Markers</span>
+              <span class="text-slate-500">BPL, &gt;5km Commute, First-Gen, Socioeconomic Markers</span>
             </div>
             <div class="flex items-center justify-between p-2.5 bg-slate-50 rounded-lg">
               <div class="flex items-center gap-2">
                 <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
-                <span class="font-semibold text-slate-700">Module 3: Attendance Analytics</span>
+                <span class="font-semibold text-slate-700">Attendance &amp; Chronic Absence Tracking</span>
               </div>
-              <span class="text-slate-500">Daily Rosters, &lt;85% Chronic Flag, Streak Alert</span>
+              <span class="text-slate-500">Daily Rosters, &lt;85% Chronic Flag, Streak Alerts</span>
             </div>
             <div class="flex items-center justify-between p-2.5 bg-slate-50 rounded-lg">
               <div class="flex items-center gap-2">
                 <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
-                <span class="font-semibold text-slate-700">Module 4: Academic Performance</span>
+                <span class="font-semibold text-slate-700">Academic Performance &amp; Learning Shock</span>
               </div>
-              <span class="text-slate-500">Core Subject Failure, GPA, Academic Shock</span>
+              <span class="text-slate-500">Core Subject Failure, GPA Engine, &ge;15% Drop Alerts</span>
             </div>
           </div>
         </div>
@@ -231,10 +234,10 @@
     </section>
 
 
-    <!-- ==================== TAB 2: MODULE 2 - STUDENTS & VULNERABILITY ==================== -->
+    <!-- ==================== TAB 2: STUDENTS & VULNERABILITY ==================== -->
     <section id="content-students" class="hidden space-y-6">
       <div class="border-b border-slate-200 pb-4">
-        <h1 class="text-2xl font-bold text-slate-900">Module 2: Student Socioeconomic Vulnerability Directory</h1>
+        <h1 class="text-2xl font-bold text-slate-900">Student Socioeconomic Vulnerability Directory</h1>
         <p class="text-sm text-slate-500">Captures demographic hardship flags (BPL status, commute distance &gt; 5 km, first-generation learner) critical for early dropout diagnosis.</p>
       </div>
 
@@ -335,10 +338,10 @@
     </section>
 
 
-    <!-- ==================== TAB 3: MODULE 3 - ATTENDANCE & CHRONIC ALERTS ==================== -->
+    <!-- ==================== TAB 3: ATTENDANCE & CHRONIC ALERTS ==================== -->
     <section id="content-attendance" class="hidden space-y-6">
       <div class="border-b border-slate-200 pb-4">
-        <h1 class="text-2xl font-bold text-slate-900">Module 3: Daily Attendance & Chronic Absence Tracking</h1>
+        <h1 class="text-2xl font-bold text-slate-900">Daily Attendance &amp; Chronic Absence Tracking</h1>
         <p class="text-sm text-slate-500">Research establishes chronic absenteeism (&lt; 85% attendance) and consecutive absence streaks as the #1 leading predictor of school dropouts.</p>
       </div>
 
@@ -432,11 +435,11 @@
     </section>
 
 
-    <!-- ==================== TAB 4: MODULE 4 - ACADEMICS & LEARNING SHOCK ==================== -->
+    <!-- ==================== TAB 4: ACADEMICS & LEARNING SHOCK ==================== -->
     <section id="content-academics" class="hidden space-y-6">
       <div class="border-b border-slate-200 pb-4">
-        <h1 class="text-2xl font-bold text-slate-900">Module 4: Academic Performance & Learning Loss Monitoring</h1>
-        <p class="text-sm text-slate-500">Detects acute "Academic Shock" (sudden &ge; 15% score collapse) and core subject failures (Mathematics & Science) that precipitate disengagement.</p>
+        <h1 class="text-2xl font-bold text-slate-900">Academic Performance &amp; Learning Loss Monitoring</h1>
+        <p class="text-sm text-slate-500">Detects acute "Academic Shock" (sudden &ge; 15% score collapse) and core subject failures (Mathematics &amp; Science) that precipitate disengagement.</p>
       </div>
 
       <!-- ACADEMIC SHOCK ALERT CALLOUT -->
@@ -554,170 +557,248 @@
       </div>
     </section>
 
-    <!-- ==================== TAB 5: STUDENT PORTAL & GRIEVANCE (PUSH COMPLAINT) ==================== -->
+    <!-- ==================== TAB 5: HELPDESK & REQUESTS ==================== -->
     <section id="content-student-portal" class="space-y-6 hidden">
-      <!-- Student Header Banner -->
-      <div class="bg-gradient-to-r from-teal-600 via-emerald-600 to-indigo-700 rounded-2xl p-6 text-white shadow-md">
-        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-          <div>
-            <div class="flex items-center gap-2">
-              <span class="bg-white/20 text-white text-xs font-semibold px-2.5 py-0.5 rounded-full">Student &amp; Guardian Access</span>
-              <span class="text-xs text-white/80">Govt High School, Birmitrapur</span>
-            </div>
-            <h1 class="text-2xl font-bold mt-1">Student Portal: Priya Kumari</h1>
-            <p class="text-xs text-white/80 mt-0.5">Admission No: <strong>ADM-2025-001</strong> | Class: <strong>Grade 9 - Section A</strong> | Roll: <strong>#1</strong></p>
-          </div>
-          <div class="flex flex-wrap gap-2 text-xs">
-            <span class="px-2.5 py-1 rounded-full bg-white/20 font-medium">🔴 BPL Card Holder</span>
-            <span class="px-2.5 py-1 rounded-full bg-white/20 font-medium">🚶 6.5 km Commute (Walking)</span>
-            <span class="px-2.5 py-1 rounded-full bg-white/20 font-medium">🎓 First-Generation Learner</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Cards Grid: Attendance Summary & Academic Performance -->
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <!-- Student Attendance Summary -->
-        <div class="bg-white rounded-xl border border-slate-200 p-5 shadow-sm space-y-4">
-          <div class="flex items-center justify-between border-b border-slate-100 pb-3">
-            <h3 class="font-bold text-slate-800 text-sm flex items-center gap-2">
-              <span>📅</span> My Attendance Summary (Term 1)
-            </h3>
-            <span class="text-xs font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">Good Standing</span>
-          </div>
-          <div class="grid grid-cols-3 gap-3 text-center">
-            <div class="p-3 bg-slate-50 rounded-lg border border-slate-100">
-              <div class="text-2xl font-extrabold text-emerald-600">92.5%</div>
-              <div class="text-xs text-slate-500 mt-1">Attendance Rate</div>
-            </div>
-            <div class="p-3 bg-slate-50 rounded-lg border border-slate-100">
-              <div class="text-2xl font-extrabold text-slate-800">37 / 40</div>
-              <div class="text-xs text-slate-500 mt-1">Working Days</div>
-            </div>
-            <div class="p-3 bg-slate-50 rounded-lg border border-slate-100">
-              <div class="text-2xl font-extrabold text-slate-800">0 Days</div>
-              <div class="text-xs text-slate-500 mt-1">Current Streak</div>
-            </div>
-          </div>
-          <div class="text-xs text-slate-500 bg-slate-50 p-3 rounded-lg flex items-center gap-2">
-            <span>ℹ️</span> Reminder: Minimum required attendance to appear in annual exams is <strong>75%</strong>. You are currently well above the chronic threshold (85%).
-          </div>
-        </div>
-
-        <!-- Student Academic Report Card -->
-        <div class="bg-white rounded-xl border border-slate-200 p-5 shadow-sm space-y-4">
-          <div class="flex items-center justify-between border-b border-slate-100 pb-3">
-            <h3 class="font-bold text-slate-800 text-sm flex items-center gap-2">
-              <span>🎓</span> My Academic Report Card
-            </h3>
-            <span class="text-xs font-bold text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded-full border border-indigo-200">GPA: 3.5 / 4.0</span>
-          </div>
-          <div class="space-y-2 text-xs">
-            <div class="flex justify-between items-center p-2 rounded-lg bg-slate-50 border border-slate-100">
-              <div>
-                <span class="font-bold text-slate-800">Mathematics (Core)</span>
-                <span class="text-slate-400 text-[11px] block">Midterm Examination</span>
-              </div>
-              <div class="text-right">
-                <span class="font-bold text-slate-800">78 / 100</span>
-                <span class="ml-2 font-bold px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800 text-[11px]">B+ (3.3)</span>
-              </div>
-            </div>
-            <div class="flex justify-between items-center p-2 rounded-lg bg-slate-50 border border-slate-100">
-              <div>
-                <span class="font-bold text-slate-800">Science (Core)</span>
-                <span class="text-slate-400 text-[11px] block">Midterm Examination</span>
-              </div>
-              <div class="text-right">
-                <span class="font-bold text-slate-800">84 / 100</span>
-                <span class="ml-2 font-bold px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800 text-[11px]">A (3.7)</span>
-              </div>
-            </div>
-            <div class="flex justify-between items-center p-2 rounded-lg bg-slate-50 border border-slate-100">
-              <div>
-                <span class="font-bold text-slate-800">English Language</span>
-                <span class="text-slate-400 text-[11px] block">Midterm Examination</span>
-              </div>
-              <div class="text-right">
-                <span class="font-bold text-slate-800">72 / 100</span>
-                <span class="ml-2 font-bold px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800 text-[11px]">B+ (3.3)</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- PUSH GRIEVANCE / ASSISTANCE REQUEST COMPLAINT BOX -->
-      <div class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm space-y-4">
-        <div class="border-b border-slate-100 pb-3 flex flex-col sm:flex-row justify-between sm:items-center gap-2">
-          <div>
-            <h3 class="text-base font-bold text-slate-900 flex items-center gap-2">
-              <span>📢</span> Submit Student Grievance / Push Complaint
-            </h3>
-            <p class="text-xs text-slate-500 mt-0.5">Facing commute hardship, financial distress, illness, or learning loss? Push a complaint directly to your School Retention Counselor.</p>
-          </div>
-          <span class="text-xs px-2.5 py-1 bg-amber-50 text-amber-800 font-semibold rounded-full border border-amber-200 self-start sm:self-auto">
-            Direct Line to Counselor
-          </span>
-        </div>
-
-        <form id="form-grievance" onsubmit="submitGrievance(event)" class="space-y-4">
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <!-- 5A: ADMIN / COUNSELOR / TEACHER REVIEW VIEW -->
+      <div id="view-admin-helpdesk" class="space-y-6">
+        <!-- Admin Banner -->
+        <div class="bg-gradient-to-r from-slate-900 via-indigo-950 to-indigo-900 rounded-2xl p-6 text-white shadow-md">
+          <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div>
-              <label class="block text-xs font-semibold text-slate-700 mb-1">Issue Category *</label>
-              <select id="grievance-category" class="w-full text-xs px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:border-indigo-500 bg-white">
-                <option value="CommuteDistance">🚌 Commute Hardship (Walking &gt;5 km / Road Impassable / Route Unsafe)</option>
-                <option value="FinancialDistress">💰 Financial Hardship (BPL / Books / Exam Fees / Uniform assistance)</option>
-                <option value="MedicalHealth">🏥 Health &amp; Medical Leave (Illness / Family Domestic Duty)</option>
-                <option value="AcademicRemedial">📚 Academic Difficulty (Requesting Remedial Extra Classes in Core Subjects)</option>
-                <option value="SafetyConcern">⚠️ School Safety, Harassment, or Bullying</option>
-                <option value="OtherHardship">📝 Other Personal / Family Hardship</option>
-              </select>
+              <div class="flex items-center gap-2">
+                <span class="bg-indigo-500/30 border border-indigo-400/30 text-indigo-200 text-xs font-semibold px-2.5 py-0.5 rounded-full">Retention Welfare Hub</span>
+                <span class="text-xs text-slate-300">Govt High School, Birmitrapur</span>
+              </div>
+              <h1 class="text-2xl font-bold mt-1">Student Welfare Helpdesk &amp; Grievance Triage</h1>
+              <p class="text-xs text-slate-300 mt-0.5">Centralized intake and resolution queue for walk-in and self-submitted student hardship requests, commute distress, and academic interventions.</p>
             </div>
-
-            <div>
-              <label class="block text-xs font-semibold text-slate-700 mb-1">Urgency Level</label>
-              <select id="grievance-urgency" class="w-full text-xs px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:border-indigo-500 bg-white">
-                <option value="Standard">Standard (Counselor review within 3 days)</option>
-                <option value="High">High (Immediate counselor call or home visit required)</option>
-              </select>
-            </div>
-          </div>
-
-          <div>
-            <label class="block text-xs font-semibold text-slate-700 mb-1">Detailed Description of Hardship / Complaint *</label>
-            <textarea id="grievance-description" rows="3" required placeholder="Describe your challenge in detail (e.g. 'Heavy monsoon rains made the 6.5km unpaved forest road impassable on foot this week; requesting bicycle support or temporary transport allowance to prevent missing classes...')" class="w-full text-xs px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:border-indigo-500"></textarea>
-          </div>
-
-          <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-3 pt-2">
-            <div class="flex items-center gap-2">
-              <input id="grievance-urgent-check" type="checkbox" class="rounded text-indigo-600 focus:ring-indigo-500">
-              <label for="grievance-urgent-check" class="text-xs text-slate-600">I confirm that this grievance is genuine and requires student welfare support.</label>
-            </div>
-            <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold px-5 py-2.5 rounded-lg shadow transition flex items-center justify-center gap-2">
-              <span>🚀</span> Push Complaint to Counselor
+            <button onclick="openGrievanceModal()" class="bg-emerald-500 hover:bg-emerald-400 text-white font-bold text-xs px-4 py-2.5 rounded-xl shadow-lg transition flex items-center gap-2">
+              <span>➕</span> Log Request for Walk-In Student
             </button>
           </div>
-        </form>
-
-        <!-- Feedback Banner -->
-        <div id="grievance-success-banner" class="hidden p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-xs text-emerald-800 space-y-1">
-          <div class="font-bold flex items-center gap-1.5">
-            <span>✅</span> Grievance Lodged Successfully!
-          </div>
-          <p id="grievance-success-msg">Your complaint has been appended to your student longitudinal timeline and routed to Retention Counselor Dr. Ananya Roy for immediate assessment.</p>
         </div>
 
-        <!-- Timeline of Logged Grievances -->
-        <div class="pt-4 border-t border-slate-100">
-          <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Recently Submitted Grievances &amp; Status:</h4>
-          <div id="grievance-history-list" class="space-y-2">
-            <div class="p-3 bg-slate-50 rounded-lg border border-slate-200 text-xs flex justify-between items-center">
-              <div>
-                <span class="font-bold text-slate-800">🚌 Commute Hardship: Rainwashed Forest Road (&gt;6km)</span>
-                <span class="text-slate-400 block text-[11px]">Logged by Priya Kumari | Sep 18, 2026</span>
+        <!-- Metrics Summary Cards -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+            <div class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Total Requests Logged</div>
+            <div id="stat-total-grievances" class="text-2xl font-extrabold text-slate-900 mt-1">3</div>
+            <div class="text-xs text-slate-500 mt-0.5">All student &amp; walk-in cases</div>
+          </div>
+          <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+            <div class="text-[11px] font-semibold text-rose-500 uppercase tracking-wider">High Urgency Pending</div>
+            <div id="stat-urgent-grievances" class="text-2xl font-extrabold text-rose-600 mt-1">1</div>
+            <div class="text-xs text-slate-500 mt-0.5">Immediate intervention flagged</div>
+          </div>
+          <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+            <div class="text-[11px] font-semibold text-emerald-600 uppercase tracking-wider">Interventions Resolved</div>
+            <div id="stat-resolved-grievances" class="text-2xl font-extrabold text-emerald-600 mt-1">2</div>
+            <div class="text-xs text-slate-500 mt-0.5">Support &amp; aids disbursed</div>
+          </div>
+          <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+            <div class="text-[11px] font-semibold text-indigo-600 uppercase tracking-wider">Average Triage Time</div>
+            <div class="text-2xl font-extrabold text-indigo-600 mt-1">&lt; 24h</div>
+            <div class="text-xs text-slate-500 mt-0.5">Welfare counselor SLA</div>
+          </div>
+        </div>
+
+        <!-- Grievance Queue Table Card -->
+        <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+          <div class="p-4 border-b border-slate-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+            <div>
+              <h3 class="font-bold text-slate-900 text-sm flex items-center gap-2">
+                <span>📋</span> Student Requests &amp; Grievance Review Queue
+              </h3>
+              <p class="text-xs text-slate-500">Super Admins &amp; Counselors review submissions, log interventions, and mark cases resolved.</p>
+            </div>
+            <div class="flex items-center gap-2 text-xs">
+              <span class="text-slate-400 font-medium">Filter:</span>
+              <button onclick="filterGrievances('All')" id="flt-all" class="flt-btn px-2.5 py-1 rounded-md bg-indigo-50 font-bold text-indigo-700">All</button>
+              <button onclick="filterGrievances('Under Review')" id="flt-review" class="flt-btn px-2.5 py-1 rounded-md text-slate-600 hover:bg-slate-100">Under Review</button>
+              <button onclick="filterGrievances('High')" id="flt-urgent" class="flt-btn px-2.5 py-1 rounded-md text-slate-600 hover:bg-slate-100">Urgent</button>
+              <button onclick="filterGrievances('Resolved')" id="flt-resolved" class="flt-btn px-2.5 py-1 rounded-md text-slate-600 hover:bg-slate-100">Resolved</button>
+            </div>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs">
+              <thead class="bg-slate-50 text-slate-500 uppercase font-semibold border-b border-slate-200">
+                <tr>
+                  <th class="px-4 py-3">Student &amp; Class</th>
+                  <th class="px-4 py-3">Category &amp; Issue Details</th>
+                  <th class="px-4 py-3">Reported By / Date</th>
+                  <th class="px-4 py-3">Urgency</th>
+                  <th class="px-4 py-3">Status</th>
+                  <th class="px-4 py-3 text-right">Action</th>
+                </tr>
+              </thead>
+              <tbody id="admin-grievance-table-body" class="divide-y divide-slate-100">
+                <!-- Dynamically populated via renderAdminGrievanceTable() -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- 5B: STUDENT / PARENT PERSONAL VIEW -->
+      <div id="view-student-portal" class="space-y-6 hidden">
+        <!-- Student Header Banner -->
+        <div class="bg-gradient-to-r from-teal-600 via-emerald-600 to-indigo-700 rounded-2xl p-6 text-white shadow-md">
+          <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="bg-white/20 text-white text-xs font-semibold px-2.5 py-0.5 rounded-full">Student &amp; Guardian Access</span>
+                <span class="text-xs text-white/80">Govt High School, Birmitrapur</span>
               </div>
-              <span class="px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 font-semibold text-[11px]">Under Review (Counselor)</span>
+              <h1 id="student-portal-name" class="text-2xl font-bold mt-1">Student Portal: Priya Kumari</h1>
+              <p class="text-xs text-white/80 mt-0.5">Admission No: <strong>ADM-2025-001</strong> | Class: <strong>Grade 9 - Section A</strong> | Roll: <strong>#1</strong></p>
+            </div>
+            <div class="flex flex-wrap gap-2 text-xs">
+              <span class="px-2.5 py-1 rounded-full bg-white/20 font-medium">🔴 BPL Card Holder</span>
+              <span class="px-2.5 py-1 rounded-full bg-white/20 font-medium">🚶 6.5 km Commute (Walking)</span>
+              <span class="px-2.5 py-1 rounded-full bg-white/20 font-medium">🎓 First-Generation Learner</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Cards Grid: Attendance Summary & Academic Performance -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <!-- Student Attendance Summary -->
+          <div class="bg-white rounded-xl border border-slate-200 p-5 shadow-sm space-y-4">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+              <h3 class="font-bold text-slate-800 text-sm flex items-center gap-2">
+                <span>📅</span> My Attendance Summary (Term 1)
+              </h3>
+              <span class="text-xs font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">Good Standing</span>
+            </div>
+            <div class="grid grid-cols-3 gap-3 text-center">
+              <div class="p-3 bg-slate-50 rounded-lg border border-slate-100">
+                <div class="text-2xl font-extrabold text-emerald-600">92.5%</div>
+                <div class="text-xs text-slate-500 mt-1">Attendance Rate</div>
+              </div>
+              <div class="p-3 bg-slate-50 rounded-lg border border-slate-100">
+                <div class="text-2xl font-extrabold text-slate-800">37 / 40</div>
+                <div class="text-xs text-slate-500 mt-1">Working Days</div>
+              </div>
+              <div class="p-3 bg-slate-50 rounded-lg border border-slate-100">
+                <div class="text-2xl font-extrabold text-slate-800">0 Days</div>
+                <div class="text-xs text-slate-500 mt-1">Current Streak</div>
+              </div>
+            </div>
+            <div class="text-xs text-slate-500 bg-slate-50 p-3 rounded-lg flex items-center gap-2">
+              <span>ℹ️</span> Reminder: Minimum required attendance to appear in annual exams is <strong>75%</strong>. You are currently well above the chronic threshold (85%).
+            </div>
+          </div>
+
+          <!-- Student Academic Report Card -->
+          <div class="bg-white rounded-xl border border-slate-200 p-5 shadow-sm space-y-4">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+              <h3 class="font-bold text-slate-800 text-sm flex items-center gap-2">
+                <span>🎓</span> My Academic Report Card
+              </h3>
+              <span class="text-xs font-bold text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded-full border border-indigo-200">GPA: 3.5 / 4.0</span>
+            </div>
+            <div class="space-y-2 text-xs">
+              <div class="flex justify-between items-center p-2 rounded-lg bg-slate-50 border border-slate-100">
+                <div>
+                  <span class="font-bold text-slate-800">Mathematics (Core)</span>
+                  <span class="text-slate-400 text-[11px] block">Midterm Examination</span>
+                </div>
+                <div class="text-right">
+                  <span class="font-bold text-slate-800">78 / 100</span>
+                  <span class="ml-2 font-bold px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800 text-[11px]">B+ (3.3)</span>
+                </div>
+              </div>
+              <div class="flex justify-between items-center p-2 rounded-lg bg-slate-50 border border-slate-100">
+                <div>
+                  <span class="font-bold text-slate-800">Science (Core)</span>
+                  <span class="text-slate-400 text-[11px] block">Midterm Examination</span>
+                </div>
+                <div class="text-right">
+                  <span class="font-bold text-slate-800">84 / 100</span>
+                  <span class="ml-2 font-bold px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800 text-[11px]">A (3.7)</span>
+                </div>
+              </div>
+              <div class="flex justify-between items-center p-2 rounded-lg bg-slate-50 border border-slate-100">
+                <div>
+                  <span class="font-bold text-slate-800">English Language</span>
+                  <span class="text-slate-400 text-[11px] block">Midterm Examination</span>
+                </div>
+                <div class="text-right">
+                  <span class="font-bold text-slate-800">72 / 100</span>
+                  <span class="ml-2 font-bold px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800 text-[11px]">B+ (3.3)</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- PUSH GRIEVANCE / ASSISTANCE REQUEST COMPLAINT BOX -->
+        <div class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm space-y-4">
+          <div class="border-b border-slate-100 pb-3 flex flex-col sm:flex-row justify-between sm:items-center gap-2">
+            <div>
+              <h3 class="text-base font-bold text-slate-900 flex items-center gap-2">
+                <span>📢</span> Submit Student Grievance / Push Complaint
+              </h3>
+              <p class="text-xs text-slate-500 mt-0.5">Facing commute hardship, financial distress, illness, or learning loss? Push a complaint directly to your School Retention Counselor.</p>
+            </div>
+            <span class="text-xs px-2.5 py-1 bg-amber-50 text-amber-800 font-semibold rounded-full border border-amber-200 self-start sm:self-auto">
+              Direct Line to Counselor
+            </span>
+          </div>
+
+          <form id="form-grievance" onsubmit="submitGrievance(event)" class="space-y-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs font-semibold text-slate-700 mb-1">Issue Category *</label>
+                <select id="grievance-category" class="w-full text-xs px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:border-indigo-500 bg-white">
+                  <option value="CommuteDistance">🚌 Commute Hardship (Walking &gt;5 km / Road Impassable / Route Unsafe)</option>
+                  <option value="FinancialDistress">💰 Financial Hardship (BPL / Books / Exam Fees / Uniform assistance)</option>
+                  <option value="MedicalHealth">🏥 Health &amp; Medical Leave (Illness / Family Domestic Duty)</option>
+                  <option value="AcademicRemedial">📚 Academic Difficulty (Requesting Remedial Extra Classes in Core Subjects)</option>
+                  <option value="SafetyConcern">⚠️ School Safety, Harassment, or Bullying</option>
+                  <option value="OtherHardship">📝 Other Personal / Family Hardship</option>
+                </select>
+              </div>
+
+              <div>
+                <label class="block text-xs font-semibold text-slate-700 mb-1">Urgency Level</label>
+                <select id="grievance-urgency" class="w-full text-xs px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:border-indigo-500 bg-white">
+                  <option value="Standard">Standard (Counselor review within 3 days)</option>
+                  <option value="High">High (Immediate counselor call or home visit required)</option>
+                </select>
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1">Detailed Description of Hardship / Complaint *</label>
+              <textarea id="grievance-description" rows="3" required placeholder="Describe your challenge in detail (e.g. 'Heavy monsoon rains made the 6.5km unpaved forest road impassable on foot this week; requesting bicycle support or temporary transport allowance to prevent missing classes...')" class="w-full text-xs px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:border-indigo-500"></textarea>
+            </div>
+
+            <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-3 pt-2">
+              <div class="flex items-center gap-2">
+                <input id="grievance-urgent-check" type="checkbox" class="rounded text-indigo-600 focus:ring-indigo-500">
+                <label for="grievance-urgent-check" class="text-xs text-slate-600">I confirm that this grievance is genuine and requires student welfare support.</label>
+              </div>
+              <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold px-5 py-2.5 rounded-lg shadow transition flex items-center justify-center gap-2">
+                <span>🚀</span> Push Complaint to Counselor
+              </button>
+            </div>
+          </form>
+
+          <!-- Feedback Banner -->
+          <div id="grievance-success-banner" class="hidden p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-xs text-emerald-800 space-y-1">
+            <div class="font-bold flex items-center gap-1.5">
+              <span>✅</span> Grievance Lodged Successfully!
+            </div>
+            <p id="grievance-success-msg">Your complaint has been appended to your student longitudinal timeline and routed to Retention Counselor Dr. Ananya Roy for immediate assessment.</p>
+          </div>
+
+          <!-- Timeline of Logged Grievances -->
+          <div class="pt-4 border-t border-slate-100">
+            <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Recently Submitted Grievances &amp; Status:</h4>
+            <div id="grievance-history-list" class="space-y-2">
+              <!-- Dynamically rendered via renderStudentGrievanceList() -->
             </div>
           </div>
         </div>
@@ -726,22 +807,35 @@
 
   </main>
 
-  <!-- ==================== LOGIN / ROLE SWITCHER MODAL ==================== -->
+  <!-- ==================== LOGIN / ROLE SWITCHER / SELF-REGISTRATION MODAL ==================== -->
   <div id="login-modal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
-    <div class="bg-white rounded-2xl max-w-xl w-full p-6 shadow-2xl border border-slate-200 space-y-5">
+    <div class="bg-white rounded-2xl max-w-xl w-full p-6 shadow-2xl border border-slate-200 space-y-4">
       <div class="flex justify-between items-start border-b border-slate-100 pb-3">
         <div>
           <h2 class="text-xl font-bold text-slate-900 flex items-center gap-2">
             <span>🔐</span> EduGuard Portal Authentication
           </h2>
-          <p class="text-xs text-slate-500 mt-0.5">Select a role persona to test different permissions, or login with custom credentials.</p>
+          <p class="text-xs text-slate-500 mt-0.5">Switch between demo roles, register a new user account, or sign in directly.</p>
         </div>
         <button onclick="closeLoginModal()" class="text-slate-400 hover:text-slate-600 font-bold text-xl">&times;</button>
       </div>
 
-      <!-- Quick Role Switch Cards -->
-      <div class="space-y-2">
-        <div class="text-xs font-bold text-slate-400 uppercase tracking-wider">Quick Switch Personas (1-Click Test):</div>
+      <!-- Segmented Tabs for Login Modal -->
+      <div class="flex border-b border-slate-200 text-xs font-semibold">
+        <button onclick="switchLoginTab('quick')" id="ltab-quick" class="ltab-btn py-2 px-3.5 border-b-2 border-indigo-600 text-indigo-600 font-bold">
+          ⚡ Quick Personas
+        </button>
+        <button onclick="switchLoginTab('register')" id="ltab-register" class="ltab-btn py-2 px-3.5 border-b-2 border-transparent text-slate-500 hover:text-slate-700">
+          ✍️ Register New User
+        </button>
+        <button onclick="switchLoginTab('manual')" id="ltab-manual" class="ltab-btn py-2 px-3.5 border-b-2 border-transparent text-slate-500 hover:text-slate-700">
+          🔑 Manual Sign In
+        </button>
+      </div>
+
+      <!-- TAB 1: QUICK ROLE SWITCH PERSONAS -->
+      <div id="login-tab-quick" class="space-y-3">
+        <div class="text-[11px] text-slate-400 uppercase tracking-wider font-bold">Click any persona for immediate 1-click test:</div>
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <!-- Card 1: Student -->
           <button onclick="loginAsRole('student', 'StudentPassword123!')" class="text-left p-3.5 rounded-xl border border-emerald-200 hover:border-emerald-500 bg-emerald-50/50 hover:bg-emerald-50 transition group">
@@ -772,7 +866,7 @@
               <span class="text-xs font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-800">Counselor</span>
             </div>
             <div class="font-bold text-sm text-slate-900 mt-2 group-hover:text-amber-700">Dr. Ananya Roy (Retention)</div>
-            <div class="text-xs text-slate-500 mt-0.5">Chronic absence (&lt;85%), streaks &amp; grievances</div>
+            <div class="text-xs text-slate-500 mt-0.5">Chronic absence (&lt;85%), streaks &amp; grievances queue</div>
             <div class="text-[11px] text-amber-600 font-mono mt-2">counselor / CounselorPassword123!</div>
           </button>
 
@@ -783,28 +877,184 @@
               <span class="text-xs font-bold px-2 py-0.5 rounded-full bg-purple-100 text-purple-800">SuperAdmin</span>
             </div>
             <div class="font-bold text-sm text-slate-900 mt-2 group-hover:text-purple-700">System Administrator</div>
-            <div class="text-xs text-slate-500 mt-0.5">Full oversight of all schools, users &amp; analytics</div>
+            <div class="text-xs text-slate-500 mt-0.5">Full oversight of all schools, users, triage &amp; analytics</div>
             <div class="text-[11px] text-purple-600 font-mono mt-2">admin / AdminPassword123!</div>
           </button>
         </div>
       </div>
 
-      <!-- Manual Login Option -->
-      <div class="pt-3 border-t border-slate-100">
-        <div class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Or Manual Login:</div>
-        <form onsubmit="handleManualLogin(event)" class="space-y-3">
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-            <input id="login-username" type="text" placeholder="Username or Email" class="w-full text-xs px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:border-indigo-500">
-            <input id="login-password" type="password" placeholder="Password" class="w-full text-xs px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:border-indigo-500">
+      <!-- TAB 2: SELF-REGISTRATION FORM -->
+      <div id="login-tab-register" class="space-y-3 hidden">
+        <div class="text-xs text-slate-500">Register a new profile directly in the database. Password will be securely hashed with PBKDF2 SHA-512.</div>
+        <form onsubmit="handleSelfRegister(event)" class="space-y-3">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1">Full Name *</label>
+              <input id="reg-fullname" type="text" required placeholder="e.g. Ramesh Kumar" class="w-full text-xs px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:border-indigo-500">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1">Username *</label>
+              <input id="reg-username" type="text" required placeholder="e.g. ramesh" class="w-full text-xs px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:border-indigo-500">
+            </div>
           </div>
-          <div class="flex justify-between items-center">
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1">Email Address *</label>
+              <input id="reg-email" type="email" required placeholder="e.g. ramesh@school.gov.in" class="w-full text-xs px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:border-indigo-500">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1">Password * (min 8 chars, 1 uppercase, 1 digit)</label>
+              <input id="reg-password" type="password" required placeholder="e.g. Pass123!" class="w-full text-xs px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:border-indigo-500">
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Account Role / Purpose *</label>
+            <select id="reg-role" class="w-full text-xs px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:border-indigo-500 bg-white">
+              <option value="StudentParent">🎓 Student / Parent (Push grievances, view attendance &amp; report card)</option>
+              <option value="Teacher">👩‍🏫 Teacher (Classroom attendance rosters &amp; academic scoring)</option>
+              <option value="Counselor">🩺 Counselor (Student welfare triage &amp; retention case files)</option>
+              <option value="SuperAdmin">👑 Super Admin (Full school system administration)</option>
+            </select>
+          </div>
+
+          <div id="reg-feedback" class="hidden text-xs p-2.5 rounded-lg font-medium"></div>
+
+          <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 rounded-lg text-xs transition flex items-center justify-center gap-1.5 shadow">
+            <span>🚀</span> Create Account &amp; Log In Automatically
+          </button>
+        </form>
+      </div>
+
+      <!-- TAB 3: MANUAL CREDENTIALS LOGIN -->
+      <div id="login-tab-manual" class="space-y-3 hidden">
+        <div class="text-xs text-slate-500">Enter existing account username or email with your password to authenticate.</div>
+        <form onsubmit="handleManualLogin(event)" class="space-y-3">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1">Username or Email *</label>
+              <input id="login-username" type="text" required placeholder="e.g. admin or student" class="w-full text-xs px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:border-indigo-500">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1">Password *</label>
+              <input id="login-password" type="password" required placeholder="e.g. AdminPassword123!" class="w-full text-xs px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:border-indigo-500">
+            </div>
+          </div>
+          <div class="flex justify-between items-center pt-2">
             <span id="login-feedback" class="text-xs text-rose-600 font-medium hidden"></span>
-            <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold px-4 py-2 rounded-lg transition ml-auto">
-              Sign In with JWT &rarr;
+            <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold px-5 py-2.5 rounded-lg transition ml-auto flex items-center gap-1.5">
+              <span>🔑</span> Sign In with JWT
             </button>
           </div>
         </form>
       </div>
+    </div>
+  </div>
+
+  <!-- ==================== LOG REQUEST / GRIEVANCE MODAL ==================== -->
+  <div id="grievance-modal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
+    <div class="bg-white rounded-2xl max-w-xl w-full p-6 shadow-2xl border border-slate-200 space-y-4">
+      <div class="flex justify-between items-start border-b border-slate-100 pb-3">
+        <div>
+          <h2 class="text-lg font-bold text-slate-900 flex items-center gap-2">
+            <span>📝</span> Submit Student Request / Grievance
+          </h2>
+          <p class="text-xs text-slate-500 mt-0.5">Submit a welfare complaint, commute challenge, financial request, or learning support.</p>
+        </div>
+        <button onclick="closeGrievanceModal()" class="text-slate-400 hover:text-slate-600 font-bold text-xl">&times;</button>
+      </div>
+
+      <form id="global-grievance-form" onsubmit="handleGlobalGrievanceSubmit(event)" class="space-y-4">
+        <!-- Student Selection (Dynamic depending on user role) -->
+        <div id="grievance-student-select-group">
+          <label class="block text-xs font-semibold text-slate-700 mb-1">Select Student or Walk-In Candidate *</label>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            <select id="modal-grievance-student" onchange="toggleWalkInStudent(this.value)" class="w-full text-xs px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:border-indigo-500 bg-white">
+              <option value="ADM-2025-001|Priya Kumari|Grade 9-A">Priya Kumari (ADM-2025-001 - Grade 9-A)</option>
+              <option value="ADM-2025-002|Sunita Kumari|Grade 9-A">Sunita Kumari (ADM-2025-002 - Grade 9-A)</option>
+              <option value="walk-in">+ Walk-In / Unregistered Student</option>
+            </select>
+            <input id="modal-grievance-walkin-name" type="text" placeholder="Enter Student Name &amp; Class" class="w-full text-xs px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:border-indigo-500 hidden">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Issue Category *</label>
+            <select id="modal-grievance-category" class="w-full text-xs px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:border-indigo-500 bg-white">
+              <option value="CommuteDistance">🚌 Commute Hardship (&gt;5km / Road Impassable)</option>
+              <option value="FinancialDistress">💰 Financial Aid (BPL / Books / Exam Fees / Uniform)</option>
+              <option value="MedicalHealth">🏥 Medical / Health Absence</option>
+              <option value="AcademicRemedial">📚 Academic Difficulty (Remedial Classes)</option>
+              <option value="SafetyConcern">⚠️ School Safety, Harassment or Bullying</option>
+              <option value="OtherHardship">📝 Other Personal / Welfare Request</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Urgency Level</label>
+            <select id="modal-grievance-urgency" class="w-full text-xs px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:border-indigo-500 bg-white">
+              <option value="Standard">Standard (Counselor review within 3 days)</option>
+              <option value="High">High (Immediate intervention required)</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1">Detailed Description of Request / Hardship *</label>
+          <textarea id="modal-grievance-desc" rows="3" required placeholder="Describe the situation, challenge, or support needed..." class="w-full text-xs px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:border-indigo-500"></textarea>
+        </div>
+
+        <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+          <div class="text-[11px] text-slate-500 flex items-center gap-1.5">
+            <span>🛡️</span> Logged into EduGuard longitudinal record for retention tracking.
+          </div>
+          <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold px-4 py-2 rounded-lg transition flex items-center gap-1.5">
+            <span>🚀</span> Submit Request
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ==================== RESOLVE / ACTION GRIEVANCE MODAL ==================== -->
+  <div id="action-modal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
+    <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 space-y-4">
+      <div class="flex justify-between items-start border-b border-slate-100 pb-3">
+        <div>
+          <h2 class="text-lg font-bold text-slate-900 flex items-center gap-2">
+            <span>🛠️</span> Action / Resolve Student Request
+          </h2>
+          <div id="action-modal-subtitle" class="text-xs text-slate-500">Student: Priya Kumari | Request #1</div>
+        </div>
+        <button onclick="closeActionModal()" class="text-slate-400 hover:text-slate-600 font-bold text-xl">&times;</button>
+      </div>
+
+      <div class="p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs space-y-1">
+        <div class="font-semibold text-slate-700" id="action-modal-category">🚌 Commute Hardship</div>
+        <div class="text-slate-500 text-[11px]" id="action-modal-desc">Description of hardship...</div>
+      </div>
+
+      <form onsubmit="handleResolveGrievance(event)" class="space-y-3">
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1">Resolution / Action Taken *</label>
+          <textarea id="action-notes" rows="3" required placeholder="Detail the welfare intervention provided (e.g. 'Provided bicycle from state tribal welfare quota; arranged village carpool. Attendance recovered.')..." class="w-full text-xs px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:border-indigo-500"></textarea>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1">Update Status</label>
+          <select id="action-status" class="w-full text-xs px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:border-indigo-500 bg-white">
+            <option value="Resolved">✅ Resolved (Intervention Complete)</option>
+            <option value="In Progress">🔄 In Progress (Action Initiated / Follow-up Scheduled)</option>
+            <option value="Under Review">⏳ Under Review (Awaiting Committee / Funds)</option>
+          </select>
+        </div>
+
+        <div class="pt-3 border-t border-slate-100 flex justify-end gap-2">
+          <button type="button" onclick="closeActionModal()" class="px-4 py-2 border border-slate-200 rounded-lg text-xs font-semibold text-slate-600 hover:bg-slate-50">Cancel</button>
+          <button type="submit" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-4 py-2 rounded-lg transition">Save Resolution &amp; Update Record</button>
+        </div>
+      </form>
     </div>
   </div>
 
@@ -850,6 +1100,55 @@
     const API_BASE = window.location.origin;
     let currentUser = null;
 
+    // Central Live Grievance State
+    let grievances = [
+      {
+        id: 1,
+        studentName: 'Priya Kumari',
+        studentAdm: 'ADM-2025-001',
+        studentClass: 'Grade 9-A',
+        category: 'CommuteDistance',
+        categoryLabel: '🚌 Commute Hardship (>5km)',
+        urgency: 'High',
+        description: 'Heavy monsoon rains made the 6.5km unpaved forest road impassable on foot this week; requesting bicycle support or temporary transport allowance to prevent missing classes.',
+        reportedBy: 'Priya Kumari (Self)',
+        reportedAt: 'Sep 18, 2026',
+        status: 'Under Review',
+        resolutionNotes: ''
+      },
+      {
+        id: 2,
+        studentName: 'Sunita Kumari',
+        studentAdm: 'ADM-2025-002',
+        studentClass: 'Grade 9-A',
+        category: 'AcademicRemedial',
+        categoryLabel: '📚 Academic Learning Difficulty',
+        urgency: 'High',
+        description: 'Acute score drop in Mathematics (40% to 20%). Requesting after-school bridge remedial support and learning material.',
+        reportedBy: 'Sunil Sharma (Teacher)',
+        reportedAt: 'Sep 19, 2026',
+        status: 'Resolved',
+        resolutionNotes: 'Assigned to Grade 9 remedial math cohort. Peer tutor assigned.'
+      },
+      {
+        id: 3,
+        studentName: 'Amit Soren',
+        studentAdm: 'ADM-2025-003',
+        studentClass: 'Grade 9-B',
+        category: 'FinancialDistress',
+        categoryLabel: '💰 Financial Hardship (BPL/Fees)',
+        urgency: 'Standard',
+        description: 'Unable to purchase science lab manual and annual examination workbook due to delayed BPL stipend disbursement.',
+        reportedBy: 'Dr. Ananya Roy (Counselor Walk-in)',
+        reportedAt: 'Sep 20, 2026',
+        status: 'Resolved',
+        resolutionNotes: 'Issued complimentary textbook and lab kit from school emergency welfare book-bank.'
+      }
+    ];
+
+    let currentGrievanceFilter = 'All';
+    let activeActionGrievanceId = null;
+
     // Tab Navigation
     function switchTab(tab) {
       ['overview', 'students', 'attendance', 'academics', 'student-portal'].forEach(t => {
@@ -870,7 +1169,7 @@
       }
     }
 
-    // Login Modal Controls
+    // Login Modal Controls & Tabs
     function openLoginModal() {
       const modal = document.getElementById('login-modal');
       modal.classList.remove('hidden');
@@ -883,7 +1182,26 @@
       modal.classList.remove('flex');
     }
 
-    // Role-based Login Execution
+    function switchLoginTab(tab) {
+      ['quick', 'register', 'manual'].forEach(t => {
+        const tabEl = document.getElementById(`login-tab-${t}`);
+        const btnEl = document.getElementById(`ltab-${t}`);
+        if (tabEl) tabEl.classList.add('hidden');
+        if (btnEl) {
+          btnEl.classList.remove('border-indigo-600', 'text-indigo-600', 'font-bold');
+          btnEl.classList.add('border-transparent', 'text-slate-500');
+        }
+      });
+      const activeTabEl = document.getElementById(`login-tab-${tab}`);
+      const activeBtnEl = document.getElementById(`ltab-${tab}`);
+      if (activeTabEl) activeTabEl.classList.remove('hidden');
+      if (activeBtnEl) {
+        activeBtnEl.classList.add('border-indigo-600', 'text-indigo-600', 'font-bold');
+        activeBtnEl.classList.remove('border-transparent', 'text-slate-500');
+      }
+    }
+
+    // Role-based 1-Click Login Execution
     async function loginAsRole(username, password) {
       try {
         const res = await fetch(`${API_BASE}/api/v1/auth/login`, {
@@ -905,8 +1223,6 @@
             switchTab('student-portal');
           } else if (roles.includes('Teacher')) {
             switchTab('attendance');
-          } else if (roles.includes('Counselor')) {
-            switchTab('overview');
           } else {
             switchTab('overview');
           }
@@ -914,8 +1230,7 @@
           alert('Login failed: ' + (json.message || 'Invalid credentials'));
         }
       } catch (err) {
-        console.warn('API Offline:', err);
-        // Fallback demo state
+        console.warn('API Offline, running in client demo mode:', err);
         const demoMap = {
           student: { fullName: 'Priya Kumari', roles: ['StudentParent'], avatar: 'PK' },
           teacher: { fullName: 'Sunil Sharma', roles: ['Teacher'], avatar: 'SS' },
@@ -923,6 +1238,7 @@
           admin: { fullName: 'System Administrator', roles: ['SuperAdmin'], avatar: 'SA' }
         };
         const demoUser = demoMap[username] || demoMap.admin;
+        currentUser = demoUser;
         updateUserDisplay(demoUser);
         closeLoginModal();
         if (username === 'student') switchTab('student-portal');
@@ -931,7 +1247,73 @@
       }
     }
 
-    // Manual Credentials Form
+    // Self-Registration Form Handler
+    async function handleSelfRegister(e) {
+      e.preventDefault();
+      const fullName = document.getElementById('reg-fullname').value.trim();
+      const username = document.getElementById('reg-username').value.trim();
+      const email = document.getElementById('reg-email').value.trim();
+      const password = document.getElementById('reg-password').value;
+      const role = document.getElementById('reg-role').value;
+      const feedback = document.getElementById('reg-feedback');
+
+      feedback.classList.add('hidden');
+      feedback.innerText = '';
+
+      try {
+        const res = await fetch(`${API_BASE}/api/v1/auth/register`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ fullName, username, email, password, role })
+        });
+        const json = await res.json();
+        if (res.ok && json.success) {
+          localStorage.setItem('eduguard_token', json.data.accessToken);
+          localStorage.setItem('eduguard_user', JSON.stringify(json.data.user));
+          currentUser = json.data.user;
+          updateUserDisplay(currentUser);
+          closeLoginModal();
+          alert(`🎉 Account created successfully! Welcome, ${currentUser.fullName} (${role}).`);
+
+          if (role === 'StudentParent') {
+            const studentHeading = document.getElementById('student-portal-name');
+            if (studentHeading) studentHeading.innerText = `Student Portal: ${currentUser.fullName}`;
+            switchTab('student-portal');
+          } else if (role === 'Teacher') {
+            switchTab('attendance');
+          } else {
+            switchTab('overview');
+          }
+        } else {
+          feedback.className = 'text-xs p-2.5 rounded-lg font-medium bg-rose-50 text-rose-700 border border-rose-200 block';
+          feedback.innerText = json.message || 'Registration failed. Please check password criteria (min 8 chars, 1 uppercase, 1 digit).';
+        }
+      } catch (err) {
+        console.warn('Registration API error, fallback to demo mode:', err);
+        const newUser = {
+          fullName: fullName,
+          userName: username,
+          email: email,
+          roles: [role],
+          avatar: fullName.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase()
+        };
+        currentUser = newUser;
+        updateUserDisplay(newUser);
+        closeLoginModal();
+        alert(`🎉 Account created successfully! Logged in as ${fullName} (${role}).`);
+        if (role === 'StudentParent') {
+          const studentHeading = document.getElementById('student-portal-name');
+          if (studentHeading) studentHeading.innerText = `Student Portal: ${fullName}`;
+          switchTab('student-portal');
+        } else if (role === 'Teacher') {
+          switchTab('attendance');
+        } else {
+          switchTab('overview');
+        }
+      }
+    }
+
+    // Manual Credentials Login Form
     async function handleManualLogin(e) {
       e.preventDefault();
       const u = document.getElementById('login-username').value.trim();
@@ -940,7 +1322,7 @@
       await loginAsRole(u, p);
     }
 
-    // Update Header with User Identity
+    // Update Header and View based on User Identity
     function updateUserDisplay(user) {
       if (!user) return;
       document.getElementById('user-display-name').innerText = user.fullName || 'User';
@@ -957,10 +1339,154 @@
          role === 'Teacher' ? 'bg-blue-800 text-blue-200' :
          role === 'Counselor' ? 'bg-amber-800 text-amber-200' :
          'bg-emerald-800 text-emerald-200');
+
+      // Toggle Tab 5 view between Admin Helpdesk and Student Portal
+      const adminView = document.getElementById('view-admin-helpdesk');
+      const studentView = document.getElementById('view-student-portal');
+      if (role === 'StudentParent') {
+        if (adminView) adminView.classList.add('hidden');
+        if (studentView) {
+          studentView.classList.remove('hidden');
+          const studentNameEl = document.getElementById('student-portal-name');
+          if (studentNameEl) studentNameEl.innerText = `Student Portal: ${user.fullName}`;
+        }
+      } else {
+        if (adminView) adminView.classList.remove('hidden');
+        if (studentView) studentView.classList.add('hidden');
+      }
+
+      renderAdminGrievanceTable();
+      renderStudentGrievanceList();
+      updateGrievanceKPIs();
     }
 
-    // Push Student Grievance
-    async function submitGrievance(e) {
+    // Global Grievance Modal Controls
+    function openGrievanceModal() {
+      const modal = document.getElementById('grievance-modal');
+      const studentSelectGroup = document.getElementById('grievance-student-select-group');
+      const roles = (currentUser && currentUser.roles) || [];
+      
+      if (roles.includes('StudentParent')) {
+        // Self-submitting student
+        if (studentSelectGroup) {
+          studentSelectGroup.innerHTML = `
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Submitting As *</label>
+            <div class="p-2.5 bg-slate-50 border border-slate-200 rounded-lg text-xs font-semibold text-slate-800 flex items-center justify-between">
+              <span>🎓 ${currentUser.fullName || 'Priya Kumari'}</span>
+              <span class="text-slate-500 font-normal">ADM-2025-001 | Grade 9-A</span>
+            </div>
+          `;
+        }
+      } else {
+        // Admin / Counselor / Teacher submitting on behalf of any student or walk-in
+        if (studentSelectGroup) {
+          studentSelectGroup.innerHTML = `
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Select Student or Walk-In Candidate *</label>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              <select id="modal-grievance-student" onchange="toggleWalkInStudent(this.value)" class="w-full text-xs px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:border-indigo-500 bg-white">
+                <option value="ADM-2025-001|Priya Kumari|Grade 9-A">Priya Kumari (ADM-2025-001 - Grade 9-A)</option>
+                <option value="ADM-2025-002|Sunita Kumari|Grade 9-A">Sunita Kumari (ADM-2025-002 - Grade 9-A)</option>
+                <option value="walk-in">+ Walk-In / Unregistered Student</option>
+              </select>
+              <input id="modal-grievance-walkin-name" type="text" placeholder="Enter Student Full Name &amp; Class" class="w-full text-xs px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:border-indigo-500 hidden">
+            </div>
+          `;
+        }
+      }
+
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function closeGrievanceModal() {
+      const modal = document.getElementById('grievance-modal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+      document.getElementById('global-grievance-form').reset();
+      const walkinInput = document.getElementById('modal-grievance-walkin-name');
+      if (walkinInput) walkinInput.classList.add('hidden');
+    }
+
+    function toggleWalkInStudent(val) {
+      const walkinInput = document.getElementById('modal-grievance-walkin-name');
+      if (!walkinInput) return;
+      if (val === 'walk-in') {
+        walkinInput.classList.remove('hidden');
+        walkinInput.required = true;
+        walkinInput.focus();
+      } else {
+        walkinInput.classList.add('hidden');
+        walkinInput.required = false;
+      }
+    }
+
+    function handleGlobalGrievanceSubmit(e) {
+      e.preventDefault();
+      const roles = (currentUser && currentUser.roles) || [];
+      let sName = 'Priya Kumari';
+      let sAdm = 'ADM-2025-001';
+      let sClass = 'Grade 9-A';
+
+      if (roles.includes('StudentParent')) {
+        sName = currentUser.fullName || 'Priya Kumari';
+        sAdm = 'ADM-2025-001';
+        sClass = 'Grade 9-A';
+      } else {
+        const studentSelect = document.getElementById('modal-grievance-student');
+        if (studentSelect && studentSelect.value === 'walk-in') {
+          const walkinName = document.getElementById('modal-grievance-walkin-name').value.trim();
+          sName = walkinName || 'Walk-In Student';
+          sAdm = 'WALK-IN-' + Math.floor(1000 + Math.random() * 9000);
+          sClass = 'Walk-In Candidate';
+        } else if (studentSelect) {
+          const parts = studentSelect.value.split('|');
+          sAdm = parts[0] || 'ADM-2025-001';
+          sName = parts[1] || 'Priya Kumari';
+          sClass = parts[2] || 'Grade 9-A';
+        }
+      }
+
+      const cat = document.getElementById('modal-grievance-category').value;
+      const urg = document.getElementById('modal-grievance-urgency').value;
+      const desc = document.getElementById('modal-grievance-desc').value.trim();
+
+      if (!desc) return;
+
+      const catLabels = {
+        CommuteDistance: '🚌 Commute Hardship (>5km)',
+        FinancialDistress: '💰 Financial Hardship (BPL/Fees)',
+        MedicalHealth: '🏥 Health & Medical Leave',
+        AcademicRemedial: '📚 Academic Learning Difficulty',
+        SafetyConcern: '⚠️ School Safety & Bullying',
+        OtherHardship: '📝 Other Personal / Welfare Request'
+      };
+
+      const newGrievance = {
+        id: grievances.length + 1,
+        studentName: sName,
+        studentAdm: sAdm,
+        studentClass: sClass,
+        category: cat,
+        categoryLabel: catLabels[cat] || cat,
+        urgency: urg,
+        description: desc,
+        reportedBy: `${currentUser ? currentUser.fullName : 'User'} (${roles[0] || 'Staff'})`,
+        reportedAt: 'Just Now',
+        status: 'Under Review',
+        resolutionNotes: ''
+      };
+
+      grievances.unshift(newGrievance);
+      renderAdminGrievanceTable();
+      renderStudentGrievanceList();
+      updateGrievanceKPIs();
+
+      closeGrievanceModal();
+      alert(`✅ Request submitted successfully for ${sName}!\nCase logged in EduGuard longitudinal record and queued for counselor review.`);
+    }
+
+    // Student In-Page Grievance Submit
+    function submitGrievance(e) {
       e.preventDefault();
       const cat = document.getElementById('grievance-category').value;
       const urg = document.getElementById('grievance-urgency').value;
@@ -978,28 +1504,174 @@
         OtherHardship: '📝 Personal Hardship'
       };
 
-      // Add to UI List immediately
-      const list = document.getElementById('grievance-history-list');
-      const item = document.createElement('div');
-      item.className = 'p-3 bg-slate-50 rounded-lg border border-slate-200 text-xs flex justify-between items-center';
-      item.innerHTML = `
-        <div>
-          <span class="font-bold text-slate-800">${catLabels[cat] || cat}: ${desc.substring(0, 45)}...</span>
-          <span class="text-slate-400 block text-[11px]">Logged just now | Urgency: ${urg}</span>
-        </div>
-        <span class="px-2 py-0.5 rounded-full ${urg === 'High' || isUrgent ? 'bg-rose-100 text-rose-800' : 'bg-amber-100 text-amber-800'} font-semibold text-[11px]">
-          ${urg === 'High' || isUrgent ? 'Urgent Review' : 'Under Review'}
-        </span>
-      `;
-      list.prepend(item);
+      const sName = (currentUser && currentUser.fullName) ? currentUser.fullName : 'Priya Kumari';
 
-      // Show Confirmation
+      const newGrievance = {
+        id: grievances.length + 1,
+        studentName: sName,
+        studentAdm: 'ADM-2025-001',
+        studentClass: 'Grade 9-A',
+        category: cat,
+        categoryLabel: catLabels[cat] || cat,
+        urgency: isUrgent ? 'High' : urg,
+        description: desc,
+        reportedBy: `${sName} (Self)`,
+        reportedAt: 'Just Now',
+        status: 'Under Review',
+        resolutionNotes: ''
+      };
+
+      grievances.unshift(newGrievance);
+      renderAdminGrievanceTable();
+      renderStudentGrievanceList();
+      updateGrievanceKPIs();
+
       const banner = document.getElementById('grievance-success-banner');
-      banner.classList.remove('hidden');
+      if (banner) banner.classList.remove('hidden');
 
-      // Reset Form
       document.getElementById('grievance-description').value = '';
       document.getElementById('grievance-urgent-check').checked = false;
+    }
+
+    // Action / Resolve Grievance Modal
+    function openActionModal(id) {
+      const g = grievances.find(x => x.id === id);
+      if (!g) return;
+      activeActionGrievanceId = id;
+      document.getElementById('action-modal-subtitle').innerText = `Student: ${g.studentName} (${g.studentAdm} | ${g.studentClass})`;
+      document.getElementById('action-modal-category').innerText = g.categoryLabel;
+      document.getElementById('action-modal-desc').innerText = `"${g.description}"`;
+      document.getElementById('action-notes').value = g.resolutionNotes || '';
+      document.getElementById('action-status').value = g.status === 'Under Review' ? 'Resolved' : g.status;
+
+      const modal = document.getElementById('action-modal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function closeActionModal() {
+      const modal = document.getElementById('action-modal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+      activeActionGrievanceId = null;
+    }
+
+    function handleResolveGrievance(e) {
+      e.preventDefault();
+      if (!activeActionGrievanceId) return;
+      const g = grievances.find(x => x.id === activeActionGrievanceId);
+      if (g) {
+        g.resolutionNotes = document.getElementById('action-notes').value.trim();
+        g.status = document.getElementById('action-status').value;
+        renderAdminGrievanceTable();
+        renderStudentGrievanceList();
+        updateGrievanceKPIs();
+        closeActionModal();
+        alert(`✅ Grievance #${g.id} for ${g.studentName} updated to [${g.status}]!`);
+      }
+    }
+
+    // Filter and Render Admin Triage Table
+    function filterGrievances(status) {
+      currentGrievanceFilter = status;
+      document.querySelectorAll('.flt-btn').forEach(b => {
+        b.classList.remove('bg-indigo-50', 'text-indigo-700', 'font-bold');
+        b.classList.add('text-slate-600');
+      });
+      const idMap = {
+        'All': 'flt-all',
+        'Under Review': 'flt-review',
+        'High': 'flt-urgent',
+        'Resolved': 'flt-resolved'
+      };
+      const activeBtn = document.getElementById(idMap[status]);
+      if (activeBtn) {
+        activeBtn.classList.add('bg-indigo-50', 'text-indigo-700', 'font-bold');
+        activeBtn.classList.remove('text-slate-600');
+      }
+      renderAdminGrievanceTable();
+    }
+
+    function renderAdminGrievanceTable() {
+      const tbody = document.getElementById('admin-grievance-table-body');
+      if (!tbody) return;
+
+      let filtered = grievances;
+      if (currentGrievanceFilter === 'Under Review') {
+        filtered = grievances.filter(g => g.status === 'Under Review');
+      } else if (currentGrievanceFilter === 'High') {
+        filtered = grievances.filter(g => g.urgency === 'High');
+      } else if (currentGrievanceFilter === 'Resolved') {
+        filtered = grievances.filter(g => g.status === 'Resolved');
+      }
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" class="p-6 text-center text-slate-400">No student requests found in this view.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = filtered.map(g => `
+        <tr class="hover:bg-slate-50/80 transition">
+          <td class="px-4 py-3">
+            <div class="font-bold text-slate-800">${g.studentName}</div>
+            <div class="text-[11px] text-slate-400 font-mono">${g.studentAdm} | ${g.studentClass}</div>
+          </td>
+          <td class="px-4 py-3 max-w-xs">
+            <div class="font-semibold text-slate-700">${g.categoryLabel}</div>
+            <div class="text-[11px] text-slate-500 truncate" title="${g.description}">${g.description}</div>
+            ${g.resolutionNotes ? `<div class="text-[10px] text-emerald-700 mt-1 font-medium bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200 inline-block">Action: ${g.resolutionNotes}</div>` : ''}
+          </td>
+          <td class="px-4 py-3 text-slate-500 text-[11px]">
+            <div>${g.reportedBy}</div>
+            <div class="text-slate-400">${g.reportedAt}</div>
+          </td>
+          <td class="px-4 py-3">
+            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold ${g.urgency === 'High' ? 'bg-rose-100 text-rose-800 border border-rose-200' : 'bg-slate-100 text-slate-700'}">
+              ${g.urgency === 'High' ? '🚨 High' : 'Standard'}
+            </span>
+          </td>
+          <td class="px-4 py-3">
+            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold ${
+              g.status === 'Resolved' ? 'bg-emerald-100 text-emerald-800 border border-emerald-200' :
+              g.status === 'In Progress' ? 'bg-blue-100 text-blue-800 border border-blue-200' :
+              'bg-amber-100 text-amber-800 border border-amber-200'
+            }">
+              ${g.status === 'Resolved' ? '✅ Resolved' : g.status === 'In Progress' ? '🔄 In Progress' : '⏳ Under Review'}
+            </span>
+          </td>
+          <td class="px-4 py-3 text-right">
+            <button onclick="openActionModal(${g.id})" class="px-2.5 py-1 rounded bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-bold text-[11px] border border-indigo-200 transition">
+              🛠️ Action / Resolve
+            </button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function renderStudentGrievanceList() {
+      const list = document.getElementById('grievance-history-list');
+      if (!list) return;
+      list.innerHTML = grievances.map(g => `
+        <div class="p-3 bg-slate-50 rounded-lg border border-slate-200 text-xs flex justify-between items-center">
+          <div>
+            <span class="font-bold text-slate-800">${g.categoryLabel}: ${g.description.substring(0, 50)}...</span>
+            <span class="text-slate-400 block text-[11px]">For ${g.studentName} | ${g.reportedAt} | Urgency: ${g.urgency}</span>
+            ${g.resolutionNotes ? `<span class="text-[10px] text-emerald-700 font-semibold block mt-0.5">Counselor Action: ${g.resolutionNotes}</span>` : ''}
+          </div>
+          <span class="px-2 py-0.5 rounded-full ${g.status === 'Resolved' ? 'bg-emerald-100 text-emerald-800' : (g.urgency === 'High' ? 'bg-rose-100 text-rose-800' : 'bg-amber-100 text-amber-800')} font-semibold text-[11px]">
+            ${g.status === 'Resolved' ? '✅ Resolved' : '⏳ Under Review'}
+          </span>
+        </div>
+      `).join('');
+    }
+
+    function updateGrievanceKPIs() {
+      const totalEl = document.getElementById('stat-total-grievances');
+      const urgentEl = document.getElementById('stat-urgent-grievances');
+      const resolvedEl = document.getElementById('stat-resolved-grievances');
+      if (totalEl) totalEl.innerText = grievances.length;
+      if (urgentEl) urgentEl.innerText = grievances.filter(g => g.urgency === 'High' && g.status !== 'Resolved').length;
+      if (resolvedEl) resolvedEl.innerText = grievances.filter(g => g.status === 'Resolved').length;
     }
 
     // Student Case File Modal
@@ -1020,7 +1692,7 @@
       modal.classList.remove('flex');
     }
 
-    // Default connection on load
+    // Default connection on load: initialize with Admin persona
     window.addEventListener('DOMContentLoaded', () => {
       loginAsRole('admin', 'AdminPassword123!');
     });

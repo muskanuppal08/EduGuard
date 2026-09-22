@@ -99,6 +99,23 @@ public class AuthController : BaseApiController
     }
 
     /// <summary>
+    /// Public self-registration for students, parents, and community members.
+    /// </summary>
+    [HttpPost("register")]
+    [AllowAnonymous]
+    [ProducesResponseType(typeof(ApiResponse<LoginResponseDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiResponse<LoginResponseDto>), StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> RegisterPublic([FromBody] RegisterPublicUserDto request, CancellationToken cancellationToken)
+    {
+        var result = await _authService.RegisterPublicAsync(request, cancellationToken);
+        if (!result.Success)
+        {
+            return BadRequest(result);
+        }
+        return Ok(result);
+    }
+
+    /// <summary>
     /// Changes password for the currently authenticated user.
     /// </summary>
     [HttpPost("change-password")]

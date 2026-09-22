@@ -2,6 +2,7 @@ using EduGuard.Application.DTOs.Auth;
 using EduGuard.Application.DTOs.Common;
 using EduGuard.Application.Interfaces;
 using EduGuard.Domain.Entities;
+using EduGuard.Domain.Enums;
 using EduGuard.Infrastructure.Security;
 using Microsoft.Extensions.Logging;
 
@@ -267,6 +268,101 @@ public class AuthService : IAuthService
         };
 
         return ApiResponse<UserInfoDto>.Ok(userInfo, "Staff member registered successfully.");
+    }
+
+    public async Task<ApiResponse<LoginResponseDto>> RegisterPublicAsync(RegisterPublicUserDto request, CancellationToken cancellationToken = default)
+    {
+        if (string.IsNullOrWhiteSpace(request.Email) || string.IsNullOrWhiteSpace(request.Username))
+        {
+            return ApiResponse<LoginResponseDto>.Fail("Username and email are required.");
+        }
+
+        if (string.IsNullOrWhiteSpace(request.Password) || request.Password.Length < 6)
+        {
+            return ApiResponse<LoginResponseDto>.Fail("Password must be at least 6 characters long.");
+        }
+
+        var existingUser = await _dataStore.GetUserByUsernameOrEmailAsync(request.Username, cancellationToken);
+        if (existingUser != null)
+        {
+            return ApiResponse<LoginResponseDto>.Fail("Username is already taken.");
+        }
+
+        var existingEmail = await _dataStore.GetUserByUsernameOrEmailAsync(request.Email, cancellationToken);
+        if (existingEmail != null)
+        {
+            return ApiResponse<LoginResponseDto>.Fail("Email is already registered.");
+        }
+
+        var requestedRole = string.IsNullOrWhiteSpace(request.Role) ? UserRoleType.StudentParent : request.Role.Trim();
+        var role = await _dataStore.GetRoleByNameAsync(requestedRole, cancellationToken)
+                   ?? await _dataStore.GetRoleByNameAsync(UserRoleType.StudentParent, cancellationToken);
+
+        if (role == null)
+        {
+            return ApiResponse<LoginResponseDto>.Fail("Default role could not be assigned.");
+        }
+
+        var (hash, salt) = _passwordHasher.HashPassword(request.Password);
+        var newUser = new User
+        {
+            Id = Guid.NewGuid(),
+            Username = request.Username.Trim(),
+            Email = request.Email.Trim().ToLowerInvariant(),
+            FullName = request.FullName.Trim(),
+            PasswordHash = hash,
+            PasswordSalt = salt,
+            PhoneNumber = request.PhoneNumber,
+            SchoolId = request.SchoolId,
+            IsActive = true,
+            CreatedAtUtc = DateTime.UtcNow
+        };
+
+        await _dataStore.AddUserAsync(newUser, cancellationToken);
+
+        await _dataStore.AddUserRoleAsync(new UserRole
+        {
+            UserId = newUser.Id,
+            RoleId = role.Id,
+            AssignedAtUtc = DateTime.UtcNow
+        }, cancellationToken);
+
+        var profile = new UserProfile
+        {
+            Id = Guid.NewGuid(),
+            UserId = newUser.Id,
+            Designation = requestedRole == UserRoleType.StudentParent ? "Student / Guardian" : requestedRole,
+            Department = "General",
+            PreferredLanguage = "en",
+            CreatedAtUtc = DateTime.UtcNow
+        };
+        await _dataStore.UpsertProfileAsync(profile, cancellationToken);
+
+        var roles = new List<string> { role.Name };
+        var permissions = await _dataStore.GetPermissionsForUserAsync(newUser.Id, cancellationToken);
+
+        var (accessToken, expiresAtUtc) = _tokenService.GenerateAccessToken(newUser, roles, permissions);
+        var refreshToken = _tokenService.GenerateRefreshToken(newUser.Id, null);
+        await _dataStore.AddRefreshTokenAsync(refreshToken, cancellationToken);
+
+        var response = new LoginResponseDto
+        {
+            AccessToken = accessToken,
+            RefreshToken = Convert.ToBase64String(Guid.NewGuid().ToByteArray()) + "." + refreshToken.Id.ToString("N"),
+            ExpiresAtUtc = expiresAtUtc,
+            User = new UserInfoDto
+            {
+                Id = newUser.Id,
+                Username = newUser.Username,
+                Email = newUser.Email,
+                FullName = newUser.FullName,
+                SchoolId = newUser.SchoolId,
+                Roles = roles,
+                Permissions = permissions
+            }
+        };
+
+        return ApiResponse<LoginResponseDto>.Ok(response, "Registration successful! You are now logged in.");
     }
 
     public async Task<ApiResponse> ChangePasswordAsync(Guid userId, ChangePasswordDto request, CancellationToken cancellationToken = default)
