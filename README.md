@@ -80,7 +80,7 @@ EduGuard/
   - Rotatable 64-byte **Refresh Tokens** with client IP tracking and revocation endpoints (`/revoke-token`, `/revoke-all`).
   - Account lockout protection after 5 consecutive failed attempts (15-minute cooldown).
 - **Public Self-Registration**:
-  - Open self-registration (`POST /api/v1/auth/register`) allowing any new student, parent, or educator to create an account and immediately receive access credentials.
+  - Public self-registration (`POST /api/v1/auth/register`) creates student/parent accounts only. Staff accounts must be created by an administrator. Quick persona sign-ins are enabled only in Development.
 - **Role-Based Access Control (RBAC)**:
   - Default Roles: `SuperAdmin`, `DistrictAdmin`, `SchoolPrincipal`, `Teacher`, `Counselor`, `StudentParent`.
   - Claim-level granular permissions (`schools.read`, `students.read`, `students.write`, `attendance.record`, `academics.reports`, etc.).
