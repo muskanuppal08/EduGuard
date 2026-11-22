@@ -1,6 +1,8 @@
 using EduGuard.Application.Interfaces;
 using EduGuard.Domain.Entities;
 using EduGuard.Domain.Enums;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
 namespace EduGuard.Infrastructure.Persistence;
@@ -10,12 +12,21 @@ public class DataSeeder
     private readonly IEduGuardDataStore _dataStore;
     private readonly IPasswordHasher _passwordHasher;
     private readonly ILogger<DataSeeder> _logger;
+    private readonly IConfiguration? _configuration;
+    private readonly IHostEnvironment? _hostEnvironment;
 
-    public DataSeeder(IEduGuardDataStore dataStore, IPasswordHasher passwordHasher, ILogger<DataSeeder> logger)
+    public DataSeeder(
+        IEduGuardDataStore dataStore,
+        IPasswordHasher passwordHasher,
+        ILogger<DataSeeder> logger,
+        IConfiguration? configuration = null,
+        IHostEnvironment? hostEnvironment = null)
     {
         _dataStore = dataStore;
         _passwordHasher = passwordHasher;
         _logger = logger;
+        _configuration = configuration;
+        _hostEnvironment = hostEnvironment;
     }
 
     public async Task SeedAsync(CancellationToken cancellationToken = default)
@@ -141,15 +152,42 @@ public class DataSeeder
             }
         }
 
-        // 3. Seed Default Users across Roles (Admin, Teacher, Counselor, Student)
-        await SeedUserIfNotExistsAsync("admin", "admin@eduguard.org", "AdminPassword123!", "System Administrator", UserRoleType.SuperAdmin, "Chief System Administrator", "Central Ministry & Districts", roleMap, cancellationToken);
-        await SeedUserIfNotExistsAsync("teacher", "teacher@eduguard.org", "TeacherPassword123!", "Sunil Sharma (Teacher)", UserRoleType.Teacher, "Class Teacher (Grade 9-A)", "Faculty of Sciences", roleMap, cancellationToken, "+919876541001");
-        await SeedUserIfNotExistsAsync("teacher_rekha", "rekha.nair@eduguard.org", "TeacherPassword123!", "Rekha Nair", UserRoleType.Teacher, "Class Teacher", "Mathematics", roleMap, cancellationToken, "+919876541002");
-        await SeedUserIfNotExistsAsync("teacher_meera", "meera.iyer@eduguard.org", "TeacherPassword123!", "Meera Iyer", UserRoleType.Teacher, "Class Teacher", "Languages", roleMap, cancellationToken, "+919876541003");
-        await SeedUserIfNotExistsAsync("teacher_arjun", "arjun.sen@eduguard.org", "TeacherPassword123!", "Arjun Sen", UserRoleType.Teacher, "Class Teacher", "Science", roleMap, cancellationToken, "+919876541004");
-        await SeedUserIfNotExistsAsync("teacher_farida", "farida.khan@eduguard.org", "TeacherPassword123!", "Farida Khan", UserRoleType.Teacher, "Class Teacher", "Social Sciences", roleMap, cancellationToken, "+919876541005");
-        await SeedUserIfNotExistsAsync("counselor", "counselor@eduguard.org", "CounselorPassword123!", "Dr. Ananya Roy (Counselor)", UserRoleType.Counselor, "Student Retention & Welfare Counselor", "Student Welfare Cell", roleMap, cancellationToken);
-        await SeedUserIfNotExistsAsync("student", "student@eduguard.org", "StudentPassword123!", "Aarav Sharma", UserRoleType.StudentParent, "Enrolled Student (Grade 9-A)", "Student Body", roleMap, cancellationToken);
+        // 3. Seed development personas or a deployment administrator.
+        if (_hostEnvironment != null && !_hostEnvironment.IsDevelopment())
+        {
+            var bootstrapPassword = _configuration?["BootstrapAdmin:Password"];
+            if (string.IsNullOrWhiteSpace(bootstrapPassword) || bootstrapPassword.Length < 16)
+            {
+                throw new InvalidOperationException(
+                    "BootstrapAdmin:Password must be configured with at least 16 characters outside Development.");
+            }
+
+            var bootstrapUsername = _configuration?["BootstrapAdmin:Username"] ?? "admin";
+            var bootstrapEmail = _configuration?["BootstrapAdmin:Email"] ?? "admin@eduguard.org";
+            await SeedUserIfNotExistsAsync(
+                bootstrapUsername,
+                bootstrapEmail,
+                bootstrapPassword,
+                "System Administrator",
+                UserRoleType.SuperAdmin,
+                "Chief System Administrator",
+                "Central Ministry & Districts",
+                roleMap,
+                cancellationToken);
+            _logger.LogInformation("Production seeding completed with the configured administrator only.");
+            return;
+        }
+        else
+        {
+            await SeedUserIfNotExistsAsync("admin", "admin@eduguard.org", "AdminPassword123!", "System Administrator", UserRoleType.SuperAdmin, "Chief System Administrator", "Central Ministry & Districts", roleMap, cancellationToken);
+            await SeedUserIfNotExistsAsync("teacher", "teacher@eduguard.org", "TeacherPassword123!", "Sunil Sharma (Teacher)", UserRoleType.Teacher, "Class Teacher (Grade 9-A)", "Faculty of Sciences", roleMap, cancellationToken, "+919876541001");
+            await SeedUserIfNotExistsAsync("teacher_rekha", "rekha.nair@eduguard.org", "TeacherPassword123!", "Rekha Nair", UserRoleType.Teacher, "Class Teacher", "Mathematics", roleMap, cancellationToken, "+919876541002");
+            await SeedUserIfNotExistsAsync("teacher_meera", "meera.iyer@eduguard.org", "TeacherPassword123!", "Meera Iyer", UserRoleType.Teacher, "Class Teacher", "Languages", roleMap, cancellationToken, "+919876541003");
+            await SeedUserIfNotExistsAsync("teacher_arjun", "arjun.sen@eduguard.org", "TeacherPassword123!", "Arjun Sen", UserRoleType.Teacher, "Class Teacher", "Science", roleMap, cancellationToken, "+919876541004");
+            await SeedUserIfNotExistsAsync("teacher_farida", "farida.khan@eduguard.org", "TeacherPassword123!", "Farida Khan", UserRoleType.Teacher, "Class Teacher", "Social Sciences", roleMap, cancellationToken, "+919876541005");
+            await SeedUserIfNotExistsAsync("counselor", "counselor@eduguard.org", "CounselorPassword123!", "Dr. Ananya Roy (Counselor)", UserRoleType.Counselor, "Student Retention & Welfare Counselor", "Student Welfare Cell", roleMap, cancellationToken);
+            await SeedUserIfNotExistsAsync("student", "student@eduguard.org", "StudentPassword123!", "Aarav Sharma", UserRoleType.StudentParent, "Enrolled Student (Grade 9-A)", "Student Body", roleMap, cancellationToken);
+        }
 
         // 4. Seed Sample School (Marginalized / Rural Focus)
         var sampleSchool = await _dataStore.GetSchoolByCodeAsync("SCH-RUR-001", cancellationToken);

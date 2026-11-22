@@ -79,6 +79,7 @@ app.MapGet("/api/health", () => new
     System = "EduGuard - Student Dropout Analysis & Retention Platform",
     Version = "1.0.0",
     Status = "Healthy",
+    DemoAccountsEnabled = app.Environment.IsDevelopment(),
     ActiveModules = new[]
     {
         "Module 1: Authentication & User Management (Active)",

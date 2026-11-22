@@ -80,7 +80,7 @@ EduGuard/
   - Rotatable 64-byte **Refresh Tokens** with client IP tracking and revocation endpoints (`/revoke-token`, `/revoke-all`).
   - Account lockout protection after 5 consecutive failed attempts (15-minute cooldown).
 - **Public Self-Registration**:
-  - Open self-registration (`POST /api/v1/auth/register`) allowing any new student, parent, or educator to create an account and immediately receive access credentials.
+  - Public self-registration (`POST /api/v1/auth/register`) creates student/parent accounts only. Staff accounts must be created by an administrator. Quick persona sign-ins are enabled only in Development.
 - **Role-Based Access Control (RBAC)**:
   - Default Roles: `SuperAdmin`, `DistrictAdmin`, `SchoolPrincipal`, `Teacher`, `Counselor`, `StudentParent`.
   - Claim-level granular permissions (`schools.read`, `students.read`, `students.write`, `attendance.record`, `academics.reports`, etc.).
@@ -216,7 +216,7 @@ The navigation bar offers intuitive, role-aware tabs:
 
 ## 👥 Role Personas & 1-Click Test Accounts
 
-The login modal contains 4 pre-seeded personas for immediate 1-click testing:
+The login modal contains 4 pre-seeded personas for immediate 1-click testing in Development:
 
 | Role | Username | Password | Purpose & Capabilities |
 |---|---|---|---|
@@ -224,6 +224,8 @@ The login modal contains 4 pre-seeded personas for immediate 1-click testing:
 | **Teacher** | `teacher` | `TeacherPassword123!` | Daily section attendance roll-call, exam marks entry |
 | **Counselor** | `counselor` | `CounselorPassword123!` | Student case files, chronic absence triage, grievance resolution |
 | **StudentParent** | `student` | `StudentPassword123!` | Push grievances, view own attendance summary & report card |
+
+These demo accounts are not seeded outside Development. The Render deployment seeds only the `admin` account and roles, using a generated `BootstrapAdmin__Password` environment secret; it does not seed the sample school or student data.
 
 ---
 
@@ -254,7 +256,7 @@ The login modal contains 4 pre-seeded personas for immediate 1-click testing:
 ### How New Users Self-Register
 1. In the top-right header, click **`[ 👤 Switch Role / Login ]`**.
 2. Click the **`✍️ Register New User`** tab.
-3. Fill in **Full Name**, **Username**, **Email**, **Password** (min 8 chars, 1 uppercase, 1 digit), and choose your **Role** (`StudentParent`, `Teacher`, `Counselor`, `SuperAdmin`).
+3. Fill in **Full Name**, **Username**, **Email**, and **Password** (min 8 chars, 1 uppercase, 1 digit). Public self-registration creates a `StudentParent` account; staff accounts must be created by an administrator.
 4. Click **`Create Account & Log In Automatically`**.
 5. The backend validates and hashes your credentials, issues a JWT token, and logs you into your personalized dashboard.
 
@@ -385,3 +387,14 @@ dotnet test EduGuard.slnx
 dotnet run --project src/EduGuard.WebApi/EduGuard.WebApi.csproj --urls "http://localhost:5065"
 ```
 Navigate to **`http://localhost:5065`** in your browser.
+
+### Deploying to Render
+
+The repository includes a `Dockerfile` and `render.yaml` for a Render Blueprint deployment:
+
+1. In Render, choose **New > Blueprint** and connect this GitHub repository.
+2. Review the `eduguard` web service and apply the Blueprint.
+3. Render builds the Docker image and generates a `Jwt__SecretKey` environment secret.
+4. After deployment, check the service's `/api/health` endpoint.
+
+The deployment uses generated JWT and administrator-password secrets, and seeds only roles and the administrator account. The application still stores data in memory, so data is lost when the service restarts. Use this only as a non-sensitive demo; configure persistent storage and review access controls before using real student data.

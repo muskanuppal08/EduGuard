@@ -18,7 +18,13 @@ public class TokenService : ITokenService
 
     public TokenService(IConfiguration configuration)
     {
-        _secretKey = configuration["Jwt:SecretKey"] ?? "EduGuard_Super_Secret_Key_For_Jwt_Generation_2026_Minimum_32_Chars!";
+        _secretKey = configuration["Jwt:SecretKey"]
+            ?? throw new InvalidOperationException("Jwt:SecretKey must be configured.");
+        if (Encoding.UTF8.GetByteCount(_secretKey) < 32)
+        {
+            throw new InvalidOperationException("Jwt:SecretKey must be at least 32 bytes.");
+        }
+
         _issuer = configuration["Jwt:Issuer"] ?? "EduGuard";
         _audience = configuration["Jwt:Audience"] ?? "EduGuardUsers";
         _accessTokenLifetimeMinutes = int.TryParse(configuration["Jwt:AccessTokenLifetimeMinutes"], out var mins) ? mins : 60;

@@ -7,6 +7,8 @@ using EduGuard.Infrastructure.Persistence;
 using EduGuard.Infrastructure.Security;
 using EduGuard.Infrastructure.Services;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.FileProviders;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging.Abstractions;
 using Xunit;
 
@@ -101,6 +103,20 @@ public class AuthTests
     }
 
     [Fact]
+    public void TokenService_RequiresStrongConfiguredSigningKey()
+    {
+        var missingKey = new ConfigurationBuilder()
+            .AddInMemoryCollection(new Dictionary<string, string?>())
+            .Build();
+        var shortKey = new ConfigurationBuilder()
+            .AddInMemoryCollection(new Dictionary<string, string?> { ["Jwt:SecretKey"] = "too-short" })
+            .Build();
+
+        Assert.Throws<InvalidOperationException>(() => new TokenService(missingKey));
+        Assert.Throws<InvalidOperationException>(() => new TokenService(shortKey));
+    }
+
+    [Fact]
     public async Task AuthService_Login_WithInvalidPassword_ShouldFail()
     {
         // Act
@@ -147,6 +163,60 @@ public class AuthTests
             Password = "TeacherPassword123!"
         });
         Assert.True(loginResult.Success);
+    }
+
+    [Fact]
+    public async Task AuthService_RegisterPublic_AlwaysAssignsStudentParentRole()
+    {
+        var result = await _authService.RegisterPublicAsync(new RegisterPublicUserDto
+        {
+            Username = "public_user",
+            Email = "public@example.com",
+            FullName = "Public User",
+            Password = "SecurePassword123!",
+            Role = UserRoleType.SuperAdmin,
+            SchoolId = Guid.NewGuid()
+        });
+
+        Assert.True(result.Success);
+        Assert.NotNull(result.Data);
+        Assert.Contains(UserRoleType.StudentParent, result.Data.User.Roles);
+        Assert.DoesNotContain(UserRoleType.SuperAdmin, result.Data.User.Roles);
+        Assert.Null(result.Data.User.SchoolId);
+    }
+
+    [Fact]
+    public async Task DataSeeder_NonDevelopment_SeedsOnlyConfiguredAdministrator()
+    {
+        var dataStore = new InMemoryEduGuardDataStore();
+        var configuration = new ConfigurationBuilder()
+            .AddInMemoryCollection(new Dictionary<string, string?>
+            {
+                ["BootstrapAdmin:Username"] = "bootstrap-admin",
+                ["BootstrapAdmin:Password"] = "Generated_Only_For_Testing_12345!"
+            })
+            .Build();
+        var environment = new TestHostEnvironment { EnvironmentName = Environments.Production };
+        var seeder = new DataSeeder(
+            dataStore,
+            _passwordHasher,
+            NullLogger<DataSeeder>.Instance,
+            configuration,
+            environment);
+
+        await seeder.SeedAsync();
+
+        Assert.NotNull(await dataStore.GetUserByUsernameOrEmailAsync("bootstrap-admin"));
+        Assert.Null(await dataStore.GetUserByUsernameOrEmailAsync("admin"));
+        Assert.Null(await dataStore.GetUserByUsernameOrEmailAsync("teacher"));
+
+        var authService = new AuthService(dataStore, _passwordHasher, _tokenService, NullLogger<AuthService>.Instance);
+        var login = await authService.LoginAsync(new LoginRequestDto
+        {
+            UsernameOrEmail = "bootstrap-admin",
+            Password = "Generated_Only_For_Testing_12345!"
+        });
+        Assert.True(login.Success);
     }
 
     [Fact]
@@ -232,5 +302,13 @@ public class AuthTests
         // Assert
         Assert.False(lockoutResult.Success);
         Assert.Contains("locked", lockoutResult.Message.ToLowerInvariant());
+    }
+
+    private sealed class TestHostEnvironment : IHostEnvironment
+    {
+        public string EnvironmentName { get; set; } = Environments.Production;
+        public string ApplicationName { get; set; } = nameof(AuthTests);
+        public string ContentRootPath { get; set; } = AppContext.BaseDirectory;
+        public IFileProvider ContentRootFileProvider { get; set; } = new NullFileProvider();
     }
 }
