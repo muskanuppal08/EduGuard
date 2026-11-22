@@ -297,7 +297,7 @@ public class AuthService : IAuthService
             return ApiResponse<LoginResponseDto>.Fail("Email is already registered.");
         }
 
-        var requestedRole = string.IsNullOrWhiteSpace(request.Role) ? UserRoleType.StudentParent : request.Role.Trim();
+        const string requestedRole = UserRoleType.StudentParent;
         var role = await _dataStore.GetRoleByNameAsync(requestedRole, cancellationToken)
                    ?? await _dataStore.GetRoleByNameAsync(UserRoleType.StudentParent, cancellationToken);
 
@@ -316,7 +316,7 @@ public class AuthService : IAuthService
             PasswordHash = hash,
             PasswordSalt = salt,
             PhoneNumber = request.PhoneNumber,
-            SchoolId = request.SchoolId,
+            SchoolId = null,
             IsActive = true,
             CreatedAtUtc = DateTime.UtcNow
         };

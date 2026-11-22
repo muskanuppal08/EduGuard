@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: eduguard
+    runtime: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    healthCheckPath: /api/health
+    envVars:
+      - key: ASPNETCORE_ENVIRONMENT
+        value: Production
+      - key: ASPNETCORE_URLS
+        value: http://0.0.0.0:10000
+      - key: Jwt__SecretKey
+        generateValue: true
+      - key: BootstrapAdmin__Username
+        value: admin
+      - key: BootstrapAdmin__Password
+        generateValue: true
