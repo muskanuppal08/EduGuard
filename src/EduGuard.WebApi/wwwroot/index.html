@@ -186,7 +186,7 @@
             <p class="mt-3 max-w-xl text-sm leading-6 text-indigo-100">An intelligent platform that identifies vulnerable students early and enables timely intervention.</p>
             <div class="mt-5 flex flex-wrap gap-2">
               <button onclick="viewAtRiskStudents()" class="rounded-xl bg-white px-4 py-2.5 text-xs font-extrabold text-indigo-900 shadow hover:bg-indigo-50">View At-Risk Students →</button>
-              <a href="/api/v1/analytics/reports/risk.csv" class="rounded-xl border border-white/40 bg-white/10 px-4 py-2.5 text-xs font-bold text-white hover:bg-white/20">↓ Generate Report</a>
+              <a href="/api/v1/analytics/reports/risk.csv" data-report-format="csv" class="report-link rounded-xl border border-white/40 bg-white/10 px-4 py-2.5 text-xs font-bold text-white hover:bg-white/20">↓ Generate Report</a>
             </div>
           </div>
           <div class="grid grid-cols-3 gap-3">
@@ -337,7 +337,7 @@
               <button onclick="sendTestNotification()" class="quick-action admin-only hidden">♧ <span>Send alert</span></button>
               <button onclick="switchTab('risk'); document.getElementById('intervention-plan').focus()" class="quick-action">♡ <span>Assign intervention</span></button>
               <button onclick="viewAtRiskStudents()" class="quick-action">⚑ <span>High-risk students</span></button>
-              <a href="/api/v1/analytics/reports/risk.csv" class="quick-action">↓ <span>Generate report</span></a>
+              <a href="/api/v1/analytics/reports/risk.csv" data-report-format="csv" class="report-link quick-action">↓ <span>Generate report</span></a>
               <button onclick="switchTab('students')" class="quick-action">⌕ <span>Case history</span></button>
             </div>
           </section>
@@ -581,8 +581,8 @@
           <p class="text-sm text-slate-500">Explainable risk scoring from attendance, academic performance, and socioeconomic indicators.</p>
         </div>
         <div class="flex gap-2">
-          <a href="/api/v1/analytics/reports/risk.csv" class="px-3 py-2 rounded-lg bg-emerald-600 text-white text-xs font-bold hover:bg-emerald-500">Export Excel CSV</a>
-          <a href="/api/v1/analytics/reports/risk.pdf" target="_blank" class="px-3 py-2 rounded-lg bg-slate-800 text-white text-xs font-bold hover:bg-slate-700">Print PDF Report</a>
+          <a href="/api/v1/analytics/reports/risk.csv" data-report-format="csv" class="report-link px-3 py-2 rounded-lg bg-emerald-600 text-white text-xs font-bold hover:bg-emerald-500">Export Excel CSV</a>
+          <a href="/api/v1/analytics/reports/risk.pdf" data-report-format="pdf" target="_blank" class="report-link px-3 py-2 rounded-lg bg-slate-800 text-white text-xs font-bold hover:bg-slate-700">Print PDF Report</a>
         </div>
       </div>
 
@@ -873,8 +873,8 @@
     <section id="content-reports" class="hidden space-y-6">
       <div><h1 class="text-2xl font-extrabold text-slate-900">Reports & analytics</h1><p class="mt-1 text-sm text-slate-500">Generate reports from the currently recorded student, attendance, academic, and intervention data.</p></div>
       <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-        <article class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"><div class="text-2xl text-indigo-600">▤</div><h2 class="mt-3 font-bold text-slate-900">Student risk register</h2><p class="mt-1 text-xs text-slate-500">Risk score, attendance, academic average, and detected factors.</p><a class="mt-4 inline-flex rounded-lg bg-indigo-600 px-4 py-2 text-xs font-bold text-white" href="/api/v1/analytics/reports/risk.csv">Download CSV / Excel</a></article>
-        <article class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"><div class="text-2xl text-violet-600">▧</div><h2 class="mt-3 font-bold text-slate-900">Printable risk report</h2><p class="mt-1 text-xs text-slate-500">Open print view and choose “Save as PDF” in your browser.</p><a class="mt-4 inline-flex rounded-lg bg-slate-900 px-4 py-2 text-xs font-bold text-white" href="/api/v1/analytics/reports/risk.pdf" target="_blank">Open PDF print view</a></article>
+        <article class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"><div class="text-2xl text-indigo-600">▤</div><h2 class="mt-3 font-bold text-slate-900">Student risk register</h2><p class="mt-1 text-xs text-slate-500">Risk score, attendance, academic average, and detected factors.</p><a class="report-link mt-4 inline-flex rounded-lg bg-indigo-600 px-4 py-2 text-xs font-bold text-white" data-report-format="csv" href="/api/v1/analytics/reports/risk.csv">Download CSV / Excel</a></article>
+        <article class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"><div class="text-2xl text-violet-600">▧</div><h2 class="mt-3 font-bold text-slate-900">Printable risk report</h2><p class="mt-1 text-xs text-slate-500">Open print view and choose “Save as PDF” in your browser.</p><a class="report-link mt-4 inline-flex rounded-lg bg-slate-900 px-4 py-2 text-xs font-bold text-white" data-report-format="pdf" href="/api/v1/analytics/reports/risk.pdf" target="_blank">Open PDF print view</a></article>
         <article class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"><div class="text-2xl text-emerald-600">◷</div><h2 class="mt-3 font-bold text-slate-900">Intervention outcomes</h2><p id="reports-intervention-summary" class="mt-1 text-xs text-slate-500">Loading recorded case outcomes…</p><button onclick="switchTab('risk')" class="mt-4 rounded-lg border border-slate-200 px-4 py-2 text-xs font-bold text-slate-700">Review plans</button></article>
       </div>
     </section>
@@ -1311,6 +1311,61 @@
       }
       return response.json();
     }
+
+    async function openRiskReport(link) {
+      const format = link.dataset.reportFormat;
+      const reportWindow = format === 'pdf' ? window.open('about:blank', '_blank') : null;
+      if (format === 'pdf' && !reportWindow) {
+        showToast('Allow pop-ups to open the printable report.', 'error');
+        return;
+      }
+
+      try {
+        const token = localStorage.getItem('eduguard_token');
+        if (!token) throw new Error('Sign in before generating a report.');
+
+        const response = await fetch(link.href, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        if (!response.ok) {
+          const responseText = await response.text();
+          let message = responseText || `Request failed (${response.status})`;
+          try {
+            const details = JSON.parse(responseText);
+            message = details.message || details.title || message;
+          } catch {
+            // Keep the response text when the server does not return JSON.
+          }
+          throw new Error(message);
+        }
+
+        const reportUrl = URL.createObjectURL(await response.blob());
+        if (format === 'pdf') {
+          reportWindow.location.href = reportUrl;
+          setTimeout(() => URL.revokeObjectURL(reportUrl), 60000);
+        } else {
+          const downloadLink = document.createElement('a');
+          downloadLink.href = reportUrl;
+          downloadLink.download = 'EduGuard-Risk-Report.csv';
+          document.body.appendChild(downloadLink);
+          downloadLink.click();
+          downloadLink.remove();
+          setTimeout(() => URL.revokeObjectURL(reportUrl), 1000);
+        }
+        showToast(format === 'pdf' ? 'Printable report opened.' : 'Risk report downloaded.');
+      } catch (error) {
+        if (reportWindow && !reportWindow.closed) reportWindow.close();
+        showToast(`Report could not be generated: ${error.message}`, 'error');
+      }
+    }
+
+    document.addEventListener('click', event => {
+      if (!(event.target instanceof Element)) return;
+      const link = event.target.closest('a.report-link');
+      if (!link) return;
+      event.preventDefault();
+      openRiskReport(link);
+    });
 
     async function loadSystemHealth() {
       const status = document.getElementById('system-status');
