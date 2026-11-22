@@ -80,7 +80,9 @@ public class AcademicTests
         Assert.NotNull(student1);
         Assert.NotNull(student2);
 
-        var assessments = await _dataStore.QueryAssessmentsAsync(a => a.Title.Contains("Mathematics Midterm"));
+        var assessments = await _dataStore.QueryAssessmentsAsync(a =>
+            a.SectionId == student1!.CurrentSectionId &&
+            a.Title.Contains("Mathematics Midterm"));
         var assessment = Assert.Single(assessments);
 
         // Act: Record Marks

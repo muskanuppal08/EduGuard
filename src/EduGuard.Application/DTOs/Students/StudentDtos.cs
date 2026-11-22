@@ -98,6 +98,9 @@ public class StudentFilterDto
 {
     public Guid? SchoolId { get; set; }
     public Guid? SectionId { get; set; }
+    public Guid? StudentId { get; set; }
+    public IReadOnlyCollection<Guid>? SectionIds { get; set; }
+    public bool IncludeArchived { get; set; }
     public StudentStatus? Status { get; set; }
     public string? Gender { get; set; }
     public bool? IsBPL { get; set; }

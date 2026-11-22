@@ -6,155 +6,253 @@
   <title>EduGuard - Early Warning & Retention Platform</title>
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
   <!-- Google Fonts: Inter -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
-    body { font-family: 'Inter', sans-serif; }
+    :root { --ink: #172033; --muted: #667085; --brand: #5957d9; --brand-dark: #312e81; --canvas: #f4f6fb; --panel: #ffffff; --line: #e8ebf3; --nav: #171d39; }
+    body { font-family: 'Inter', sans-serif; background: var(--canvas); color: var(--ink); }
+    body.dark-theme { --canvas: #0d1020; --panel: #171a2d; --line: #292d46; --ink: #f2f4ff; --muted: #a7aec7; --nav: #090b18; }
+    body::before { content: ''; position: fixed; inset: 0; z-index: -1; background: radial-gradient(circle at 90% 0%, rgba(99,102,241,.10), transparent 26%), radial-gradient(circle at 0% 100%, rgba(16,185,129,.07), transparent 28%); }
+    .app-sidebar { position: fixed; left: 0; top: 0; bottom: 0; z-index: 60; width: 190px; background: var(--nav); border-right: 1px solid rgba(255,255,255,.06); color: white; overflow-y: auto; transition:width .22s ease, transform .22s ease; }
+    .brand-mark { width: 44px; height: 44px; border-radius: 12px; display:grid; place-items:center; background: linear-gradient(135deg,#7c83ff,#5146cb); box-shadow: 0 10px 24px rgba(89,87,217,.30); }
+    .side-link { width:170px; height:44px; border: 0; border-radius:10px; margin:3px 10px; padding:0 12px; display:flex; flex-direction:row; align-items:center; justify-content:flex-start; gap:12px; color:#adb4d1; background:transparent; font-size:11px; font-weight:700; transition:.18s ease; text-align:left; }
+    .side-link svg { width:17px; height:17px; flex:none; }
+    .side-link:hover { color:white; background:rgba(255,255,255,.07); }
+    .side-link.active { color:white; background:linear-gradient(135deg,#6868ed,#5143c9); box-shadow:0 8px 20px rgba(81,67,201,.28); }
+    .app-topbar { position:fixed; z-index:50; left:190px; right:0; top:0; height:64px; background:rgba(255,255,255,.94); border-bottom:1px solid var(--line); backdrop-filter:blur(16px); display:flex; align-items:center; justify-content:space-between; padding:0 24px; transition:left .22s ease; }
+    .dark-theme .app-topbar { background:rgba(13,16,32,.94); }
+    .app-main { margin-left:190px; padding-top:64px; min-height:100vh; transition:margin-left .22s ease; }
+    .app-main main { max-width:1440px !important; margin:0 auto; }
+    .theme-toggle { width:38px; height:38px; border-radius:10px; display:grid; place-items:center; border:1px solid var(--line); background:var(--panel); color:var(--ink); }
+    .top-search { position:relative; width:min(280px,25vw); height:38px; border:1px solid var(--line); border-radius:10px; background:var(--canvas); color:var(--muted); display:flex; align-items:center; gap:8px; padding:0 10px; font-size:12px; }
+    .top-search input { min-width:0; width:100%; outline:0; border:0; background:transparent; color:var(--ink); font-size:12px; }
+    .search-results { position:absolute; z-index:100; top:44px; left:0; right:0; display:none; max-height:360px; overflow:auto; background:var(--panel); border:1px solid var(--line); border-radius:13px; box-shadow:0 16px 38px rgba(20,25,55,.18); padding:5px; }
+    .search-results.open { display:block; }
+    .search-result { display:block; width:100%; border:0; background:transparent; color:var(--ink); text-align:left; border-radius:9px; padding:10px; }
+    .search-result:hover { background:rgba(99,102,241,.10); }
+    .dark-theme input, .dark-theme select, .dark-theme textarea { background-color:#101326; color:#f4f6ff; border-color:var(--line); }
+    .dark-theme input::placeholder, .dark-theme textarea::placeholder { color:#8d95b2; }
+    .dark-theme .bg-indigo-50 { background-color:#242143 !important; }
+    .dark-theme .bg-rose-50 { background-color:#321d2b !important; }
+    .dark-theme .bg-amber-50 { background-color:#30291b !important; }
+    .dark-theme .bg-emerald-50 { background-color:#17302d !important; }
+    .dark-theme .bg-purple-50 { background-color:#2b2040 !important; }
+    .dark-theme .bg-sky-50 { background-color:#1b2b3d !important; }
+    .dark-theme .text-indigo-950, .dark-theme .text-indigo-900 { color:#d5d4ff !important; }
+    .dark-theme .text-rose-950, .dark-theme .text-rose-900 { color:#ffd2df !important; }
+    .dark-theme .text-amber-900, .dark-theme .text-amber-800 { color:#ffe7ad !important; }
+    .dark-theme .text-emerald-800, .dark-theme .text-emerald-900 { color:#b8f4dc !important; }
+    .dark-theme .text-purple-900, .dark-theme .text-purple-950 { color:#e4d0ff !important; }
+    .dark-theme main .text-rose-700, .dark-theme main .text-rose-800, .dark-theme main .text-red-700 { color:#ffb5c5 !important; }
+    .dark-theme main .text-orange-700, .dark-theme main .text-orange-800 { color:#ffd0a4 !important; }
+    .dark-theme main .text-amber-700, .dark-theme main .text-amber-800 { color:#ffe7ad !important; }
+    .dark-theme main .text-emerald-700, .dark-theme main .text-emerald-800 { color:#a9efd3 !important; }
+    .dark-theme main .text-indigo-700, .dark-theme main .text-indigo-800 { color:#c1beff !important; }
+    .dark-theme main .text-purple-700, .dark-theme main .text-purple-800 { color:#e0c3ff !important; }
+    .dark-theme .bg-indigo-100, .dark-theme .bg-rose-100, .dark-theme .bg-amber-100,
+    .dark-theme .bg-emerald-100, .dark-theme .bg-orange-100, .dark-theme .bg-purple-100 {
+      filter:brightness(.72) saturate(.8);
+    }
+    .dark-theme .badge-critical, .dark-theme .badge-high, .dark-theme .badge-moderate, .dark-theme .badge-low { filter:brightness(.82); }
+    .chart-wrap { position:relative; height:240px; width:100%; }
+    .toast { position:fixed; z-index:120; right:22px; bottom:22px; transform:translateY(15px); opacity:0; pointer-events:none; transition:.2s ease; }
+    .toast.show { transform:translateY(0); opacity:1; }
+    .sidebar-toggle { border:0; background:transparent; color:var(--muted); font-size:19px; width:36px; height:36px; border-radius:9px; }
+    .sidebar-toggle:hover { background:var(--canvas); color:var(--brand); }
+    .quick-action { min-height:86px; border:1px solid var(--line); border-radius:14px; background:var(--canvas); color:var(--brand); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:7px; font-size:21px; font-weight:800; transition:transform .16s ease, box-shadow .16s ease, border-color .16s ease; }
+    .quick-action span { color:var(--ink); font-size:11px; }
+    .quick-action:hover { transform:translateY(-2px); border-color:#a5b4fc; box-shadow:0 10px 24px rgba(49,46,129,.10); }
+    body.sidebar-collapsed .app-sidebar { width:68px; }
+    body.sidebar-collapsed .app-topbar { left:68px; }
+    body.sidebar-collapsed .app-main { margin-left:68px; }
+    body.sidebar-collapsed .side-link { width:48px; justify-content:center; padding:0; }
+    body.sidebar-collapsed .side-link .side-label, body.sidebar-collapsed .side-section-label, body.sidebar-collapsed .brand-label { display:none; }
+    .dark-theme main .bg-white, .dark-theme main [class*="bg-slate-50"], .dark-theme main [class*="bg-slate-100"],
+    .dark-theme .fixed .bg-white, .dark-theme #login-modal .bg-white { background-color:var(--panel) !important; }
+    .dark-theme main [class*="border-slate-"], .dark-theme .fixed [class*="border-slate-"] { border-color:var(--line) !important; }
+    .dark-theme main .text-slate-900, .dark-theme main .text-slate-800, .dark-theme .fixed .text-slate-900, .dark-theme .fixed .text-slate-800 { color:#f4f6ff !important; }
+    .dark-theme main .text-slate-700, .dark-theme main .text-slate-600, .dark-theme main .text-slate-500, .dark-theme main .text-slate-400,
+    .dark-theme .fixed .text-slate-700, .dark-theme .fixed .text-slate-600, .dark-theme .fixed .text-slate-500, .dark-theme .fixed .text-slate-400 { color:var(--muted) !important; }
+    .tab-btn { border-radius: 10px; white-space: nowrap; }
+    .tab-btn:hover { transform: translateY(-1px); }
+    .metric-card { transition: transform .18s ease, box-shadow .18s ease; }
+    .metric-card:hover { transform: translateY(-3px); box-shadow: 0 14px 32px rgba(23,32,51,.10); }
+    .hero-card { position: relative; overflow: hidden; background: linear-gradient(135deg, #4338ca 0%, #6366f1 55%, #818cf8 100%); }
+    .hero-card::after { content: ''; position: absolute; width: 260px; height: 260px; right: -80px; bottom: -150px; border-radius: 50%; border: 50px solid rgba(255,255,255,.08); }
+    .risk-ring { width: 74px; height: 74px; border-radius: 50%; display:grid; place-items:center; background: conic-gradient(#fb7185 0 92%, rgba(255,255,255,.12) 92%); }
+    .risk-ring::before { content:''; width:58px; height:58px; border-radius:50%; background:#312e81; }
+    .risk-ring span { position:absolute; color:white; font-weight:800; font-size:16px; }
+    @media (max-width: 1023px) {
+      .app-sidebar { width:68px; }
+      .app-topbar { left:68px; }
+      .app-main { margin-left:68px; }
+      .side-link { width:48px; justify-content:center; padding:0; }
+      .side-link .side-label, .side-section-label, .brand-label { display:none; }
+      .brand-mark { width:38px; height:38px; }
+    }
+    @media (max-width: 639px) {
+      .app-sidebar { width:190px; transform:translateX(-100%); box-shadow:12px 0 32px rgba(0,0,0,.24); }
+      body.mobile-menu-open .app-sidebar { transform:translateX(0); }
+      body.mobile-menu-open::after { content:''; position:fixed; z-index:55; inset:0; background:rgba(7,10,26,.42); }
+      .app-topbar { left:0; height:58px; padding:0 12px; }
+      .app-main { margin-left:0; padding-top:58px; }
+      body.sidebar-collapsed .app-sidebar { width:190px; }
+      body.sidebar-collapsed .app-topbar { left:0; }
+      body.sidebar-collapsed .app-main { margin-left:0; }
+      body.sidebar-collapsed .side-link { width:170px; justify-content:flex-start; padding:0 12px; }
+      body.sidebar-collapsed .side-link .side-label, body.sidebar-collapsed .side-section-label, body.sidebar-collapsed .brand-label { display:inline; }
+      .app-topbar .top-search { display:none; }
+    }
     .badge-critical { background-color: #fee2e2; color: #991b1b; border: 1px solid #f87171; }
     .badge-high { background-color: #ffedd5; color: #9a3412; border: 1px solid #fb923c; }
     .badge-moderate { background-color: #fef9c3; color: #854d0e; border: 1px solid #facc15; }
     .badge-low { background-color: #dcfce7; color: #166534; border: 1px solid #4ade80; }
+    .badge-unassessed { background-color:#eef0f6; color:#596174; border:1px solid #cbd1de; }
+    .dark-theme .badge-unassessed { background:#272b3b; color:#c2c8d8; border-color:#42485f; }
   </style>
 </head>
 <body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col">
 
-  <!-- TOP NAVIGATION BAR -->
-  <header class="bg-indigo-900 text-white shadow-lg sticky top-0 z-50">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="flex items-center justify-between h-16">
-        <!-- Logo & Title -->
-        <div class="flex items-center space-x-3">
-          <div class="bg-indigo-500 text-white p-2 rounded-lg font-black text-xl tracking-wider">EG</div>
-          <div>
-            <div class="font-bold text-lg leading-tight tracking-tight flex items-center gap-2">
-              EduGuard
-              <span class="text-xs bg-indigo-700 font-medium px-2 py-0.5 rounded-full text-indigo-200">v1.0.0</span>
-            </div>
-            <div class="text-xs text-indigo-300">Early Warning & Student Retention Platform</div>
-          </div>
-        </div>
-
-        <!-- School & Role Banner -->
-        <div class="hidden md:flex items-center space-x-4">
-          <div class="text-right">
-            <div class="text-xs text-indigo-200 font-medium">Active School</div>
-            <div id="school-name-banner" class="text-sm font-semibold text-white">Govt High School, Birmitrapur</div>
-          </div>
-          <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-400/20 text-amber-300 border border-amber-400/30">
-            Marginalized / Rural
-          </span>
-          <div class="border-l border-indigo-700 h-8"></div>
-          <!-- User Profile & Role Switcher -->
-          <div class="flex items-center space-x-2">
-            <div id="user-avatar" class="w-8 h-8 rounded-full bg-indigo-600 flex items-center justify-center font-bold text-sm">SA</div>
-            <div class="text-left text-xs">
-              <div id="user-display-name" class="font-medium">System Admin</div>
-              <span id="user-display-role" class="text-indigo-300 font-mono text-[11px] bg-indigo-800/80 px-1.5 py-0.5 rounded">SuperAdmin</span>
-            </div>
-          </div>
-          <button id="btn-open-grievance" onclick="openGrievanceModal()" class="text-xs bg-emerald-500 hover:bg-emerald-400 text-white font-bold px-3 py-1.5 rounded-md shadow-sm transition flex items-center gap-1.5">
-            <span>📝</span> Log Request / Grievance
-          </button>
-          <button id="btn-open-login" onclick="openLoginModal()" class="text-xs bg-amber-400 hover:bg-amber-300 text-slate-900 font-bold px-3 py-1.5 rounded-md shadow-sm transition flex items-center gap-1.5">
-            <span>👤</span> Switch Role / Login
-          </button>
-        </div>
+  <aside class="app-sidebar">
+    <div class="h-16 flex items-center justify-center gap-2 border-b border-white/10">
+      <div class="brand-mark" title="EduGuard">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8"><path d="m2 8 10-5 10 5-10 5L2 8Z"/><path d="M6 10v6c3 3 9 3 12 0v-6M22 8v7"/></svg>
       </div>
+      <span class="brand-label text-sm font-extrabold tracking-tight">EduGuard</span>
+    </div>
+    <div class="side-section-label px-5 pt-4 pb-1 text-[9px] font-bold uppercase tracking-[.16em] text-slate-400">Workspace</div>
+    <nav class="py-1">
+      <button class="side-link active" data-tab="overview" onclick="switchTab('overview')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-6v-7h-4v7H4a1 1 0 0 1-1-1V10Z"/></svg><span class="side-label">Dashboard</span></button>
+      <button class="side-link" data-tab="students" onclick="switchTab('students')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="8" r="3"/><path d="M3 20v-1a6 6 0 0 1 12 0v1M16 5.5a3 3 0 0 1 0 5.8M18 14a5 5 0 0 1 3 4.5V20"/></svg><span class="side-label">Students</span></button>
+      <button class="side-link" data-tab="risk" onclick="switchTab('risk')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3 2.8 19a1.4 1.4 0 0 0 1.2 2h16a1.4 1.4 0 0 0 1.2-2L12 3Z"/><path d="M12 9v5m0 3h.01"/></svg><span class="side-label">Risk Analysis</span></button>
+      <button class="side-link" data-tab="attendance" onclick="switchTab('attendance')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18m-13 4h3m-3 3h6"/></svg><span class="side-label">Attendance & Alerts</span></button>
+      <button class="side-link" data-tab="academics" onclick="switchTab('academics')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m2 8 10-5 10 5-10 5L2 8Z"/><path d="M6 10v6c3 3 9 3 12 0v-6M22 8v7"/></svg><span class="side-label">Academics</span></button>
+      <button class="side-link" data-tab="risk" onclick="switchTab('risk'); document.getElementById('intervention-plan').focus()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 20s-8-4.4-8-10a4.5 4.5 0 0 1 8-2.8A4.5 4.5 0 0 1 20 10c0 5.6-8 10-8 10Z"/><path d="M12 9v5m-2.5-2.5h5"/></svg><span class="side-label">Interventions</span></button>
+      <button class="side-link" data-tab="reports" onclick="switchTab('reports')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 20V4m0 16h17M8 16l4-5 3 2 5-7"/></svg><span class="side-label">Reports</span></button>
+      <button class="side-link" data-tab="student-portal" onclick="switchTab('student-portal')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg><span class="side-label">Helpdesk</span></button>
+      <button class="side-link admin-only hidden" data-tab="management" onclick="switchTab('management')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="8" r="3"/><path d="M3 20v-1a6 6 0 0 1 12 0v1m2-13h4m-2-2v4m-3 5h6"/></svg><span class="side-label">Management</span></button>
+      <button class="side-link" data-tab="settings" onclick="switchTab('settings')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="m19.4 15 .1.1 1.4 1.1-1.4 2.4-1.7-.7a8 8 0 0 1-1.6.9l-.3 1.8h-2.8l-.3-1.8a8 8 0 0 1-1.6-.9l-1.7.7-1.4-2.4 1.4-1.1a7 7 0 0 1 0-1.9l-1.4-1.1 1.4-2.4 1.7.7a8 8 0 0 1 1.6-.9l.3-1.8h2.8l.3 1.8a8 8 0 0 1 1.6.9l1.7-.7 1.4 2.4-1.4 1.1a7 7 0 0 1 0 1.9Z"/></svg><span class="side-label">Settings</span></button>
+    </nav>
+  </aside>
 
-      <!-- NAVIGATION TABS -->
-      <nav class="flex space-x-1 sm:space-x-4 pb-2 text-sm font-medium overflow-x-auto">
-        <button onclick="switchTab('overview')" id="tab-overview" class="tab-btn px-3 py-1.5 rounded-md text-white bg-indigo-800 font-semibold shadow-sm transition">
-          📊 Executive Overview
-        </button>
-        <button onclick="switchTab('students')" id="tab-students" class="tab-btn px-3 py-1.5 rounded-md text-indigo-200 hover:text-white hover:bg-indigo-800/60 transition">
-          👥 Students &amp; Vulnerability
-        </button>
-        <button onclick="switchTab('attendance')" id="tab-attendance" class="tab-btn px-3 py-1.5 rounded-md text-indigo-200 hover:text-white hover:bg-indigo-800/60 transition">
-          📅 Attendance &amp; Alerts
-        </button>
-        <button onclick="switchTab('academics')" id="tab-academics" class="tab-btn px-3 py-1.5 rounded-md text-indigo-200 hover:text-white hover:bg-indigo-800/60 transition">
-          🎓 Academics &amp; Performance
-        </button>
-        <button onclick="switchTab('student-portal')" id="tab-student-portal" class="tab-btn px-3 py-1.5 rounded-md text-indigo-200 hover:text-white hover:bg-indigo-800/60 transition">
-          📢 Helpdesk &amp; Requests
-        </button>
-      </nav>
+  <header class="app-topbar">
+    <div class="flex items-center gap-3">
+      <button class="sidebar-toggle" onclick="toggleSidebar()" aria-label="Toggle navigation">☰</button>
+      <div>
+        <div class="flex items-center gap-2 font-extrabold text-[16px]" style="color:var(--ink)">EduGuard <span class="rounded-full px-2 py-0.5 text-[9px] font-bold bg-indigo-100 text-indigo-600">v2.0</span></div>
+        <div class="text-[9px] font-medium" style="color:var(--muted)">Early Warning & Student Retention Platform</div>
+      </div>
+    </div>
+    <div class="flex items-center gap-2">
+      <div class="top-search hidden md:flex">
+        <span aria-hidden="true">⌕</span>
+        <input id="global-search" type="search" autocomplete="off" placeholder="Search students, IDs, classes, risk...">
+        <button id="clear-search" class="hidden text-lg leading-none" aria-label="Clear search">×</button>
+        <div id="search-results" class="search-results"></div>
+      </div>
+      <button id="theme-toggle" class="theme-toggle" onclick="toggleTheme()" title="Toggle light and dark theme">☾</button>
+      <button onclick="openLoginModal()" class="hidden sm:grid w-9 h-9 place-items-center rounded-full bg-gradient-to-br from-indigo-400 to-violet-600 text-xs font-bold text-white">PS</button>
     </div>
   </header>
 
+  <div class="app-main">
   <!-- MAIN CONTAINER -->
-  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-1 w-full">
+  <main class="px-4 sm:px-6 lg:px-7 py-6 flex-1 w-full">
 
     <!-- ==================== TAB 1: EXECUTIVE OVERVIEW ==================== -->
     <section id="content-overview" class="space-y-6">
       <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-2 border-b border-slate-200 pb-4">
         <div>
-          <h1 class="text-2xl font-bold text-slate-900">Dropout Early Warning System</h1>
-          <p class="text-sm text-slate-500">Live indicators synthesizing attendance records, academic shock patterns, and socioeconomic risk flags.</p>
+          <h1 id="dashboard-title" class="text-2xl font-bold text-slate-900">Dropout Early Warning System</h1>
+          <p id="dashboard-subtitle" class="text-sm text-slate-500">Live indicators synthesizing attendance records, academic shock patterns, and socioeconomic risk flags.</p>
         </div>
         <div class="flex items-center gap-2 text-xs">
           <span class="inline-block w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
-          <span class="font-medium text-slate-600">Engine Online (Port 5065)</span>
+          <span id="system-status" class="font-medium text-slate-600">Checking system status…</span>
+        </div>
+      </div>
+
+      <div class="hero-card rounded-3xl p-6 md:p-8 text-white shadow-xl">
+        <div class="relative z-10 flex flex-col md:flex-row md:items-end justify-between gap-6">
+          <div>
+            <div class="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1 text-xs font-bold">
+              <span class="h-2 w-2 rounded-full bg-emerald-300"></span>
+              LIVE RETENTION COMMAND CENTER
+            </div>
+            <h2 class="mt-4 max-w-2xl text-3xl md:text-4xl font-extrabold leading-tight">See the risk.<br><span class="text-indigo-100">Act before a student disappears.</span></h2>
+            <p class="mt-3 max-w-xl text-sm leading-6 text-indigo-100">An intelligent platform that identifies vulnerable students early and enables timely intervention.</p>
+            <div class="mt-5 flex flex-wrap gap-2">
+              <button onclick="viewAtRiskStudents()" class="rounded-xl bg-white px-4 py-2.5 text-xs font-extrabold text-indigo-900 shadow hover:bg-indigo-50">View At-Risk Students →</button>
+              <a href="/api/v1/analytics/reports/risk.csv" class="rounded-xl border border-white/40 bg-white/10 px-4 py-2.5 text-xs font-bold text-white hover:bg-white/20">↓ Generate Report</a>
+            </div>
+          </div>
+          <div class="grid grid-cols-3 gap-3">
+            <div class="rounded-2xl border border-white/15 bg-white/10 p-4 text-center backdrop-blur"><div id="hero-risk-coverage" class="text-2xl font-black">—</div><div class="mt-1 text-[10px] font-bold uppercase tracking-widest text-indigo-100">Risk coverage</div></div>
+            <div class="rounded-2xl border border-white/15 bg-white/10 p-4 text-center backdrop-blur"><div id="hero-alert-count" class="text-2xl font-black">—</div><div class="mt-1 text-[10px] font-bold uppercase tracking-widest text-indigo-100">High-risk students</div></div>
+            <div class="rounded-2xl border border-white/15 bg-white/10 p-4 text-center backdrop-blur"><div id="hero-student-count" class="text-2xl font-black">—</div><div class="mt-1 text-[10px] font-bold uppercase tracking-widest text-indigo-100">Monitored</div></div>
+          </div>
         </div>
       </div>
 
       <!-- KPI STATS CARDS -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+      <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-5 gap-4">
+        <div class="metric-card bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
           <div class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Total Monitored Students</div>
           <div class="mt-2 flex items-baseline justify-between">
-            <span id="kpi-total-students" class="text-3xl font-extrabold text-slate-900">2</span>
-            <span class="text-xs px-2 py-0.5 rounded bg-indigo-50 text-indigo-700 font-medium">Grade 9-A</span>
+            <span id="kpi-total-students" class="text-3xl font-extrabold text-slate-900">—</span>
+            <span class="text-xs px-2 py-0.5 rounded bg-indigo-50 text-indigo-700 font-medium">Live count</span>
           </div>
-          <div class="mt-1 text-xs text-slate-500">Kutra Tribal High School</div>
+          <div class="mt-1 text-xs text-slate-500">Across monitored schools</div>
         </div>
 
-        <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+        <div class="metric-card bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+          <div class="text-xs font-semibold text-slate-400 uppercase tracking-wider">High-Risk Students</div>
+          <div class="mt-2 flex items-baseline justify-between">
+            <span id="kpi-high-risk" class="text-3xl font-extrabold text-rose-600">—</span>
+            <span class="text-xs px-2 py-0.5 rounded bg-rose-50 text-rose-700 font-semibold">Requires review</span>
+          </div>
+          <div class="mt-1 text-xs text-slate-500">Critical + high classifications</div>
+        </div>
+
+        <div class="metric-card bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
           <div class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Chronic Absenteeism</div>
           <div class="mt-2 flex items-baseline justify-between">
-            <span id="kpi-chronic-absentees" class="text-3xl font-extrabold text-amber-600">1</span>
+            <span id="kpi-chronic-absentees" class="text-3xl font-extrabold text-amber-600">—</span>
             <span class="text-xs px-2 py-0.5 rounded bg-amber-50 text-amber-700 font-semibold">&lt; 85% Rate</span>
           </div>
-          <div class="mt-1 text-xs text-slate-500">Triggered by agricultural labor streak</div>
+          <div class="mt-1 text-xs text-slate-500">Below 85% recorded attendance</div>
         </div>
 
-        <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+        <div class="metric-card bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
           <div class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Academic Shock Detected</div>
           <div class="mt-2 flex items-baseline justify-between">
-            <span id="kpi-academic-shock" class="text-3xl font-extrabold text-rose-600">1</span>
+            <span id="kpi-academic-shock" class="text-3xl font-extrabold text-rose-600">—</span>
             <span class="text-xs px-2 py-0.5 rounded bg-rose-50 text-rose-700 font-semibold">&ge; 15% Score Drop</span>
           </div>
-          <div class="mt-1 text-xs text-slate-500">Drop from 40% to 20% in Mathematics</div>
+          <div class="mt-1 text-xs text-slate-500">Recorded score decreases ≥15 points</div>
         </div>
 
-        <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+        <div class="metric-card bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
           <div class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Core Subject Failures</div>
           <div class="mt-2 flex items-baseline justify-between">
-            <span id="kpi-core-fails" class="text-3xl font-extrabold text-purple-600">2 Subjects</span>
-            <span class="text-xs px-2 py-0.5 rounded badge-critical font-bold">Critical Risk</span>
+            <span id="kpi-core-fails" class="text-3xl font-extrabold text-purple-600">—</span>
+            <span class="text-xs px-2 py-0.5 rounded bg-purple-50 text-purple-700 font-bold">Recorded</span>
           </div>
-          <div class="mt-1 text-xs text-slate-500">Failed Math (30%) & Science (28%)</div>
+          <div class="mt-1 text-xs text-slate-500">Core subject student failures</div>
         </div>
       </div>
 
       <!-- CRITICAL ACTION ALERT BANNER -->
-      <div class="bg-gradient-to-r from-red-500 via-rose-500 to-amber-500 rounded-xl p-5 text-white shadow-md">
+      <div id="priority-alert" class="hidden rounded-2xl border border-rose-200 bg-rose-50 p-4 shadow-sm dark:border-rose-900">
         <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-          <div>
-            <div class="flex items-center gap-2">
-              <span class="bg-white text-rose-600 text-xs font-bold uppercase px-2 py-0.5 rounded">High Priority Early Warning</span>
-              <span class="text-xs text-white/90">Student: Sunita Kumari (ADM-2025-002)</span>
-            </div>
-            <h2 class="text-lg font-bold mt-1">Compound Vulnerability Flagged: Seasonal Absence + Academic Shock</h2>
-            <p class="text-xs text-white/90 max-w-2xl mt-1">
-              Student has missed 4 consecutive days due to seasonal agricultural harvest and demonstrated a sudden 20% performance collapse in core courses. Immediate counseling and remedial support recommended.
-            </p>
+          <div><div class="flex items-center gap-2"><span class="rounded-full bg-rose-100 px-2.5 py-1 text-[10px] font-extrabold uppercase text-rose-700">High priority early warning</span><span id="priority-student-meta" class="text-xs text-slate-600"></span></div>
+            <h2 id="priority-student-title" class="mt-2 text-base font-extrabold text-slate-900"></h2>
+            <p id="priority-student-reason" class="mt-1 max-w-3xl text-xs text-slate-600"></p>
           </div>
-          <button onclick="switchTab('students')" class="bg-white text-slate-900 hover:bg-slate-100 font-semibold text-xs px-4 py-2 rounded-lg shadow-sm whitespace-nowrap transition">
-            View Student Case File &rarr;
-          </button>
+          <button id="priority-case-button" class="shrink-0 rounded-xl bg-indigo-700 px-4 py-2.5 text-xs font-bold text-white hover:bg-indigo-600">View student case →</button>
         </div>
       </div>
 
@@ -166,30 +264,8 @@
             <h3 class="font-bold text-slate-900 text-sm">Active Early Warning Alerts (Attendance &amp; Academics)</h3>
             <span class="text-xs text-slate-400">Live Threshold Engine</span>
           </div>
-          <div class="mt-4 space-y-3">
-            <div class="p-3 bg-red-50 border-l-4 border-red-500 rounded-r-lg">
-              <div class="flex justify-between items-start">
-                <div class="font-semibold text-xs text-red-900">Chronic Absenteeism Threshold Violated</div>
-                <span class="text-[10px] bg-red-100 text-red-700 px-1.5 py-0.5 rounded font-bold">&lt; 85%</span>
-              </div>
-              <p class="text-xs text-red-700 mt-1">Sunita Kumari's attendance rate is 70.0% (Threshold: 85%).</p>
-            </div>
-
-            <div class="p-3 bg-orange-50 border-l-4 border-orange-500 rounded-r-lg">
-              <div class="flex justify-between items-start">
-                <div class="font-semibold text-xs text-orange-900">Consecutive Unexcused Absence Streak</div>
-                <span class="text-[10px] bg-orange-100 text-orange-700 px-1.5 py-0.5 rounded font-bold">4 Days</span>
-              </div>
-              <p class="text-xs text-orange-700 mt-1">Student missed 4 consecutive school days due to agricultural sowing.</p>
-            </div>
-
-            <div class="p-3 bg-rose-50 border-l-4 border-rose-500 rounded-r-lg">
-              <div class="flex justify-between items-start">
-                <div class="font-semibold text-xs text-rose-900">Acute Academic Shock Triggered</div>
-                <span class="text-[10px] bg-rose-100 text-rose-700 px-1.5 py-0.5 rounded font-bold">-20.0% Drop</span>
-              </div>
-              <p class="text-xs text-rose-700 mt-1">Math score collapsed from 40% (Midterm) down to 20% (Quarterly).</p>
-            </div>
+          <div id="dashboard-alerts" class="mt-4 space-y-3">
+            <div class="animate-pulse rounded-lg bg-slate-100 p-4 text-xs text-slate-400">Loading recorded risk signals…</div>
           </div>
         </div>
 
@@ -229,6 +305,42 @@
               <span class="text-slate-500">Core Subject Failure, GPA Engine, &ge;15% Drop Alerts</span>
             </div>
           </div>
+
+          <div class="grid grid-cols-1 xl:grid-cols-2 gap-5">
+            <article class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+              <div class="mb-4 flex items-start justify-between"><div><h3 class="font-extrabold text-slate-900">Risk distribution</h3><p class="mt-1 text-xs text-slate-500">Current classified student records</p></div><span class="rounded-full bg-indigo-50 px-2.5 py-1 text-[10px] font-bold text-indigo-700">Live</span></div>
+              <div class="chart-wrap"><canvas id="risk-distribution-chart"></canvas><div id="risk-chart-empty" class="absolute inset-0 hidden items-center justify-center text-xs text-slate-400">No student risk records are available.</div></div>
+            </article>
+            <article class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+              <div class="mb-4 flex items-start justify-between"><div><h3 class="font-extrabold text-slate-900">Attendance analytics</h3><p class="mt-1 text-xs text-slate-500">Recorded daily attendance only</p></div><select id="attendance-period" class="rounded-lg border border-slate-200 px-2 py-1 text-xs" onchange="loadDashboardData(this.value)"><option value="week">Last 7 recorded days</option><option selected value="month">Last 30 recorded days</option><option value="year">Last 365 recorded days</option></select></div>
+              <div class="chart-wrap"><canvas id="attendance-chart"></canvas><div id="attendance-chart-empty" class="absolute inset-0 hidden items-center justify-center text-xs text-slate-400">No attendance records for this period.</div></div>
+            </article>
+            <article class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+              <div class="mb-4"><h3 class="font-extrabold text-slate-900">Academic performance</h3><p class="mt-1 text-xs text-slate-500">Average marks normalized to assessment maximum</p></div>
+              <div class="chart-wrap"><canvas id="academic-chart"></canvas><div id="academic-chart-empty" class="absolute inset-0 hidden items-center justify-center text-xs text-slate-400">No marked assessments are available.</div></div>
+            </article>
+            <article class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+              <div class="mb-4"><h3 class="font-extrabold text-slate-900">Intervention outcomes</h3><p class="mt-1 text-xs text-slate-500">Status of recorded counselor plans</p></div>
+              <div class="chart-wrap"><canvas id="intervention-chart"></canvas><div id="intervention-chart-empty" class="absolute inset-0 hidden items-center justify-center text-xs text-slate-400">No intervention plans recorded yet.</div></div>
+            </article>
+            <article class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm xl:col-span-2">
+              <div class="mb-4"><h3 class="font-extrabold text-slate-900">Student risk trends</h3><p id="risk-trend-note" class="mt-1 text-xs text-slate-500">Trend line requires saved historical risk snapshots.</p></div>
+              <div id="risk-trend-empty" class="rounded-xl border border-dashed border-slate-200 p-8 text-center text-xs text-slate-400">No historical risk snapshots are available yet. Trend data will appear when periodic snapshots are enabled.</div>
+              <div id="risk-trend-wrap" class="chart-wrap hidden"><canvas id="risk-trend-chart"></canvas></div>
+            </article>
+          </div>
+
+          <section class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+            <div class="mb-4 flex flex-wrap items-center justify-between gap-3"><div><h3 class="font-extrabold text-slate-900">Quick actions</h3><p class="mt-1 text-xs text-slate-500">Jump directly into the next student-retention task.</p></div></div>
+            <div class="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-6">
+              <button onclick="openStudentRegistration()" class="quick-action student-write-only hidden">＋ <span>Add student</span></button>
+              <button onclick="sendTestNotification()" class="quick-action admin-only hidden">♧ <span>Send alert</span></button>
+              <button onclick="switchTab('risk'); document.getElementById('intervention-plan').focus()" class="quick-action">♡ <span>Assign intervention</span></button>
+              <button onclick="viewAtRiskStudents()" class="quick-action">⚑ <span>High-risk students</span></button>
+              <a href="/api/v1/analytics/reports/risk.csv" class="quick-action">↓ <span>Generate report</span></a>
+              <button onclick="switchTab('students')" class="quick-action">⌕ <span>Case history</span></button>
+            </div>
+          </section>
         </div>
       </div>
     </section>
@@ -245,12 +357,11 @@
       <div class="bg-indigo-50 border border-indigo-200 rounded-xl p-4 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
           <div class="text-xs font-semibold text-indigo-700 uppercase">Registered Institution</div>
-          <div class="text-lg font-bold text-indigo-950">Kutra Tribal High School (Code: SCH-OD-TRIBAL-01)</div>
-          <div class="text-xs text-indigo-700 mt-0.5">District: Sundargarh | Block: Kutra Tribal Area | Classification: Rural Marginalized School</div>
+          <div id="school-context-name" class="text-lg font-bold text-indigo-950">Loading school records…</div>
+          <div id="school-context-detail" class="text-xs text-indigo-700 mt-0.5"></div>
         </div>
         <div class="flex gap-2">
-          <span class="bg-indigo-600 text-white text-xs font-semibold px-3 py-1.5 rounded-lg shadow-sm">Academic Year: 2025-2026</span>
-          <span class="bg-white border border-indigo-300 text-indigo-800 text-xs font-semibold px-3 py-1.5 rounded-lg shadow-sm">Class 9 - Section A</span>
+          <span id="student-school-count" class="bg-indigo-600 text-white text-xs font-semibold px-3 py-1.5 rounded-lg shadow-sm">— schools</span>
         </div>
       </div>
 
@@ -258,7 +369,7 @@
       <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
         <div class="p-4 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
           <h3 class="font-bold text-slate-900 text-sm">Enrolled Students Roster</h3>
-          <span class="text-xs text-slate-500">Total: 2 Students</span>
+          <div class="flex items-center gap-3"><input id="student-table-search" oninput="filterStudentTable(this.value)" class="rounded-lg border border-slate-200 px-3 py-2 text-xs" placeholder="Filter roster"><select id="student-status-filter" onchange="loadStudentsPage()" class="rounded-lg border border-slate-200 px-3 py-2 text-xs"><option value="" selected>All non-archived</option><option value="Active">Active only</option><option value="Archived">Archived</option></select><span id="students-total" class="text-xs text-slate-500">Loading…</span></div>
         </div>
         <div class="overflow-x-auto">
           <table class="w-full text-left text-xs">
@@ -273,64 +384,7 @@
               </tr>
             </thead>
             <tbody id="students-table-body" class="divide-y divide-slate-100">
-              <!-- Dynamically Populated or Pre-rendered -->
-              <tr class="hover:bg-slate-50 transition">
-                <td class="py-3 px-4">
-                  <div class="font-semibold text-slate-900 text-sm">Aarav Sharma</div>
-                  <div class="text-slate-400">ADM: ADM-2025-001 | Gender: Male</div>
-                </td>
-                <td class="py-3 px-4">
-                  <span class="font-medium text-slate-700">1.2 km</span>
-                  <div class="text-slate-400">Bicycle / Walking</div>
-                </td>
-                <td class="py-3 px-4">
-                  <div class="flex gap-1.5 flex-wrap">
-                    <span class="badge-low text-[10px] px-2 py-0.5 rounded font-medium">Above Poverty Line</span>
-                    <span class="bg-slate-100 text-slate-600 text-[10px] px-2 py-0.5 rounded">Educated Household</span>
-                  </div>
-                </td>
-                <td class="py-3 px-4">
-                  <div class="text-slate-700">Guardian: Rajesh Sharma</div>
-                  <div class="text-slate-400">Income: Middle</div>
-                </td>
-                <td class="py-3 px-4">
-                  <span class="bg-emerald-100 text-emerald-800 text-[10px] px-2.5 py-1 rounded-full font-bold">Active</span>
-                </td>
-                <td class="py-3 px-4 text-right">
-                  <button onclick="viewStudentModal('Aarav Sharma', 'ADM-2025-001', '1.2 km', 'Low Risk', 'Regular attendance, strong academic performance across midterm assessments.')" class="text-indigo-600 hover:text-indigo-800 font-semibold">Case Details &rarr;</button>
-                </td>
-              </tr>
-
-              <tr class="hover:bg-slate-50 transition bg-rose-50/20">
-                <td class="py-3 px-4">
-                  <div class="font-semibold text-slate-900 text-sm flex items-center gap-1.5">
-                    Sunita Kumari
-                    <span class="bg-rose-100 text-rose-700 text-[10px] font-bold px-1.5 py-0.5 rounded">At-Risk</span>
-                  </div>
-                  <div class="text-slate-400">ADM: ADM-2025-002 | Gender: Female</div>
-                </td>
-                <td class="py-3 px-4">
-                  <span class="font-bold text-rose-700">6.8 km</span>
-                  <span class="text-[10px] bg-rose-100 text-rose-700 px-1 py-0.5 rounded ml-1 font-semibold">&gt; 5 km Warning</span>
-                  <div class="text-slate-400">Walking / Remote Rural Trail</div>
-                </td>
-                <td class="py-3 px-4">
-                  <div class="flex gap-1.5 flex-wrap">
-                    <span class="badge-critical text-[10px] px-2 py-0.5 rounded font-bold">BPL Household</span>
-                    <span class="badge-high text-[10px] px-2 py-0.5 rounded font-semibold">1st Gen Learner</span>
-                  </div>
-                </td>
-                <td class="py-3 px-4">
-                  <div class="text-slate-700">Guardian: Rameshwar Kumari</div>
-                  <div class="text-rose-700 font-medium">Income: Ultra-Low (BPL)</div>
-                </td>
-                <td class="py-3 px-4">
-                  <span class="bg-amber-100 text-amber-800 text-[10px] px-2.5 py-1 rounded-full font-bold">Flagged</span>
-                </td>
-                <td class="py-3 px-4 text-right">
-                  <button onclick="viewStudentModal('Sunita Kumari', 'ADM-2025-002', '6.8 km', 'Critical Risk', 'Compound hardship: 6.8 km walk, BPL household, seasonal agriculture absence, failed 2 core subjects.')" class="text-rose-600 hover:text-rose-800 font-bold">Case Details &rarr;</button>
-                </td>
-              </tr>
+              <tr><td class="p-5 text-xs text-slate-400" colspan="6">Loading student records…</td></tr>
             </tbody>
           </table>
         </div>
@@ -346,44 +400,8 @@
       </div>
 
       <!-- ACTIVE ALERTS ROW -->
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div class="bg-white border-2 border-red-200 rounded-xl p-4 shadow-sm">
-          <div class="flex items-center justify-between pb-2 border-b border-red-100">
-            <span class="text-xs font-bold text-red-600 uppercase tracking-wide">Automatic System Alert</span>
-            <span class="text-[10px] bg-red-600 text-white px-2 py-0.5 rounded-full font-bold">High Severity</span>
-          </div>
-          <div class="mt-3">
-            <div class="text-sm font-bold text-slate-900">Chronic Absenteeism Flag: Sunita Kumari</div>
-            <div class="text-xs text-slate-600 mt-1">
-              Overall Attendance Rate: <strong class="text-red-600">70.0%</strong> (Safety Threshold: 85.0%).
-              Missed 6 out of 20 recorded days in the reporting cycle.
-            </div>
-            <div class="mt-3 pt-3 border-t border-slate-100 flex items-center justify-between text-xs">
-              <span class="text-slate-400">Trigger Date: 2025-04-26</span>
-              <button onclick="alert('Intervention dialog opened: Home visit dispatched to guardian Rameshwar Kumari.')" class="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded font-semibold transition">
-                Log Counselor Intervention
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <div class="bg-white border-2 border-amber-200 rounded-xl p-4 shadow-sm">
-          <div class="flex items-center justify-between pb-2 border-b border-amber-100">
-            <span class="text-xs font-bold text-amber-600 uppercase tracking-wide">Streak Detection Alert</span>
-            <span class="text-[10px] bg-amber-500 text-white px-2 py-0.5 rounded-full font-bold">&ge; 3 Days</span>
-          </div>
-          <div class="mt-3">
-            <div class="text-sm font-bold text-slate-900">4 Consecutive Unexcused Days Missed</div>
-            <div class="text-xs text-slate-600 mt-1">
-              Primary Absence Reason: <strong class="text-amber-800">Agricultural & Seasonal Farm Labor</strong>.
-              Remarks: "Assisting family during peak seasonal agricultural sowing".
-            </div>
-            <div class="mt-3 pt-3 border-t border-slate-100 flex items-center justify-between text-xs">
-              <span class="text-slate-400">Section: Grade 9-A</span>
-              <span class="badge-high px-2 py-0.5 rounded font-semibold text-[11px]">Parent Contact Required</span>
-            </div>
-          </div>
-        </div>
+      <div id="attendance-alert-list" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="rounded-xl border border-slate-200 bg-white p-5 text-xs text-slate-400">Loading recorded attendance summaries…</div>
       </div>
 
       <!-- ATTENDANCE RECORDING SIMULATOR -->
@@ -394,9 +412,9 @@
             <p class="text-xs text-slate-400">Select date and review real-time presence marking</p>
           </div>
           <div class="flex gap-2">
-            <input type="date" value="2025-04-26" class="text-xs border border-slate-300 rounded-lg px-2.5 py-1.5 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-            <button onclick="alert('Batch attendance saved successfully to EduGuard backend!')" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs px-3.5 py-1.5 rounded-lg font-semibold transition">
-              Submit Daily Batch
+            <input id="attendance-date" type="date" class="text-xs border border-slate-300 rounded-lg px-2.5 py-1.5 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            <button onclick="recordDailyAttendance()" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs px-3.5 py-1.5 rounded-lg font-semibold transition">
+              Save attendance
             </button>
           </div>
         </div>
@@ -411,24 +429,7 @@
                 <th class="py-2.5 px-3">Teacher Observation Notes</th>
               </tr>
             </thead>
-            <tbody class="divide-y divide-slate-100">
-              <tr>
-                <td class="py-3 px-3 font-semibold text-slate-800">Aarav Sharma (ADM-2025-001)</td>
-                <td class="py-3 px-3">
-                  <span class="bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded">Present</span>
-                </td>
-                <td class="py-3 px-3 text-slate-400">Regular attendance</td>
-                <td class="py-3 px-3 text-slate-500">Attentive in classroom activities</td>
-              </tr>
-              <tr class="bg-rose-50/30">
-                <td class="py-3 px-3 font-semibold text-slate-800">Sunita Kumari (ADM-2025-002)</td>
-                <td class="py-3 px-3">
-                  <span class="bg-rose-100 text-rose-800 font-bold px-2 py-0.5 rounded">Absent</span>
-                </td>
-                <td class="py-3 px-3 font-medium text-amber-700">AgriculturalOrSeasonalLabor</td>
-                <td class="py-3 px-3 text-slate-600 italic">"Assisting family during peak seasonal agricultural sowing"</td>
-              </tr>
-            </tbody>
+            <tbody id="attendance-roster" class="divide-y divide-slate-100"><tr><td class="p-5 text-xs text-slate-400" colspan="4">Choose an enrolled class to load its roster.</td></tr></tbody>
           </table>
         </div>
       </div>
@@ -439,9 +440,10 @@
     <section id="content-academics" class="hidden space-y-6">
       <div class="border-b border-slate-200 pb-4">
         <h1 class="text-2xl font-bold text-slate-900">Academic Performance &amp; Learning Loss Monitoring</h1>
-        <p class="text-sm text-slate-500">Detects acute "Academic Shock" (sudden &ge; 15% score collapse) and core subject failures (Mathematics &amp; Science) that precipitate disengagement.</p>
+        <p class="text-sm text-slate-500">Recorded assessment marks, subject averages, learning shocks, and student report cards.</p>
       </div>
 
+      <div class="hidden">
       <!-- ACADEMIC SHOCK ALERT CALLOUT -->
       <div class="bg-rose-50 border-2 border-rose-300 rounded-xl p-5 shadow-sm">
         <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
@@ -555,9 +557,104 @@
         </div>
 
       </div>
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div class="rounded-2xl border border-slate-200 bg-white p-4"><div class="text-xs font-bold uppercase text-slate-400">Students assessed</div><div id="academics-assessed-count" class="mt-1 text-2xl font-extrabold text-slate-900">—</div></div>
+        <div class="rounded-2xl border border-slate-200 bg-white p-4"><div class="text-xs font-bold uppercase text-slate-400">Subject averages available</div><div id="academics-subject-count" class="mt-1 text-2xl font-extrabold text-indigo-600">—</div></div>
+        <div class="rounded-2xl border border-slate-200 bg-white p-4"><div class="text-xs font-bold uppercase text-slate-400">Academic shocks detected</div><div id="academics-shock-count" class="mt-1 text-2xl font-extrabold text-rose-600">—</div></div>
+      </div>
+      <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+        <h2 class="font-extrabold text-slate-900">Recorded subject performance</h2>
+        <p class="mt-1 text-xs text-slate-500">Values are calculated from marks entered for assessments. Subjects without recorded marks are not charted.</p>
+        <div class="chart-wrap mt-4"><canvas id="academics-page-chart"></canvas><div id="academics-page-empty" class="absolute inset-0 hidden items-center justify-center text-xs text-slate-400">No assessment marks have been recorded.</div></div>
+      </div>
+      <div class="rounded-2xl border border-slate-200 bg-white shadow-sm">
+        <div class="border-b border-slate-100 p-4"><h2 class="font-extrabold text-slate-900">Student report cards</h2></div>
+        <div id="academic-report-cards" class="grid gap-4 p-4 lg:grid-cols-2"><div class="text-xs text-slate-400">Loading recorded marks…</div></div>
+      </div>
     </section>
 
-    <!-- ==================== TAB 5: HELPDESK & REQUESTS ==================== -->
+    <!-- ==================== TAB 5: RISK ANALYTICS & INTERVENTIONS ==================== -->
+    <section id="content-risk" class="space-y-6 hidden">
+      <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-3 border-b border-slate-200 pb-4">
+        <div>
+          <h1 class="text-2xl font-bold text-slate-900">Dropout Risk Command Center</h1>
+          <p class="text-sm text-slate-500">Explainable risk scoring from attendance, academic performance, and socioeconomic indicators.</p>
+        </div>
+        <div class="flex gap-2">
+          <a href="/api/v1/analytics/reports/risk.csv" class="px-3 py-2 rounded-lg bg-emerald-600 text-white text-xs font-bold hover:bg-emerald-500">Export Excel CSV</a>
+          <a href="/api/v1/analytics/reports/risk.pdf" target="_blank" class="px-3 py-2 rounded-lg bg-slate-800 text-white text-xs font-bold hover:bg-slate-700">Print PDF Report</a>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 lg:grid-cols-5 gap-4">
+        <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm"><div class="text-xs text-slate-400 font-bold uppercase">Students</div><div id="risk-total" class="text-3xl font-extrabold mt-1">-</div></div>
+        <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm"><div class="text-xs text-rose-500 font-bold uppercase">Critical</div><div id="risk-critical" class="text-3xl font-extrabold text-rose-600 mt-1">-</div></div>
+        <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm"><div class="text-xs text-orange-500 font-bold uppercase">High</div><div id="risk-high" class="text-3xl font-extrabold text-orange-600 mt-1">-</div></div>
+        <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm"><div class="text-xs text-amber-500 font-bold uppercase">Moderate</div><div id="risk-moderate" class="text-3xl font-extrabold text-amber-600 mt-1">-</div></div>
+        <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm"><div class="text-xs text-emerald-500 font-bold uppercase">Average Score</div><div id="risk-average" class="text-3xl font-extrabold text-emerald-600 mt-1">-</div></div>
+      </div>
+
+      <div class="grid md:grid-cols-[1fr_auto] gap-4">
+        <div class="rounded-2xl border border-indigo-100 bg-gradient-to-r from-indigo-950 via-indigo-900 to-slate-900 p-5 text-white shadow-lg">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <div class="text-xs font-bold uppercase tracking-[0.18em] text-indigo-300">Predictive engine</div>
+              <h3 class="mt-1 text-xl font-extrabold">Dropout Risk Model</h3>
+              <p id="model-status-line" class="mt-1 text-xs text-indigo-200">Loading model status...</p>
+            </div>
+            <div class="grid grid-cols-3 gap-2 text-center">
+              <div class="rounded-xl border border-white/10 bg-white/5 px-4 py-3"><div id="model-accuracy" class="text-lg font-black">--</div><div class="text-[9px] uppercase text-indigo-200">Accuracy</div></div>
+              <div class="rounded-xl border border-white/10 bg-white/5 px-4 py-3"><div id="model-recall" class="text-lg font-black">--</div><div class="text-[9px] uppercase text-indigo-200">Recall</div></div>
+              <div class="rounded-xl border border-white/10 bg-white/5 px-4 py-3"><div id="model-f1" class="text-lg font-black">--</div><div class="text-[9px] uppercase text-indigo-200">F1 score</div></div>
+            </div>
+            <button onclick="trainRiskModel()" class="shrink-0 rounded-xl bg-white px-4 py-3 text-xs font-extrabold text-indigo-950 shadow-md hover:bg-indigo-50">Train / Refresh</button>
+          </div>
+        </div>
+        <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm md:w-72">
+          <div class="flex items-center justify-between"><div><div class="text-xs font-bold uppercase text-slate-400">Notifications</div><div id="notification-count" class="mt-1 text-2xl font-extrabold text-slate-900">0</div></div><button onclick="sendTestNotification()" class="rounded-lg bg-emerald-50 px-3 py-2 text-xs font-bold text-emerald-700 hover:bg-emerald-100">Send alert</button></div>
+          <div id="notification-preview" class="mt-3 text-xs text-slate-500">Loading alerts...</div>
+        </div>
+      </div>
+
+      <div class="grid lg:grid-cols-3 gap-6">
+        <div class="lg:col-span-2 bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+          <div class="px-5 py-4 border-b border-slate-100 flex justify-between items-center">
+            <h2 class="font-bold text-slate-900">Student Risk Register</h2>
+            <button onclick="loadRiskDashboard()" class="text-xs text-indigo-600 font-bold hover:text-indigo-800">Refresh</button>
+          </div>
+          <div class="flex flex-col gap-2 px-5 py-3 sm:flex-row">
+            <input id="risk-table-search" oninput="renderRiskTable()" class="min-w-0 flex-1 rounded-lg border border-slate-200 px-3 py-2 text-xs" placeholder="Search students and risk factors">
+            <select id="risk-level-filter" onchange="renderRiskTable()" class="rounded-lg border border-slate-200 px-3 py-2 text-xs"><option value="">All risk levels</option><option>High+</option><option>Critical</option><option>High</option><option>Moderate</option><option>Low</option><option>Unassessed</option></select>
+          </div>
+          <div class="overflow-x-auto"><table class="w-full text-sm">
+            <thead class="bg-slate-50 text-xs uppercase text-slate-400"><tr><th class="px-5 py-3 text-left">Student / Class</th><th class="px-5 py-3 text-left">Attendance</th><th class="px-5 py-3 text-left">Academic</th><th class="px-5 py-3 text-left">Risk</th><th class="px-5 py-3 text-left">Primary factors</th><th class="px-5 py-3 text-left">Counselor / Status</th><th class="px-5 py-3 text-left">Case</th></tr></thead>
+            <tbody id="risk-student-table" class="divide-y divide-slate-100"></tbody>
+          </table></div>
+          <div class="flex items-center justify-between border-t border-slate-100 px-5 py-3 text-xs text-slate-500"><span id="risk-table-count"></span><div class="flex gap-2"><button onclick="changeRiskPage(-1)" class="rounded border border-slate-200 px-2 py-1">Previous</button><button onclick="changeRiskPage(1)" class="rounded border border-slate-200 px-2 py-1">Next</button></div></div>
+        </div>
+
+        <div class="space-y-4">
+          <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+            <h2 class="font-bold text-slate-900 mb-4">Create Intervention Plan</h2>
+            <label class="block text-xs font-bold text-slate-500 mb-1">Student</label>
+            <select id="intervention-student" class="w-full mb-3 px-3 py-2 border border-slate-200 rounded-lg text-sm"></select>
+            <label class="block text-xs font-bold text-slate-500 mb-1">Assigned Counselor</label>
+            <input id="intervention-counselor" value="Counselor Ananya Roy" class="w-full mb-3 px-3 py-2 border border-slate-200 rounded-lg text-sm">
+            <label class="block text-xs font-bold text-slate-500 mb-1">Priority</label>
+            <select id="intervention-priority" class="w-full mb-3 px-3 py-2 border border-slate-200 rounded-lg text-sm"><option>Critical</option><option selected>High</option><option>Moderate</option><option>Low</option></select>
+            <label class="block text-xs font-bold text-slate-500 mb-1">Action Plan</label>
+            <textarea id="intervention-plan" rows="3" class="w-full mb-3 px-3 py-2 border border-slate-200 rounded-lg text-sm" placeholder="Schedule counseling, transport support, remedial classes..."></textarea>
+            <button onclick="createIntervention()" class="w-full py-2.5 rounded-lg bg-indigo-600 text-white text-sm font-bold hover:bg-indigo-500">Assign Intervention</button>
+          </div>
+          <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+            <h2 class="font-bold text-slate-900 mb-3">Active Follow-ups</h2>
+            <div id="intervention-list" class="space-y-2 text-sm"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== TAB 6: HELPDESK & REQUESTS ==================== -->
     <section id="content-student-portal" class="space-y-6 hidden">
       <!-- 5A: ADMIN / COUNSELOR / TEACHER REVIEW VIEW -->
       <div id="view-admin-helpdesk" class="space-y-6">
@@ -648,15 +745,13 @@
             <div>
               <div class="flex items-center gap-2">
                 <span class="bg-white/20 text-white text-xs font-semibold px-2.5 py-0.5 rounded-full">Student &amp; Guardian Access</span>
-                <span class="text-xs text-white/80">Govt High School, Birmitrapur</span>
+                <span id="student-portal-school" class="text-xs text-white/80">Loading school record…</span>
               </div>
               <h1 id="student-portal-name" class="text-2xl font-bold mt-1">Student Portal: Priya Kumari</h1>
-              <p class="text-xs text-white/80 mt-0.5">Admission No: <strong>ADM-2025-001</strong> | Class: <strong>Grade 9 - Section A</strong> | Roll: <strong>#1</strong></p>
+              <p id="student-portal-meta" class="text-xs text-white/80 mt-0.5">Loading your student record…</p>
             </div>
             <div class="flex flex-wrap gap-2 text-xs">
-              <span class="px-2.5 py-1 rounded-full bg-white/20 font-medium">🔴 BPL Card Holder</span>
-              <span class="px-2.5 py-1 rounded-full bg-white/20 font-medium">🚶 6.5 km Commute (Walking)</span>
-              <span class="px-2.5 py-1 rounded-full bg-white/20 font-medium">🎓 First-Generation Learner</span>
+              <div id="student-factor-badges" class="flex flex-wrap gap-2 text-xs"></div>
             </div>
           </div>
         </div>
@@ -669,24 +764,24 @@
               <h3 class="font-bold text-slate-800 text-sm flex items-center gap-2">
                 <span>📅</span> My Attendance Summary (Term 1)
               </h3>
-              <span class="text-xs font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">Good Standing</span>
+              <span id="student-attendance-tier" class="text-xs font-bold text-slate-700 bg-slate-50 px-2 py-0.5 rounded-full border border-slate-200">Attendance record</span>
             </div>
             <div class="grid grid-cols-3 gap-3 text-center">
               <div class="p-3 bg-slate-50 rounded-lg border border-slate-100">
-                <div class="text-2xl font-extrabold text-emerald-600">92.5%</div>
+                <div id="student-attendance-rate" class="text-2xl font-extrabold text-emerald-600">—</div>
                 <div class="text-xs text-slate-500 mt-1">Attendance Rate</div>
               </div>
               <div class="p-3 bg-slate-50 rounded-lg border border-slate-100">
-                <div class="text-2xl font-extrabold text-slate-800">37 / 40</div>
+                <div id="student-attendance-days" class="text-2xl font-extrabold text-slate-800">—</div>
                 <div class="text-xs text-slate-500 mt-1">Working Days</div>
               </div>
               <div class="p-3 bg-slate-50 rounded-lg border border-slate-100">
-                <div class="text-2xl font-extrabold text-slate-800">0 Days</div>
-                <div class="text-xs text-slate-500 mt-1">Current Streak</div>
+                <div id="student-absence-streak" class="text-2xl font-extrabold text-slate-800">—</div>
+                <div class="text-xs text-slate-500 mt-1">Consecutive absences</div>
               </div>
             </div>
             <div class="text-xs text-slate-500 bg-slate-50 p-3 rounded-lg flex items-center gap-2">
-              <span>ℹ️</span> Reminder: Minimum required attendance to appear in annual exams is <strong>75%</strong>. You are currently well above the chronic threshold (85%).
+              <span>ℹ️</span> Attendance summary uses your recorded school attendance only. Annual exam eligibility is subject to school policy.
             </div>
           </div>
 
@@ -696,40 +791,9 @@
               <h3 class="font-bold text-slate-800 text-sm flex items-center gap-2">
                 <span>🎓</span> My Academic Report Card
               </h3>
-              <span class="text-xs font-bold text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded-full border border-indigo-200">GPA: 3.5 / 4.0</span>
+              <span id="student-academic-gpa" class="text-xs font-bold text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded-full border border-indigo-200">GPA: —</span>
             </div>
-            <div class="space-y-2 text-xs">
-              <div class="flex justify-between items-center p-2 rounded-lg bg-slate-50 border border-slate-100">
-                <div>
-                  <span class="font-bold text-slate-800">Mathematics (Core)</span>
-                  <span class="text-slate-400 text-[11px] block">Midterm Examination</span>
-                </div>
-                <div class="text-right">
-                  <span class="font-bold text-slate-800">78 / 100</span>
-                  <span class="ml-2 font-bold px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800 text-[11px]">B+ (3.3)</span>
-                </div>
-              </div>
-              <div class="flex justify-between items-center p-2 rounded-lg bg-slate-50 border border-slate-100">
-                <div>
-                  <span class="font-bold text-slate-800">Science (Core)</span>
-                  <span class="text-slate-400 text-[11px] block">Midterm Examination</span>
-                </div>
-                <div class="text-right">
-                  <span class="font-bold text-slate-800">84 / 100</span>
-                  <span class="ml-2 font-bold px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800 text-[11px]">A (3.7)</span>
-                </div>
-              </div>
-              <div class="flex justify-between items-center p-2 rounded-lg bg-slate-50 border border-slate-100">
-                <div>
-                  <span class="font-bold text-slate-800">English Language</span>
-                  <span class="text-slate-400 text-[11px] block">Midterm Examination</span>
-                </div>
-                <div class="text-right">
-                  <span class="font-bold text-slate-800">72 / 100</span>
-                  <span class="ml-2 font-bold px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800 text-[11px]">B+ (3.3)</span>
-                </div>
-              </div>
-            </div>
+            <div id="student-academic-summary" class="space-y-2 text-xs"><p class="text-slate-500">Loading your recorded marks…</p></div>
           </div>
         </div>
 
@@ -748,6 +812,7 @@
           </div>
 
           <form id="form-grievance" onsubmit="submitGrievance(event)" class="space-y-4">
+            <label class="block text-xs font-semibold text-slate-700">Student record<select id="portal-grievance-student" required class="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm"><option value="">Loading student records…</option></select></label>
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label class="block text-xs font-semibold text-slate-700 mb-1">Issue Category *</label>
@@ -805,7 +870,119 @@
       </div>
     </section>
 
+    <section id="content-reports" class="hidden space-y-6">
+      <div><h1 class="text-2xl font-extrabold text-slate-900">Reports & analytics</h1><p class="mt-1 text-sm text-slate-500">Generate reports from the currently recorded student, attendance, academic, and intervention data.</p></div>
+      <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+        <article class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"><div class="text-2xl text-indigo-600">▤</div><h2 class="mt-3 font-bold text-slate-900">Student risk register</h2><p class="mt-1 text-xs text-slate-500">Risk score, attendance, academic average, and detected factors.</p><a class="mt-4 inline-flex rounded-lg bg-indigo-600 px-4 py-2 text-xs font-bold text-white" href="/api/v1/analytics/reports/risk.csv">Download CSV / Excel</a></article>
+        <article class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"><div class="text-2xl text-violet-600">▧</div><h2 class="mt-3 font-bold text-slate-900">Printable risk report</h2><p class="mt-1 text-xs text-slate-500">Open print view and choose “Save as PDF” in your browser.</p><a class="mt-4 inline-flex rounded-lg bg-slate-900 px-4 py-2 text-xs font-bold text-white" href="/api/v1/analytics/reports/risk.pdf" target="_blank">Open PDF print view</a></article>
+        <article class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"><div class="text-2xl text-emerald-600">◷</div><h2 class="mt-3 font-bold text-slate-900">Intervention outcomes</h2><p id="reports-intervention-summary" class="mt-1 text-xs text-slate-500">Loading recorded case outcomes…</p><button onclick="switchTab('risk')" class="mt-4 rounded-lg border border-slate-200 px-4 py-2 text-xs font-bold text-slate-700">Review plans</button></article>
+      </div>
+    </section>
+
+    <section id="content-settings" class="hidden space-y-6">
+      <div><h1 class="text-2xl font-extrabold text-slate-900">Workspace settings</h1><p class="mt-1 text-sm text-slate-500">Personalize your workspace display and access the signed-in profile.</p></div>
+      <div class="grid gap-4 lg:grid-cols-2">
+        <article class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"><h2 class="font-bold text-slate-900">Appearance</h2><p class="mt-1 text-xs text-slate-500">Theme preference is saved on this browser and applies across all dashboard pages.</p><div class="mt-4 flex gap-3"><button onclick="applyTheme('light')" class="rounded-lg border border-slate-200 px-4 py-2 text-xs font-bold text-slate-700">☼ Light mode</button><button onclick="applyTheme('dark')" class="rounded-lg bg-slate-900 px-4 py-2 text-xs font-bold text-white">☾ Dark mode</button></div></article>
+        <article class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"><h2 class="font-bold text-slate-900">Account & access</h2><p id="settings-user" class="mt-1 text-xs text-slate-500">Sign in to load your profile and permissions.</p><div class="mt-4 flex gap-2"><button onclick="openLoginModal()" class="rounded-lg border border-slate-200 px-4 py-2 text-xs font-bold text-slate-700">Switch account</button><button onclick="logoutUser()" class="rounded-lg bg-slate-900 px-4 py-2 text-xs font-bold text-white">Sign out</button></div></article>
+      </div>
+    </section>
+
+    <section id="content-management" class="hidden space-y-6">
+      <div><h1 class="text-2xl font-extrabold text-slate-900">School & user management</h1><p class="mt-1 text-sm text-slate-500">Manage staff accounts, class-teacher assignments, student enrollment, and intervention duties.</p></div>
+      <div class="grid gap-4 xl:grid-cols-2">
+        <form onsubmit="registerStaff(event)" class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+          <h2 class="font-bold text-slate-900">Create staff account</h2>
+          <div class="mt-4 grid gap-3 sm:grid-cols-2">
+            <label class="text-xs font-semibold text-slate-600">Full name<input id="staff-full-name" required class="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2"></label>
+            <label class="text-xs font-semibold text-slate-600">Username<input id="staff-username" required class="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2"></label>
+            <label class="text-xs font-semibold text-slate-600">Email<input id="staff-email" type="email" required class="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2"></label>
+            <label class="text-xs font-semibold text-slate-600">Contact number<input id="staff-phone" class="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2"></label>
+            <label class="text-xs font-semibold text-slate-600">Role<select id="staff-role" class="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2"><option value="Teacher">Teacher</option><option value="Counselor">Counselor</option><option value="SchoolPrincipal">School Principal</option></select></label>
+            <label class="text-xs font-semibold text-slate-600">Department<input id="staff-department" class="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2"></label>
+            <label class="text-xs font-semibold text-slate-600">Temporary password<input id="staff-password" type="password" minlength="12" required class="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2"></label>
+            <label class="text-xs font-semibold text-slate-600">Designation<input id="staff-designation" class="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2"></label>
+          </div>
+          <button class="mt-4 rounded-lg bg-indigo-600 px-4 py-2 text-xs font-bold text-white">Create account</button>
+        </form>
+        <form onsubmit="assignClassTeacher(event)" class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+          <h2 class="font-bold text-slate-900">Assign class teacher</h2><p class="mt-1 text-xs text-slate-500">Teacher access is limited to students in assigned sections.</p>
+          <div class="mt-4 grid gap-3 sm:grid-cols-2">
+            <label class="text-xs font-semibold text-slate-600">Class & section<select id="management-section" required class="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2"></select></label>
+            <label class="text-xs font-semibold text-slate-600">Teacher<select id="management-teacher" required class="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2"></select></label>
+          </div>
+          <button class="mt-4 rounded-lg bg-indigo-600 px-4 py-2 text-xs font-bold text-white">Save assignment</button>
+        </form>
+      </div>
+      <div class="grid gap-4 xl:grid-cols-2">
+        <form onsubmit="assignStudentSection(event)" class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+          <h2 class="font-bold text-slate-900">Enroll / move a student</h2>
+          <div class="mt-4 grid gap-3 sm:grid-cols-2">
+            <label class="text-xs font-semibold text-slate-600">Student<select id="management-student" required class="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2"></select></label>
+            <label class="text-xs font-semibold text-slate-600">Class & section<select id="management-enrollment-section" required class="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2"></select></label>
+          </div>
+          <button class="mt-4 rounded-lg bg-indigo-600 px-4 py-2 text-xs font-bold text-white">Save enrollment</button>
+        </form>
+        <form onsubmit="linkStudentAccount(event)" class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+          <h2 class="font-bold text-slate-900">Link student portal account</h2>
+          <div class="mt-4 grid gap-3">
+            <label class="text-xs font-semibold text-slate-600">Student / parent account<select id="management-student-account" required class="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2"></select></label>
+            <label class="text-xs font-semibold text-slate-600">Student record<select id="management-linked-student" required class="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2"></select></label>
+          </div>
+          <button class="mt-4 rounded-lg bg-indigo-600 px-4 py-2 text-xs font-bold text-white">Link account</button>
+        </form>
+        <form onsubmit="assignInterventionDuty(event)" class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+          <h2 class="font-bold text-slate-900">Assign student-support duty</h2>
+          <div class="mt-4 grid gap-3 sm:grid-cols-2">
+            <label class="text-xs font-semibold text-slate-600">Student<select id="duty-student" required class="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2"></select></label>
+            <label class="text-xs font-semibold text-slate-600">Responsible staff<select id="duty-teacher" required class="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2"></select></label>
+            <label class="text-xs font-semibold text-slate-600">Priority<select id="duty-priority" class="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2"><option>Moderate</option><option>High</option><option>Critical</option><option>Low</option></select></label>
+            <label class="text-xs font-semibold text-slate-600">Follow-up date<input id="duty-follow-up" type="date" class="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2"></label>
+            <label class="text-xs font-semibold text-slate-600 sm:col-span-2">Intervention plan<textarea id="duty-plan" required rows="2" class="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2"></textarea></label>
+          </div>
+          <button class="mt-4 rounded-lg bg-indigo-600 px-4 py-2 text-xs font-bold text-white">Assign duty</button>
+        </form>
+      </div>
+      <article class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+        <div class="flex flex-wrap items-center justify-between gap-3 p-5"><div><h2 class="font-bold text-slate-900">Users & assigned sections</h2><p class="mt-1 text-xs text-slate-500">Active account status, school assignment, and intervention follow-up.</p></div><input id="management-user-search" oninput="renderManagementUsers()" placeholder="Search users…" class="rounded-lg border border-slate-200 px-3 py-2 text-xs"></div>
+        <div class="overflow-x-auto"><table class="w-full text-left text-xs"><thead class="bg-slate-50 text-slate-500"><tr><th class="p-3">User</th><th class="p-3">Role / Department</th><th class="p-3">Contact</th><th class="p-3">Status</th><th class="p-3">Action</th></tr></thead><tbody id="management-users-body"></tbody></table></div>
+      </article>
+      <article class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+        <div class="p-5"><h2 class="font-bold text-slate-900">Assigned student-support duties</h2></div>
+        <div class="overflow-x-auto"><table class="w-full text-left text-xs"><thead class="bg-slate-50 text-slate-500"><tr><th class="p-3">Student</th><th class="p-3">Plan</th><th class="p-3">Assigned to</th><th class="p-3">Priority</th><th class="p-3">Status / follow-up</th></tr></thead><tbody id="management-interventions"></tbody></table></div>
+      </article>
+    </section>
+
   </main>
+  </div>
+
+  <div id="student-registration-modal" class="fixed inset-0 z-[70] hidden items-center justify-center overflow-y-auto bg-slate-950/60 p-4 backdrop-blur-sm">
+    <form onsubmit="registerStudent(event)" class="my-auto w-full max-w-3xl rounded-2xl border border-slate-200 bg-white p-6 shadow-2xl">
+      <div class="mb-4 flex items-start justify-between border-b border-slate-100 pb-3"><div><h2 id="student-form-title" class="text-xl font-extrabold text-slate-900">Add student</h2><p id="student-form-description" class="mt-1 text-xs text-slate-500">Creates a student record through the existing student API.</p></div><button type="button" onclick="closeStudentRegistration()" class="text-xl text-slate-400">×</button></div>
+      <div class="grid gap-3 sm:grid-cols-2">
+        <label class="text-xs font-bold text-slate-600">Admission number<input id="new-admission" required class="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"></label>
+        <label class="text-xs font-bold text-slate-600">Date of birth<input id="new-dob" type="date" required class="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"></label>
+        <label class="text-xs font-bold text-slate-600">First name<input id="new-first-name" required class="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"></label>
+        <label class="text-xs font-bold text-slate-600">Last name<input id="new-last-name" required class="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"></label>
+        <label class="text-xs font-bold text-slate-600">School<select id="new-school-id" required class="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"></select></label>
+        <label class="text-xs font-bold text-slate-600">Gender<select id="new-gender" class="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"><option>Female</option><option>Male</option><option>Other</option></select></label>
+        <label class="text-xs font-bold text-slate-600">Guardian name<input id="new-guardian" class="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"></label>
+        <label class="text-xs font-bold text-slate-600">Guardian relationship<input id="new-guardian-relationship" class="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"></label>
+        <label class="text-xs font-bold text-slate-600">Guardian phone<input id="new-guardian-phone" type="tel" class="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"></label>
+        <label class="text-xs font-bold text-slate-600">Guardian occupation<input id="new-guardian-occupation" class="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"></label>
+        <label class="text-xs font-bold text-slate-600">Distance to school (km)<input id="new-distance" type="number" min="0" step="0.1" value="0" class="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"></label>
+        <label class="text-xs font-bold text-slate-600">Transport<select id="new-transport" class="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"><option value="0">Walking</option><option value="1">Bicycle</option><option value="2">Public bus</option><option value="3">School bus</option><option value="4">Two-wheeler</option><option value="5">Other</option></select></label>
+        <label class="text-xs font-bold text-slate-600">Family income tier<select id="new-income-tier" class="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"><option value="0">Below poverty line</option><option value="1">Low</option><option value="2">Lower middle</option><option value="3">Middle</option><option value="4">Upper middle</option></select></label>
+        <label class="text-xs font-bold text-slate-600">Social category<input id="new-social-category" class="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"></label>
+        <label class="text-xs font-bold text-slate-600">Mother tongue<input id="new-mother-tongue" class="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"></label>
+        <label class="flex items-center gap-2 text-xs text-slate-700"><input id="new-bpl" type="checkbox"> Below Poverty Line</label>
+        <label class="flex items-center gap-2 text-xs text-slate-700"><input id="new-first-gen" type="checkbox"> First-generation learner</label>
+        <label class="flex items-center gap-2 text-xs text-slate-700"><input id="new-special-needs" type="checkbox"> Accessibility support required</label>
+        <label class="flex items-center gap-2 text-xs text-slate-700"><input id="new-family-support" type="checkbox"> Single-parent/orphan support</label>
+        <label class="text-xs font-bold text-slate-600 sm:col-span-2">Residential address<textarea id="new-address" rows="2" class="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"></textarea></label>
+      </div>
+      <div class="mt-5 flex justify-end gap-2"><button type="button" onclick="closeStudentRegistration()" class="rounded-lg border border-slate-200 px-4 py-2 text-xs font-bold text-slate-600">Cancel</button><button id="student-form-submit" type="submit" class="rounded-lg bg-indigo-600 px-4 py-2 text-xs font-bold text-white">Save student</button></div>
+    </form>
+  </div>
 
   <!-- ==================== LOGIN / ROLE SWITCHER / SELF-REGISTRATION MODAL ==================== -->
   <div id="login-modal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
@@ -843,7 +1020,7 @@
               <span class="text-xl">🎓</span>
               <span class="text-xs font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">Student/Parent</span>
             </div>
-            <div class="font-bold text-sm text-slate-900 mt-2 group-hover:text-emerald-700">Priya Kumari (Student)</div>
+            <div class="font-bold text-sm text-slate-900 mt-2 group-hover:text-emerald-700">Aarav Sharma (Student)</div>
             <div class="text-xs text-slate-500 mt-0.5">Push grievances, view own attendance &amp; report card</div>
             <div class="text-[11px] text-emerald-600 font-mono mt-2">student / StudentPassword123!</div>
           </button>
@@ -1090,6 +1267,7 @@
     </div>
   </div>
 
+  </div>
   <!-- FOOTER -->
   <footer class="bg-white border-t border-slate-200 py-4 text-center text-xs text-slate-400">
     EduGuard &copy; 2026 | Built for Marginalized Communities Retention &amp; Dropout Prevention (.NET 10 WebApi)
@@ -1101,57 +1279,51 @@
     let currentUser = null;
 
     // Central Live Grievance State
-    let grievances = [
-      {
-        id: 1,
-        studentName: 'Priya Kumari',
-        studentAdm: 'ADM-2025-001',
-        studentClass: 'Grade 9-A',
-        category: 'CommuteDistance',
-        categoryLabel: '🚌 Commute Hardship (>5km)',
-        urgency: 'High',
-        description: 'Heavy monsoon rains made the 6.5km unpaved forest road impassable on foot this week; requesting bicycle support or temporary transport allowance to prevent missing classes.',
-        reportedBy: 'Priya Kumari (Self)',
-        reportedAt: 'Sep 18, 2026',
-        status: 'Under Review',
-        resolutionNotes: ''
-      },
-      {
-        id: 2,
-        studentName: 'Sunita Kumari',
-        studentAdm: 'ADM-2025-002',
-        studentClass: 'Grade 9-A',
-        category: 'AcademicRemedial',
-        categoryLabel: '📚 Academic Learning Difficulty',
-        urgency: 'High',
-        description: 'Acute score drop in Mathematics (40% to 20%). Requesting after-school bridge remedial support and learning material.',
-        reportedBy: 'Sunil Sharma (Teacher)',
-        reportedAt: 'Sep 19, 2026',
-        status: 'Resolved',
-        resolutionNotes: 'Assigned to Grade 9 remedial math cohort. Peer tutor assigned.'
-      },
-      {
-        id: 3,
-        studentName: 'Amit Soren',
-        studentAdm: 'ADM-2025-003',
-        studentClass: 'Grade 9-B',
-        category: 'FinancialDistress',
-        categoryLabel: '💰 Financial Hardship (BPL/Fees)',
-        urgency: 'Standard',
-        description: 'Unable to purchase science lab manual and annual examination workbook due to delayed BPL stipend disbursement.',
-        reportedBy: 'Dr. Ananya Roy (Counselor Walk-in)',
-        reportedAt: 'Sep 20, 2026',
-        status: 'Resolved',
-        resolutionNotes: 'Issued complimentary textbook and lab kit from school emergency welfare book-bank.'
-      }
-    ];
+    let grievances = [];
 
     let currentGrievanceFilter = 'All';
     let activeActionGrievanceId = null;
 
     // Tab Navigation
+    const dashboardCharts = {};
+    let dashboardChartData = null;
+    let riskTableRows = [];
+    let riskInterventions = [];
+    let riskTablePage = 1;
+    let searchDebounce = null;
+    let managementUsers = [];
+    let managementSections = [];
+    let managementStudents = [];
+    let editingStudentId = null;
+    let managementInterventions = [];
+
+    async function apiFetch(path, options = {}) {
+      const token = localStorage.getItem('eduguard_token');
+      const headers = {
+        ...(options.body ? { 'Content-Type': 'application/json' } : {}),
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        ...(options.headers || {})
+      };
+      const response = await fetch(`${API_BASE}${path}`, { ...options, headers });
+      if (!response.ok) {
+        const detail = await response.text();
+        throw new Error(detail || `Request failed (${response.status})`);
+      }
+      return response.json();
+    }
+
+    async function loadSystemHealth() {
+      const status = document.getElementById('system-status');
+      try {
+        const health = await apiFetch('/api/health');
+        if (status) status.textContent = health.status === 'Healthy' ? 'System operational' : `System ${health.status || 'status unknown'}`;
+      } catch {
+        if (status) status.textContent = 'System status unavailable';
+      }
+    }
+
     function switchTab(tab) {
-      ['overview', 'students', 'attendance', 'academics', 'student-portal'].forEach(t => {
+      ['overview', 'students', 'attendance', 'academics', 'risk', 'student-portal', 'reports', 'settings', 'management'].forEach(t => {
         const content = document.getElementById(`content-${t}`);
         const btn = document.getElementById(`tab-${t}`);
         if (content) content.classList.add('hidden');
@@ -1167,6 +1339,884 @@
         activeBtn.classList.add('bg-indigo-800', 'text-white');
         activeBtn.classList.remove('text-indigo-200');
       }
+      document.querySelectorAll('.side-link').forEach(link => {
+        link.classList.toggle('active', link.dataset.tab === tab);
+      });
+      document.body.classList.remove('mobile-menu-open');
+      if (tab === 'risk') loadRiskDashboard();
+      if (tab === 'student-portal') {
+        loadStudentPortal();
+        loadGrievances();
+      }
+      if (tab === 'overview') loadDashboardData(document.getElementById('attendance-period')?.value || 'month');
+      if (tab === 'students') loadStudentsPage();
+      if (tab === 'attendance') loadAttendancePage();
+      if (tab === 'academics') loadAcademicsPage();
+      if (tab === 'reports') loadReportsPage();
+      if (tab === 'management') loadManagementPage();
+    }
+
+    function toggleSidebar() {
+      if (window.matchMedia('(max-width: 639px)').matches) {
+        document.body.classList.toggle('mobile-menu-open');
+      } else {
+        document.body.classList.toggle('sidebar-collapsed');
+        localStorage.setItem('eduguard_sidebar_collapsed', document.body.classList.contains('sidebar-collapsed'));
+      }
+    }
+
+    async function loadDashboardData(period = 'month') {
+      try {
+        const [dashboard, risk] = await Promise.all([
+          apiFetch(`/api/v1/analytics/dashboard?period=${encodeURIComponent(period)}`),
+          apiFetch('/api/v1/analytics/risk-summary')
+        ]);
+        dashboardChartData = dashboard;
+        const totals = dashboard.totals;
+        document.getElementById('kpi-total-students').textContent = totals.students;
+        document.getElementById('kpi-high-risk').textContent = totals.highRisk;
+        document.getElementById('kpi-chronic-absentees').textContent = totals.chronicAbsentees;
+        document.getElementById('kpi-academic-shock').textContent = totals.academicShock;
+        document.getElementById('kpi-core-fails').textContent = totals.coreSubjectFailures;
+        document.getElementById('hero-risk-coverage').textContent = `${totals.riskCoverage}%`;
+        document.getElementById('hero-alert-count').textContent = totals.highRisk;
+        document.getElementById('hero-student-count').textContent = totals.students;
+
+        const topRisk = risk.students.find(student => ['Critical', 'High'].includes(student.riskLevel));
+        const alert = document.getElementById('priority-alert');
+        if (topRisk) {
+          alert.classList.remove('hidden');
+          document.getElementById('priority-student-meta').textContent = `${topRisk.studentName} · ${topRisk.admissionNumber} · ${topRisk.riskLevel} risk`;
+          document.getElementById('priority-student-title').textContent = `Risk score ${topRisk.riskScore} — review recommended`;
+          document.getElementById('priority-student-reason').textContent = `${topRisk.factors.join(' · ')} Attendance ${topRisk.attendanceDataAvailable ? `${topRisk.attendancePercentage}%` : 'not recorded'}; academic average ${topRisk.academicDataAvailable ? `${topRisk.academicAverage}%` : 'not recorded'}.`;
+          document.getElementById('priority-case-button').onclick = () => openStudentCase(topRisk.studentId);
+        } else {
+          alert.classList.add('hidden');
+        }
+
+        const alerts = document.getElementById('dashboard-alerts');
+        const atRisk = risk.students.filter(student => ['Critical', 'High'].includes(student.riskLevel)).slice(0, 4);
+        alerts.innerHTML = atRisk.length
+          ? atRisk.map(student => `<button onclick="openStudentCase('${student.studentId}')" class="block w-full rounded-xl border border-rose-100 bg-rose-50/60 p-3 text-left hover:border-rose-300">
+              <div class="flex items-center justify-between"><span class="text-xs font-bold text-slate-800">${escapeHtml(student.studentName)} · ${escapeHtml(student.admissionNumber)}</span><span class="badge-${student.riskLevel.toLowerCase()} rounded-full px-2 py-1 text-[10px] font-bold">${student.riskLevel} · ${student.riskScore}</span></div>
+              <div class="mt-1 text-[11px] text-slate-500">${student.factors.map(escapeHtml).join(' · ')}</div>
+            </button>`).join('')
+          : '<div class="rounded-xl border border-dashed border-slate-200 p-5 text-center text-xs text-slate-400">No high or critical student alerts in the current records.</div>';
+        renderDashboardCharts();
+      } catch (error) {
+        console.error('Unable to load dashboard analytics', error);
+        showToast(`Dashboard data could not be loaded: ${error.message}`, 'error');
+      }
+    }
+
+    function renderDashboardCharts() {
+      if (!dashboardChartData || !window.Chart) return;
+      Object.values(dashboardCharts).forEach(chart => chart.destroy());
+      const data = dashboardChartData;
+      const dark = document.body.classList.contains('dark-theme');
+      const labelColor = dark ? '#b5bdd4' : '#667085';
+      const gridColor = dark ? 'rgba(170,180,210,.12)' : 'rgba(100,116,139,.12)';
+      const common = {
+        responsive: true,
+        maintainAspectRatio: false,
+        animation: { duration: 450 },
+        plugins: { legend: { labels: { color: labelColor, usePointStyle: true, boxWidth: 8, font: { family: 'Inter', size: 10 } } } }
+      };
+      const showEmpty = (id, empty, emptyId = `${id.replace('-chart', '')}-chart-empty`) => {
+        const canvas = document.getElementById(id);
+        const emptyState = document.getElementById(emptyId);
+        if (!emptyState) return;
+        emptyState.classList.toggle('hidden', !empty);
+        emptyState.classList.toggle('flex', empty);
+        canvas.classList.toggle('hidden', empty);
+      };
+
+      const distribution = data.riskDistribution;
+      const riskValues = [distribution.critical, distribution.high, distribution.moderate, distribution.low, distribution.unassessed];
+      showEmpty('risk-distribution-chart', riskValues.every(value => value === 0), 'risk-chart-empty');
+      if (riskValues.some(value => value > 0)) {
+        dashboardCharts.risk = new Chart(document.getElementById('risk-distribution-chart'), {
+          type: 'doughnut',
+          data: { labels: ['Critical', 'High', 'Moderate', 'Low', 'Unassessed'], datasets: [{ data: riskValues, backgroundColor: ['#e45c78', '#f39a55', '#efc35e', '#41b98a', '#a8afc0'], borderColor: dark ? '#171a2d' : '#fff', borderWidth: 4, hoverOffset: 5 }] },
+          options: { ...common, cutout: '68%' }
+        });
+      }
+
+      const attendance = data.attendanceTrend || [];
+      showEmpty('attendance-chart', attendance.length === 0);
+      if (attendance.length) {
+        dashboardCharts.attendance = new Chart(document.getElementById('attendance-chart'), {
+          type: 'line',
+          data: { labels: attendance.map(item => item.date), datasets: [{ label: 'Attendance %', data: attendance.map(item => item.percentage), borderColor: '#7166e8', backgroundColor: 'rgba(113,102,232,.15)', fill: true, tension: .35, pointRadius: 3 }] },
+          options: { ...common, scales: { x: { ticks: { color: labelColor, maxTicksLimit: 7 }, grid: { display: false } }, y: { min: 0, max: 100, ticks: { color: labelColor, callback: value => `${value}%` }, grid: { color: gridColor } } } }
+        });
+      }
+
+      const academics = data.academicPerformance || [];
+      showEmpty('academic-chart', academics.length === 0);
+      if (academics.length) {
+        dashboardCharts.academic = new Chart(document.getElementById('academic-chart'), {
+          type: 'bar',
+          data: { labels: academics.map(item => item.subject), datasets: [{ label: 'Average score %', data: academics.map(item => item.average), backgroundColor: ['#7066e8', '#9187f1', '#b0a7f7', '#6558ce'], borderRadius: 7, maxBarThickness: 44 }] },
+          options: { ...common, plugins: { ...common.plugins, legend: { display: false } }, scales: { x: { ticks: { color: labelColor }, grid: { display: false } }, y: { min: 0, max: 100, ticks: { color: labelColor, callback: value => `${value}%` }, grid: { color: gridColor } } } }
+        });
+      }
+
+      const outcomes = data.interventions;
+      const outcomeValues = [outcomes.open, outcomes.inProgress, outcomes.resolved];
+      showEmpty('intervention-chart', outcomes.total === 0);
+      if (outcomes.total > 0) {
+        dashboardCharts.interventions = new Chart(document.getElementById('intervention-chart'), {
+          type: 'bar',
+          data: { labels: ['Open', 'In progress', 'Resolved'], datasets: [{ label: 'Cases', data: outcomeValues, backgroundColor: ['#e8b34f', '#7d72e8', '#41b98a'], borderRadius: 7, maxBarThickness: 54 }] },
+          options: { ...common, plugins: { ...common.plugins, legend: { display: false } }, scales: { x: { ticks: { color: labelColor }, grid: { display: false } }, y: { beginAtZero: true, ticks: { color: labelColor, precision: 0 }, grid: { color: gridColor } } } }
+        });
+      }
+
+      const trend = data.riskTrend || [];
+      document.getElementById('risk-trend-note').textContent = data.riskTrendNote;
+      document.getElementById('risk-trend-empty').classList.toggle('hidden', trend.length > 0);
+      document.getElementById('risk-trend-wrap').classList.toggle('hidden', trend.length === 0);
+      if (trend.length) {
+        dashboardCharts.riskTrend = new Chart(document.getElementById('risk-trend-chart'), {
+          type: 'line',
+          data: { labels: trend.map(item => item.date), datasets: [{ label: 'Average risk score', data: trend.map(item => item.averageScore), borderColor: '#8a72ea', backgroundColor: 'rgba(138,114,234,.13)', fill: true, tension: .35 }] },
+          options: { ...common, scales: { x: { ticks: { color: labelColor }, grid: { display: false } }, y: { min: 0, max: 100, ticks: { color: labelColor }, grid: { color: gridColor } } } }
+        });
+      }
+    }
+
+    function renderRiskTable() {
+      const search = (document.getElementById('risk-table-search')?.value || '').trim().toLowerCase();
+      const level = document.getElementById('risk-level-filter')?.value || '';
+      const rows = riskTableRows.filter(student => {
+        const intervention = riskInterventions.find(item => item.studentId === student.studentId);
+        const terms = [student.studentName, student.admissionNumber, student.className, student.riskLevel,
+          ...(student.factors || []), intervention?.assignedTo, intervention?.status].join(' ').toLowerCase();
+        const matchesLevel = !level || student.riskLevel === level ||
+          (level === 'High+' && ['Critical', 'High'].includes(student.riskLevel));
+        return (!search || terms.includes(search)) && matchesLevel;
+      });
+      const pageSize = 10;
+      const pages = Math.max(1, Math.ceil(rows.length / pageSize));
+      riskTablePage = Math.min(Math.max(1, riskTablePage), pages);
+      const start = (riskTablePage - 1) * pageSize;
+      const body = document.getElementById('risk-student-table');
+      body.innerHTML = rows.slice(start, start + pageSize).map(student => {
+        const intervention = riskInterventions.find(item => item.studentId === student.studentId);
+        const badge = `badge-${String(student.riskLevel).toLowerCase()}`;
+        return `<tr class="hover:bg-indigo-50/40">
+          <td class="px-5 py-3"><button onclick="openStudentCase('${student.studentId}')" class="text-left"><div class="font-bold text-slate-800">${escapeHtml(student.studentName)}</div><div class="text-xs text-slate-400">${escapeHtml(student.admissionNumber)} · ${escapeHtml(student.className || 'Class not set')}</div></button></td>
+          <td class="px-5 py-3">${student.attendanceDataAvailable ? `${student.attendancePercentage}%` : '<span class="text-slate-400">No data</span>'}</td><td class="px-5 py-3">${student.academicDataAvailable ? `${student.academicAverage}%` : '<span class="text-slate-400">No data</span>'}</td>
+          <td class="px-5 py-3"><span class="${badge} rounded-full px-2 py-1 text-[10px] font-bold">${student.riskLevel} · ${student.riskScore}</span></td>
+          <td class="max-w-[240px] px-5 py-3 text-xs text-slate-500">${(student.factors || []).map(escapeHtml).join(' · ')}</td>
+          <td class="px-5 py-3 text-xs">${intervention ? `${escapeHtml(intervention.assignedTo)}<br><span class="text-slate-400">${escapeHtml(intervention.status)}</span>` : '<span class="text-slate-400">Unassigned</span>'}</td>
+          <td class="px-5 py-3"><button onclick="openStudentCase('${student.studentId}')" class="text-xs font-bold text-indigo-600">View case →</button></td>
+        </tr>`;
+      }).join('') || '<tr><td class="p-8 text-center text-xs text-slate-400" colspan="7">No students match these filters.</td></tr>';
+      document.getElementById('risk-table-count').textContent = rows.length ? `${start + 1}–${Math.min(start + pageSize, rows.length)} of ${rows.length}` : '0 results';
+    }
+
+    function changeRiskPage(delta) {
+      riskTablePage += delta;
+      renderRiskTable();
+    }
+
+    async function loadStudentsPage() {
+      try {
+        const status = document.getElementById('student-status-filter')?.value || '';
+        const statusQuery = status ? `&status=${encodeURIComponent(status)}` : '';
+        const response = await apiFetch(`/api/v1/students?page=1&pageSize=100${statusQuery}`);
+        const students = response.data?.items || [];
+        const risk = await apiFetch('/api/v1/analytics/risk-summary');
+        const riskById = new Map(risk.students.map(item => [item.studentId, item]));
+        document.getElementById('students-total').textContent = `${response.data?.totalCount ?? students.length} students`;
+        const tbody = document.getElementById('students-table-body');
+        tbody.innerHTML = students.map(student => {
+          const studentRisk = riskById.get(student.id);
+          const statusName = studentStatusName(student.currentStatus);
+          const tags = [
+            student.isBPL ? '<span class="badge-critical rounded px-2 py-0.5 text-[10px] font-bold">BPL</span>' : '<span class="badge-low rounded px-2 py-0.5 text-[10px] font-bold">Non-BPL</span>',
+            student.isFirstGenerationLearner ? '<span class="badge-high rounded px-2 py-0.5 text-[10px] font-bold">First generation</span>' : '',
+            student.hasSpecialNeeds ? '<span class="badge-moderate rounded px-2 py-0.5 text-[10px] font-bold">Accessibility support</span>' : '',
+            student.isSingleParentOrOrphan ? '<span class="badge-moderate rounded px-2 py-0.5 text-[10px] font-bold">Family support</span>' : ''
+          ].filter(Boolean).join(' ');
+          return `<tr class="hover:bg-indigo-50/40">
+            <td class="py-3 px-4"><div class="font-semibold text-slate-900 text-sm">${escapeHtml(student.fullName)}</div><div class="text-slate-400">${escapeHtml(student.admissionNumber)} · ${escapeHtml(student.currentClassName || 'Class not assigned')}</div></td>
+            <td class="py-3 px-4"><span class="${student.distanceToSchoolKm > 5 ? 'text-rose-600 font-bold' : 'text-slate-700'}">${student.distanceToSchoolKm} km</span><div class="text-slate-400">${escapeHtml(String(student.transportMode ?? ''))}</div></td>
+            <td class="py-3 px-4"><div class="flex flex-wrap gap-1">${tags || '<span class="text-slate-400">No flags recorded</span>'}</div></td>
+            <td class="py-3 px-4"><div>${escapeHtml(student.guardianName || 'Guardian not recorded')}</div><div class="text-slate-400">Income tier: ${escapeHtml(String(student.familyIncomeTier ?? 'Not recorded'))}</div></td>
+            <td class="py-3 px-4"><span class="rounded-full ${statusName === 'Archived' ? 'bg-slate-100 text-slate-600' : 'bg-emerald-100 text-emerald-800'} px-2.5 py-1 text-[10px] font-bold">${escapeHtml(statusName)}</span><div class="mt-1 text-[10px] ${studentRisk ? `badge-${String(studentRisk.riskLevel).toLowerCase()}` : 'text-slate-400'}">${studentRisk ? `${studentRisk.riskLevel} risk · ${studentRisk.riskScore}` : 'Risk not available'}</div></td>
+            <td class="py-3 px-4 text-right"><div class="flex items-center justify-end gap-3"><button onclick="openStudentCase('${student.id}')" class="font-semibold text-indigo-600 hover:text-indigo-800">Case details</button><button onclick="editStudent('${student.id}')" class="student-write-only font-semibold text-slate-600 hover:text-indigo-700">Edit</button>${statusName === 'Archived' ? `<button onclick="restoreStudent('${student.id}')" class="student-write-only font-semibold text-emerald-700">Restore</button>` : `<button onclick="archiveStudent('${student.id}')" class="student-write-only font-semibold text-rose-600">Archive</button>`}</div></td>
+          </tr>`;
+        }).join('') || '<tr><td class="p-8 text-center text-xs text-slate-400" colspan="6">No student records found.</td></tr>';
+        refreshAdminOnlyVisibility();
+        filterStudentTable(document.getElementById('student-table-search')?.value || '');
+        const schools = await apiFetch('/api/v1/schools?page=1&pageSize=100');
+        const schoolList = schools.data?.items || [];
+        document.getElementById('school-context-name').textContent = schoolList[0]?.name || 'No schools have been registered';
+        document.getElementById('school-context-detail').textContent = schoolList[0]
+          ? `${schoolList[0].district || 'District not recorded'} · ${schoolList[0].blockOrZone || 'Zone not recorded'} · ${schoolList[0].areaType || 'Area not recorded'}`
+          : 'Register a school to begin enrolling students.';
+        document.getElementById('student-school-count').textContent = `${schoolList.length} school${schoolList.length === 1 ? '' : 's'}`;
+      } catch (error) {
+        console.error('Unable to load student directory', error);
+        document.getElementById('students-table-body').innerHTML = `<tr><td class="p-6 text-xs text-rose-600" colspan="6">${escapeHtml(error.message)}</td></tr>`;
+      }
+    }
+
+    function filterStudentTable(term) {
+      const query = term.trim().toLowerCase();
+      document.querySelectorAll('#students-table-body tr').forEach(row => {
+        row.classList.toggle('hidden', query.length > 0 && !row.textContent.toLowerCase().includes(query));
+      });
+    }
+
+    function studentStatusName(value) {
+      const statuses = ['Active', 'Promoted', 'Repeater', 'Transferred', 'DroppedOut', 'Graduated', 'Archived'];
+      if (typeof value === 'number' || /^\d+$/.test(String(value))) {
+        return statuses[Number(value)] || 'Unknown';
+      }
+      return String(value || 'Unknown').split('.').pop();
+    }
+
+    function refreshAdminOnlyVisibility() {
+      const canManageUsers = (currentUser?.permissions || []).includes('UsersManage');
+      const canWriteStudents = (currentUser?.permissions || []).includes('StudentsWrite');
+      document.querySelectorAll('.admin-only').forEach(element => {
+        element.classList.toggle('hidden', !canManageUsers);
+      });
+      document.querySelectorAll('.student-write-only').forEach(element => {
+        element.classList.toggle('hidden', !canWriteStudents);
+      });
+    }
+
+    async function openStudentCase(studentId) {
+      try {
+        const [studentResult, riskResult] = await Promise.all([
+          apiFetch(`/api/v1/students/${studentId}`),
+          apiFetch(`/api/v1/analytics/risk/student/${studentId}`)
+        ]);
+        const student = studentResult.data;
+        const risk = riskResult;
+        viewStudentModal(student.fullName, student.admissionNumber, `${student.distanceToSchoolKm} km`, `${risk.riskLevel} · ${risk.riskScore}`, `${risk.factors.join('; ')} Attendance: ${risk.attendanceDataAvailable ? `${risk.attendancePercentage}%` : 'not recorded'}. Academic average: ${risk.academicDataAvailable ? `${risk.academicAverage}%` : 'not recorded'}.`);
+      } catch (error) {
+        showToast(`Unable to open student case: ${error.message}`, 'error');
+      }
+    }
+
+    async function loadAttendancePage() {
+      const dateInput = document.getElementById('attendance-date');
+      if (!dateInput.value) dateInput.value = new Date().toISOString().slice(0, 10);
+      try {
+        const response = await apiFetch('/api/v1/students?page=1&pageSize=100');
+        const students = response.data?.items || [];
+        const summaries = await Promise.all(students.map(async student => {
+          try { return await apiFetch(`/api/v1/attendance/student/${student.id}/summary`); }
+          catch (error) { console.error(`Attendance summary unavailable for ${student.id}`, error); return null; }
+        }));
+        const recorded = summaries.map(result => result?.data).filter(Boolean);
+        const chronic = recorded.filter(item => item.attendancePercentage < 85);
+        const alertHost = document.getElementById('attendance-alert-list');
+        alertHost.innerHTML = chronic.length
+          ? chronic.map(item => `<article class="rounded-xl border border-amber-200 bg-white p-4 shadow-sm"><div class="flex justify-between"><span class="text-xs font-extrabold uppercase text-amber-700">Chronic absenteeism</span><span class="badge-high rounded-full px-2 py-1 text-[10px] font-bold">${item.attendancePercentage}%</span></div><div class="mt-3 font-bold text-slate-900">${escapeHtml(item.fullName)} · ${escapeHtml(item.admissionNumber)}</div><div class="mt-1 text-xs text-slate-500">${item.daysAbsent} absent of ${item.totalWorkingDays} recorded days · ${item.consecutiveAbsentDays} consecutive absence days</div><button onclick="openStudentCase('${item.studentId}')" class="mt-3 text-xs font-bold text-indigo-600">Review case →</button></article>`).join('')
+          : '<div class="rounded-xl border border-dashed border-slate-200 bg-white p-6 text-center text-xs text-slate-400">No chronic absenteeism is supported by current recorded attendance data.</div>';
+        const sectionStudent = students.find(item => item.currentSectionId);
+        if (!sectionStudent) {
+          document.getElementById('attendance-roster').innerHTML = '<tr><td class="p-6 text-xs text-slate-400" colspan="4">No enrolled section exists for the current students.</td></tr>';
+          return;
+        }
+        activeAttendanceSectionId = sectionStudent.currentSectionId;
+        const rosterResponse = await apiFetch(`/api/v1/attendance/roster?sectionId=${activeAttendanceSectionId}&date=${dateInput.value}`);
+        const roster = rosterResponse.data;
+        document.querySelector('#content-attendance h3').textContent = `${roster.sectionName} Daily Attendance Register`;
+        document.getElementById('attendance-roster').innerHTML = roster.students.map(student => `<tr data-student-id="${student.studentId}">
+          <td class="py-3 px-3 font-semibold text-slate-800">${escapeHtml(student.fullName)} (${escapeHtml(student.admissionNumber)})</td>
+          <td class="py-3 px-3"><select class="attendance-status rounded-lg border border-slate-200 px-2 py-1 text-xs"><option value="0" ${student.status === 0 ? 'selected' : ''}>Present</option><option value="1" ${student.status === 1 ? 'selected' : ''}>Absent</option><option value="2" ${student.status === 2 ? 'selected' : ''}>Late</option><option value="3" ${student.status === 3 ? 'selected' : ''}>Half day</option><option value="4" ${student.status === 4 ? 'selected' : ''}>Excused</option></select></td>
+          <td class="py-3 px-3 text-slate-500">${student.isMarked ? escapeHtml(String(student.reason ?? 'Recorded')) : 'Not marked'}</td>
+          <td class="py-3 px-3"><input class="attendance-remarks w-full rounded-lg border border-slate-200 px-2 py-1 text-xs" value="${escapeHtml(student.remarks || '')}" placeholder="Optional note"></td>
+        </tr>`).join('');
+      } catch (error) {
+        console.error('Unable to load attendance dashboard', error);
+        showToast(`Attendance could not be loaded: ${error.message}`, 'error');
+      }
+    }
+
+    let activeAttendanceSectionId = null;
+    async function recordDailyAttendance() {
+      if (!activeAttendanceSectionId) return showToast('No enrolled section is available for attendance.', 'error');
+      try {
+        const records = Array.from(document.querySelectorAll('#attendance-roster tr[data-student-id]')).map(row => ({
+          studentId: row.dataset.studentId,
+          status: Number(row.querySelector('.attendance-status').value),
+          reason: 0,
+          remarks: row.querySelector('.attendance-remarks').value || null
+        }));
+        await apiFetch('/api/v1/attendance/batch', {
+          method: 'POST',
+          body: JSON.stringify({ sectionId: activeAttendanceSectionId, date: document.getElementById('attendance-date').value, records })
+        });
+        showToast('Attendance saved successfully.');
+        await Promise.all([loadAttendancePage(), loadDashboardData(document.getElementById('attendance-period').value)]);
+      } catch (error) {
+        showToast(`Could not save attendance: ${error.message}`, 'error');
+      }
+    }
+
+    async function loadAcademicsPage() {
+      try {
+        const studentsResponse = await apiFetch('/api/v1/students?page=1&pageSize=100');
+        const students = studentsResponse.data?.items || [];
+        const dashboard = await apiFetch('/api/v1/analytics/dashboard?period=year');
+        const risk = await apiFetch('/api/v1/analytics/risk-summary');
+        const cards = await Promise.all(students.map(async student => {
+          try { return (await apiFetch(`/api/v1/academics/analytics/report-card/${student.id}`)).data; }
+          catch (error) { console.error(`Report card unavailable for ${student.id}`, error); return null; }
+        }));
+        const reports = cards.filter(Boolean);
+        document.getElementById('academics-assessed-count').textContent = new Set(reports.filter(item => item.totalMaxMarks > 0).map(item => item.studentId)).size;
+        document.getElementById('academics-subject-count').textContent = dashboard.academicPerformance.length;
+        document.getElementById('academics-shock-count').textContent = dashboard.totals.academicShock;
+        const host = document.getElementById('academic-report-cards');
+        host.innerHTML = reports.map(card => {
+          const status = risk.students.find(item => item.studentId === card.studentId);
+          return `<article class="rounded-xl border border-slate-200 p-4"><div class="flex justify-between gap-3"><div><h3 class="font-bold text-slate-900">${escapeHtml(card.fullName)}</h3><div class="text-xs text-slate-500">${escapeHtml(card.admissionNumber)} · ${escapeHtml(card.className || 'Class not assigned')}</div></div><span class="badge-${String(card.academicRiskSeverity || 'Low').toLowerCase()} h-fit rounded-full px-2 py-1 text-[10px] font-bold">${escapeHtml(card.academicRiskSeverity || 'No mark data')}</span></div><div class="mt-3 grid grid-cols-3 gap-2"><div class="rounded-lg bg-slate-50 p-2"><div class="text-[9px] uppercase text-slate-400">Average</div><div class="font-extrabold">${card.cumulativePercentage}%</div></div><div class="rounded-lg bg-slate-50 p-2"><div class="text-[9px] uppercase text-slate-400">GPA</div><div class="font-extrabold">${card.gpa}</div></div><div class="rounded-lg bg-slate-50 p-2"><div class="text-[9px] uppercase text-slate-400">Core fails</div><div class="font-extrabold">${card.coreSubjectsFailedCount}</div></div></div><div class="mt-3 space-y-1">${(card.subjectSummaries || []).map(subject => `<div class="flex justify-between rounded-lg bg-slate-50 px-3 py-2 text-xs"><span>${escapeHtml(subject.subjectName)}${subject.isCoreSubject ? ' · Core' : ''}</span><span class="font-bold">${subject.averagePercentage}% · ${escapeHtml(subject.overallGrade)}</span></div>`).join('') || '<div class="text-xs text-slate-400">No subject marks recorded.</div>'}</div><div class="mt-2 text-[10px] text-slate-400">Dropout risk: ${status ? `${status.riskLevel} (${status.riskScore})` : 'Not available'}</div></article>`;
+        }).join('') || '<div class="text-xs text-slate-400">No report cards are available for the current student records.</div>';
+        renderAcademicsChart(dashboard.academicPerformance);
+      } catch (error) {
+        showToast(`Academic records could not be loaded: ${error.message}`, 'error');
+      }
+    }
+
+    function renderAcademicsChart(values) {
+      if (!window.Chart) return;
+      if (dashboardCharts.academicsPage) dashboardCharts.academicsPage.destroy();
+      const empty = !values.length;
+      document.getElementById('academics-page-chart').classList.toggle('hidden', empty);
+      document.getElementById('academics-page-empty').classList.toggle('hidden', !empty);
+      document.getElementById('academics-page-empty').classList.toggle('flex', empty);
+      if (empty) return;
+      const dark = document.body.classList.contains('dark-theme');
+      dashboardCharts.academicsPage = new Chart(document.getElementById('academics-page-chart'), {
+        type: 'bar',
+        data: { labels: values.map(item => item.subject), datasets: [{ label: 'Average %', data: values.map(item => item.average), backgroundColor: '#7166e8', borderRadius: 8 }] },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: dark ? '#b5bdd4' : '#667085' }, grid: { display: false } }, y: { min: 0, max: 100, ticks: { color: dark ? '#b5bdd4' : '#667085' } } } }
+      });
+    }
+
+    async function loadReportsPage() {
+      try {
+        const outcomes = (await apiFetch('/api/v1/analytics/dashboard?period=month')).interventions;
+        document.getElementById('reports-intervention-summary').textContent = `${outcomes.resolved} resolved · ${outcomes.open} open · ${outcomes.inProgress} in progress (${outcomes.total} total recorded plans).`;
+      } catch (error) {
+        document.getElementById('reports-intervention-summary').textContent = `Unable to load case outcomes: ${error.message}`;
+      }
+    }
+
+    async function loadManagementPage() {
+      try {
+        const [usersResponse, schoolResponse, studentResponse, interventionResponse] = await Promise.all([
+          apiFetch('/api/v1/users?page=1&pageSize=100'),
+          apiFetch('/api/v1/schools?page=1&pageSize=100'),
+          apiFetch('/api/v1/students?page=1&pageSize=100'),
+          apiFetch('/api/v1/analytics/interventions')
+        ]);
+        managementUsers = usersResponse.data?.items || [];
+        managementStudents = studentResponse.data?.items || [];
+        managementInterventions = interventionResponse.data || [];
+        const school = schoolResponse.data?.items?.[0];
+        if (!school) throw new Error('Create a school before assigning teachers or enrolling students.');
+        const gradesResponse = await apiFetch(`/api/v1/classes/schools/${encodeURIComponent(school.id)}/grades`);
+        managementSections = (gradesResponse.data || []).flatMap(grade =>
+          (grade.sections || []).map(section => ({ ...section, displayName: `${grade.name}-${section.sectionName}` }))
+        );
+        const teachers = managementUsers.filter(user => user.roles?.includes('Teacher'));
+        const sectionOptions = managementSections.map(section =>
+          `<option value="${escapeHtml(section.id)}" data-year="${escapeHtml(section.academicYearId)}">${escapeHtml(section.displayName)} · ${section.enrolledStudentsCount} students</option>`
+        ).join('');
+        document.getElementById('management-section').innerHTML = sectionOptions;
+        document.getElementById('management-enrollment-section').innerHTML = sectionOptions;
+        document.getElementById('management-teacher').innerHTML = teachers.map(user =>
+          `<option value="${escapeHtml(user.userId)}">${escapeHtml(user.fullName)} · ${escapeHtml(user.department || 'Teacher')}</option>`
+        ).join('');
+        document.getElementById('duty-teacher').innerHTML = managementUsers
+          .filter(user => user.roles?.includes('Teacher') || user.roles?.includes('Counselor'))
+          .map(user => `<option value="${escapeHtml(user.userId)}">${escapeHtml(user.fullName)} · ${escapeHtml(user.roles.join(', '))}</option>`).join('');
+        const studentOptions = managementStudents.map(student =>
+          `<option value="${escapeHtml(student.id)}">${escapeHtml(student.fullName)} · ${escapeHtml(student.admissionNumber)}</option>`
+        ).join('');
+        document.getElementById('management-student').innerHTML = studentOptions;
+        document.getElementById('duty-student').innerHTML = studentOptions;
+        document.getElementById('management-linked-student').innerHTML = studentOptions;
+        document.getElementById('management-student-account').innerHTML = managementUsers
+          .filter(user => user.roles?.includes('StudentParent'))
+          .map(user => `<option value="${escapeHtml(user.userId)}">${escapeHtml(user.fullName)} · ${escapeHtml(user.username)}</option>`).join('');
+        renderManagementUsers();
+        renderManagementInterventions();
+      } catch (error) {
+        showToast(`Management records could not be loaded: ${error.message}`, 'error');
+      }
+    }
+
+    function renderManagementUsers() {
+      const body = document.getElementById('management-users-body');
+      if (!body) return;
+      const term = (document.getElementById('management-user-search')?.value || '').trim().toLowerCase();
+      const users = managementUsers.filter(user =>
+        !term || [user.fullName, user.username, user.email, user.department, ...(user.roles || [])]
+          .some(value => String(value || '').toLowerCase().includes(term))
+      );
+      body.innerHTML = users.length ? users.map(user => `
+        <tr class="border-t border-slate-100">
+          <td class="p-3"><strong>${escapeHtml(user.fullName)}</strong><span class="block text-slate-500">${escapeHtml(user.username)} · ${escapeHtml(user.email)}</span></td>
+          <td class="p-3">${escapeHtml((user.roles || []).join(', '))}<span class="block text-slate-500">${escapeHtml(user.department || user.designation || '—')}</span></td>
+          <td class="p-3">${escapeHtml(user.phoneNumber || '—')}</td>
+          <td class="p-3">${user.isActive ? 'Active' : 'Inactive'}</td>
+          <td class="p-3"><button onclick="toggleManagedUserStatus('${escapeHtml(user.userId)}', ${!user.isActive})" class="rounded-lg border border-slate-200 px-2.5 py-1 font-bold">${user.isActive ? 'Deactivate' : 'Activate'}</button></td>
+        </tr>`).join('') : '<tr><td colspan="5" class="p-5 text-center text-slate-500">No matching user records.</td></tr>';
+    }
+
+    function renderManagementInterventions() {
+      const body = document.getElementById('management-interventions');
+      if (!body) return;
+      body.innerHTML = managementInterventions.length ? managementInterventions.map(item => `
+        <tr class="border-t border-slate-100">
+          <td class="p-3">${escapeHtml(item.studentName)}</td><td class="p-3">${escapeHtml(item.plan)}</td>
+          <td class="p-3">${escapeHtml(item.assignedTo)}</td><td class="p-3">${escapeHtml(item.priority)}</td>
+          <td class="p-3">${escapeHtml(item.status)}${item.followUpAtUtc ? `<span class="block text-slate-500">${escapeHtml(new Date(item.followUpAtUtc).toLocaleDateString())}</span>` : ''}</td>
+        </tr>`).join('') : '<tr><td colspan="5" class="p-5 text-center text-slate-500">No intervention duties are recorded yet.</td></tr>';
+    }
+
+    async function registerStaff(event) {
+      event.preventDefault();
+      const get = id => document.getElementById(id).value.trim();
+      try {
+        await apiFetch('/api/v1/auth/register-staff', {
+          method: 'POST',
+          body: JSON.stringify({
+            fullName: get('staff-full-name'), username: get('staff-username'), email: get('staff-email'),
+            phoneNumber: get('staff-phone'), role: get('staff-role'), department: get('staff-department'),
+            designation: get('staff-designation'), password: document.getElementById('staff-password').value
+          })
+        });
+        event.target.reset();
+        await loadManagementPage();
+        showToast('Staff account created.');
+      } catch (error) {
+        showToast(`Staff account could not be created: ${error.message}`, 'error');
+      }
+    }
+
+    async function toggleManagedUserStatus(userId, isActive) {
+      try {
+        await apiFetch(`/api/v1/users/${encodeURIComponent(userId)}/status?isActive=${isActive}`, { method: 'PUT' });
+        await loadManagementPage();
+        showToast(`Account ${isActive ? 'activated' : 'deactivated'}.`);
+      } catch (error) {
+        showToast(`Account status could not be changed: ${error.message}`, 'error');
+      }
+    }
+
+    async function assignClassTeacher(event) {
+      event.preventDefault();
+      try {
+        await apiFetch('/api/v1/classes/sections/assign-teacher', {
+          method: 'POST',
+          body: JSON.stringify({
+            sectionId: document.getElementById('management-section').value,
+            teacherUserId: document.getElementById('management-teacher').value
+          })
+        });
+        await loadManagementPage();
+        showToast('Class teacher assignment saved.');
+      } catch (error) {
+        showToast(`Teacher assignment could not be saved: ${error.message}`, 'error');
+      }
+    }
+
+    async function assignStudentSection(event) {
+      event.preventDefault();
+      const section = document.getElementById('management-enrollment-section');
+      const selected = section.options[section.selectedIndex];
+      try {
+        await apiFetch('/api/v1/enrollments', {
+          method: 'POST',
+          body: JSON.stringify({
+            studentId: document.getElementById('management-student').value,
+            sectionId: section.value,
+            academicYearId: selected.dataset.year,
+            enrollmentDate: new Date().toISOString().slice(0, 10)
+          })
+        });
+        await loadManagementPage();
+        showToast('Student enrollment and section assignment saved.');
+      } catch (error) {
+        showToast(`Student assignment could not be saved: ${error.message}`, 'error');
+      }
+    }
+
+    async function linkStudentAccount(event) {
+      event.preventDefault();
+      try {
+        await apiFetch(`/api/v1/users/${encodeURIComponent(document.getElementById('management-student-account').value)}/student-link`, {
+          method: 'PUT',
+          body: JSON.stringify({ studentId: document.getElementById('management-linked-student').value })
+        });
+        showToast('Student portal account linked. The user must sign in again to refresh access.');
+        await loadManagementPage();
+      } catch (error) {
+        showToast(`Student account could not be linked: ${error.message}`, 'error');
+      }
+    }
+
+    async function assignInterventionDuty(event) {
+      event.preventDefault();
+      const staffId = document.getElementById('duty-teacher').value;
+      const staff = managementUsers.find(user => user.userId === staffId);
+      if (!staff) return showToast('Select an active staff account.', 'error');
+      const followUpDate = document.getElementById('duty-follow-up').value;
+      try {
+        await apiFetch('/api/v1/analytics/interventions', {
+          method: 'POST',
+          body: JSON.stringify({
+            studentId: document.getElementById('duty-student').value,
+            assignedTo: `${staff.fullName} (${staff.username})`,
+            priority: document.getElementById('duty-priority').value,
+            plan: document.getElementById('duty-plan').value.trim(),
+            followUpAtUtc: followUpDate ? new Date(`${followUpDate}T12:00:00Z`).toISOString() : null
+          })
+        });
+        event.target.reset();
+        await loadManagementPage();
+        showToast('Student-support duty assigned.');
+      } catch (error) {
+        showToast(`Duty could not be assigned: ${error.message}`, 'error');
+      }
+    }
+
+    async function openStudentRegistration() {
+      try {
+        editingStudentId = null;
+        document.getElementById('student-registration-modal').querySelector('form').reset();
+        document.getElementById('student-form-title').textContent = 'Add student';
+        document.getElementById('student-form-description').textContent = 'Creates a student record through the existing student API.';
+        document.getElementById('student-form-submit').textContent = 'Save student';
+        document.getElementById('new-admission').disabled = false;
+        document.getElementById('new-school-id').disabled = false;
+        const schools = await apiFetch('/api/v1/schools?page=1&pageSize=100');
+        const items = schools.data?.items || [];
+        const select = document.getElementById('new-school-id');
+        select.innerHTML = items.map(school => `<option value="${school.id}">${escapeHtml(school.name)} · ${escapeHtml(school.district)}</option>`).join('');
+        if (!items.length) return showToast('Create a school before registering students.', 'error');
+        const modal = document.getElementById('student-registration-modal');
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+      } catch (error) {
+        showToast(`Schools could not be loaded: ${error.message}`, 'error');
+      }
+    }
+
+    async function editStudent(studentId) {
+      try {
+        const [response, schools] = await Promise.all([
+          apiFetch(`/api/v1/students/${studentId}`),
+          apiFetch('/api/v1/schools?page=1&pageSize=100')
+        ]);
+        const student = response.data;
+        const items = schools.data?.items || [];
+        document.getElementById('student-registration-modal').querySelector('form').reset();
+        document.getElementById('new-school-id').innerHTML = items.map(school =>
+          `<option value="${school.id}">${escapeHtml(school.name)} · ${escapeHtml(school.district)}</option>`).join('');
+        document.getElementById('new-admission').value = student.admissionNumber;
+        document.getElementById('new-admission').disabled = true;
+        document.getElementById('new-dob').value = String(student.dateOfBirth).slice(0, 10);
+        document.getElementById('new-first-name').value = student.firstName || '';
+        document.getElementById('new-last-name').value = student.lastName || '';
+        document.getElementById('new-school-id').value = student.schoolId;
+        document.getElementById('new-school-id').disabled = true;
+        document.getElementById('new-gender').value = student.gender || 'Other';
+        document.getElementById('new-guardian').value = student.guardianName || '';
+        document.getElementById('new-guardian-relationship').value = student.guardianRelationship || '';
+        document.getElementById('new-guardian-phone').value = student.guardianPhone || '';
+        document.getElementById('new-guardian-occupation').value = student.guardianOccupation || '';
+        document.getElementById('new-distance').value = student.distanceToSchoolKm ?? 0;
+        document.getElementById('new-transport').value = student.transportMode ?? 0;
+        document.getElementById('new-income-tier').value = student.familyIncomeTier ?? 0;
+        document.getElementById('new-social-category').value = student.socialCategory || '';
+        document.getElementById('new-mother-tongue').value = student.motherTongue || '';
+        document.getElementById('new-bpl').checked = Boolean(student.isBPL);
+        document.getElementById('new-first-gen').checked = Boolean(student.isFirstGenerationLearner);
+        document.getElementById('new-special-needs').checked = Boolean(student.hasSpecialNeeds);
+        document.getElementById('new-family-support').checked = Boolean(student.isSingleParentOrOrphan);
+        document.getElementById('new-address').value = student.residentialAddress || '';
+        editingStudentId = studentId;
+        document.getElementById('student-form-title').textContent = 'Edit student record';
+        document.getElementById('student-form-description').textContent = 'Update demographic, guardian, and support information. The admission number and school remain unchanged.';
+        document.getElementById('student-form-submit').textContent = 'Save changes';
+        const modal = document.getElementById('student-registration-modal');
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+      } catch (error) {
+        showToast(`Student record could not be loaded: ${error.message}`, 'error');
+      }
+    }
+
+    async function archiveStudent(studentId) {
+      if (!confirm('Archive this student record? Academic and attendance history will be retained.')) return;
+      try {
+        await apiFetch(`/api/v1/students/${studentId}`, { method: 'DELETE' });
+        showToast('Student record archived; historical data was retained.');
+        await Promise.all([loadStudentsPage(), loadDashboardData()]);
+      } catch (error) {
+        showToast(`Student record could not be archived: ${error.message}`, 'error');
+      }
+    }
+
+    async function restoreStudent(studentId) {
+      if (!confirm('Restore this student record to Active status?')) return;
+      try {
+        await apiFetch(`/api/v1/students/${studentId}/restore`, { method: 'PUT' });
+        showToast('Student record restored.');
+        await loadStudentsPage();
+      } catch (error) {
+        showToast(`Student record could not be restored: ${error.message}`, 'error');
+      }
+    }
+
+    function closeStudentRegistration() {
+      const modal = document.getElementById('student-registration-modal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+      document.getElementById('new-admission').disabled = false;
+      document.getElementById('new-school-id').disabled = false;
+    }
+
+    async function registerStudent(event) {
+      event.preventDefault();
+      const request = {
+        firstName: document.getElementById('new-first-name').value.trim(),
+        lastName: document.getElementById('new-last-name').value.trim(),
+        dateOfBirth: document.getElementById('new-dob').value,
+        gender: document.getElementById('new-gender').value,
+        isBPL: document.getElementById('new-bpl').checked,
+        isFirstGenerationLearner: document.getElementById('new-first-gen').checked,
+        hasSpecialNeeds: document.getElementById('new-special-needs').checked,
+        isSingleParentOrOrphan: document.getElementById('new-family-support').checked,
+        guardianName: document.getElementById('new-guardian').value.trim() || null,
+        guardianRelationship: document.getElementById('new-guardian-relationship').value.trim() || null,
+        guardianPhone: document.getElementById('new-guardian-phone').value.trim() || null,
+        guardianOccupation: document.getElementById('new-guardian-occupation').value.trim() || null,
+        distanceToSchoolKm: Number(document.getElementById('new-distance').value) || 0,
+        transportMode: Number(document.getElementById('new-transport').value),
+        familyIncomeTier: Number(document.getElementById('new-income-tier').value),
+        socialCategory: document.getElementById('new-social-category').value.trim() || null,
+        motherTongue: document.getElementById('new-mother-tongue').value.trim() || null,
+        residentialAddress: document.getElementById('new-address').value.trim() || null
+      };
+      try {
+        if (editingStudentId) {
+          await apiFetch(`/api/v1/students/${editingStudentId}`, { method: 'PUT', body: JSON.stringify(request) });
+        } else {
+          await apiFetch('/api/v1/students', {
+            method: 'POST',
+            body: JSON.stringify({
+              ...request,
+              admissionNumber: document.getElementById('new-admission').value.trim(),
+              schoolId: document.getElementById('new-school-id').value
+            })
+          });
+        }
+        closeStudentRegistration();
+        event.target.reset();
+        editingStudentId = null;
+        showToast('Student record saved.');
+        await Promise.all([loadStudentsPage(), loadDashboardData()]);
+      } catch (error) {
+        showToast(`Student could not be saved: ${error.message}`, 'error');
+      }
+    }
+
+    async function loadGlobalSearch(query) {
+      const resultHost = document.getElementById('search-results');
+      const clearButton = document.getElementById('clear-search');
+      clearButton.classList.toggle('hidden', !query);
+      if (!query.trim()) {
+        resultHost.classList.remove('open');
+        resultHost.innerHTML = '';
+        return;
+      }
+      resultHost.classList.add('open');
+      resultHost.innerHTML = '<div class="p-3 text-xs text-slate-400">Searching current student records…</div>';
+      try {
+        const results = await apiFetch(`/api/v1/students/search?query=${encodeURIComponent(query.trim())}`);
+        const currentQuery = document.getElementById('global-search').value.trim();
+        if (currentQuery !== query.trim()) return;
+        resultHost.innerHTML = results.length
+          ? results.map(item => `<button class="search-result" onclick="openStudentCase('${item.id}'); document.getElementById('global-search').value=''; document.getElementById('search-results').classList.remove('open')"><div class="text-xs font-bold">${escapeHtml(item.fullName)}</div><div class="mt-1 text-[10px] text-slate-500">${escapeHtml(item.admissionNumber)} · ${escapeHtml(item.className || 'Class not set')} · ${escapeHtml(item.riskLevel)} risk</div></button>`).join('')
+          : '<div class="p-3 text-xs text-slate-500">No student, class, ID, or risk matches found.</div>';
+      } catch (error) {
+        resultHost.innerHTML = `<div class="p-3 text-xs text-rose-600">Search failed: ${escapeHtml(error.message)}</div>`;
+      }
+    }
+
+    function viewAtRiskStudents() {
+      switchTab('risk');
+      document.getElementById('risk-level-filter').value = 'High+';
+      renderRiskTable();
+    }
+
+    function showToast(message, type = 'success') {
+      let toast = document.getElementById('app-toast');
+      if (!toast) {
+        toast = document.createElement('div');
+        toast.id = 'app-toast';
+        toast.className = 'toast rounded-xl bg-slate-900 px-4 py-3 text-xs font-semibold text-white shadow-xl';
+        document.body.appendChild(toast);
+      }
+      toast.textContent = message;
+      toast.classList.toggle('bg-rose-700', type === 'error');
+      toast.classList.add('show');
+      clearTimeout(showToast.timeoutId);
+      showToast.timeoutId = setTimeout(() => toast.classList.remove('show'), 3500);
+    }
+
+    async function updateIntervention(id, status) {
+      try {
+        const followUpNotes = status === 'Resolved' ? prompt('Record the intervention outcome:') : null;
+        if (status === 'Resolved' && followUpNotes === null) return;
+        await apiFetch(`/api/v1/analytics/interventions/${id}`, {
+          method: 'PUT',
+          body: JSON.stringify({ status, followUpNotes, followUpAtUtc: null })
+        });
+        showToast(`Intervention marked ${status.toLowerCase()}.`);
+        await Promise.all([loadRiskDashboard(), loadDashboardData()]);
+      } catch (error) {
+        showToast(`Intervention could not be updated: ${error.message}`, 'error');
+      }
+    }
+
+    async function loadRiskDashboard() {
+      try {
+        const [summaryRes, interventionsRes, notificationsRes, modelRes] = await Promise.all([
+          apiFetch('/api/v1/analytics/risk-summary'),
+          apiFetch('/api/v1/analytics/interventions'),
+          apiFetch('/api/v1/analytics/notifications'),
+          apiFetch('/api/v1/analytics/model/status')
+        ]);
+        const summary = summaryRes;
+        const interventions = interventionsRes;
+        const notifications = notificationsRes;
+        const model = modelRes;
+
+        document.getElementById('risk-total').textContent = summary.totalStudents;
+        document.getElementById('risk-critical').textContent = summary.criticalRisk;
+        document.getElementById('risk-high').textContent = summary.highRisk;
+        document.getElementById('risk-moderate').textContent = summary.moderateRisk;
+        document.getElementById('risk-average').textContent = summary.averageRiskScore;
+
+        document.getElementById('notification-count').textContent = notifications.length;
+        document.getElementById('notification-preview').textContent = notifications[0]?.title || 'No new alerts';
+        if (model.status && model.status.startsWith('Evaluated')) {
+          document.getElementById('model-status-line').textContent = `${model.trainingRecords} records · trained ${new Date(model.trainedAtUtc).toLocaleString()}`;
+          document.getElementById('model-accuracy').textContent = `${model.accuracy}%`;
+          document.getElementById('model-recall').textContent = `${model.recall}%`;
+          document.getElementById('model-f1').textContent = `${model.f1Score}%`;
+        } else {
+          document.getElementById('model-status-line').textContent = model.status || 'No model trained yet.';
+          document.getElementById('model-accuracy').textContent = '—';
+          document.getElementById('model-recall').textContent = '—';
+          document.getElementById('model-f1').textContent = '—';
+        }
+
+        riskTableRows = summary.students;
+        riskInterventions = interventions;
+        renderRiskTable();
+
+        const select = document.getElementById('intervention-student');
+        select.innerHTML = summary.students.map(student =>
+          `<option value="${student.studentId}">${escapeHtml(student.studentName)} — ${student.riskLevel} risk</option>`
+        ).join('');
+
+        const list = document.getElementById('intervention-list');
+        list.innerHTML = interventions.length
+          ? interventions.map(item => `<div class="p-3 rounded-lg bg-slate-50 border border-slate-100"><div class="font-bold">${escapeHtml(item.studentName)}</div><div class="text-xs text-slate-500">${escapeHtml(item.plan)}</div><div class="mt-1 text-xs text-indigo-600">${escapeHtml(item.assignedTo)} · ${escapeHtml(item.status)}${item.followUpAtUtc ? ` · Follow-up ${new Date(item.followUpAtUtc).toLocaleDateString()}` : ''}</div>${item.followUpNotes ? `<div class="mt-1 text-xs text-emerald-700">Outcome: ${escapeHtml(item.followUpNotes)}</div>` : ''}<div class="mt-2 flex gap-2"><button onclick="updateIntervention('${item.id}', 'In Progress')" class="rounded border border-indigo-200 px-2 py-1 text-[10px] font-bold text-indigo-700">In progress</button><button onclick="updateIntervention('${item.id}', 'Resolved')" class="rounded border border-emerald-200 px-2 py-1 text-[10px] font-bold text-emerald-700">Resolve</button></div></div>`).join('')
+          : '<div class="text-xs text-slate-400">No active interventions yet.</div>';
+      } catch (error) {
+        console.error('Unable to load risk dashboard', error);
+        showToast(`Risk dashboard could not be loaded: ${error.message}`, 'error');
+      }
+    }
+
+    function escapeHtml(value) {
+      const div = document.createElement('div');
+      div.textContent = value == null ? '' : String(value);
+      return div.innerHTML;
+    }
+
+    async function createIntervention() {
+      const studentId = document.getElementById('intervention-student').value;
+      const plan = document.getElementById('intervention-plan').value.trim();
+      if (!studentId || !plan) {
+        alert('Select a student and enter an action plan.');
+        return;
+      }
+      try {
+        const token = localStorage.getItem('eduguard_token');
+        const response = await fetch(`${API_BASE}/api/v1/analytics/interventions`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            ...(token ? { Authorization: `Bearer ${token}` } : {})
+          },
+          body: JSON.stringify({
+            studentId,
+            plan,
+            assignedTo: document.getElementById('intervention-counselor').value,
+            priority: document.getElementById('intervention-priority').value
+          })
+        });
+        if (!response.ok) throw new Error('Unable to create intervention');
+        document.getElementById('intervention-plan').value = '';
+        await loadRiskDashboard();
+      } catch (error) {
+        alert(error.message);
+      }
+    }
+
+    async function trainRiskModel() {
+      try {
+        const token = localStorage.getItem('eduguard_token');
+        const response = await fetch(`${API_BASE}/api/v1/analytics/model/train`, {
+          method: 'POST',
+          headers: token ? { Authorization: `Bearer ${token}` } : {}
+        });
+        if (!response.ok) throw new Error('Model training failed');
+        await loadRiskDashboard();
+      } catch (error) {
+        alert(error.message);
+      }
+    }
+
+    async function sendTestNotification() {
+      try {
+        const token = localStorage.getItem('eduguard_token');
+        const response = await fetch(`${API_BASE}/api/v1/analytics/notifications`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            ...(token ? { Authorization: `Bearer ${token}` } : {})
+          },
+          body: JSON.stringify({
+            title: 'Intervention review due',
+            message: 'Counselors should review open high-risk intervention plans and record follow-up outcomes.',
+            audience: 'Counselors'
+          })
+        });
+        if (!response.ok) throw new Error('Unable to send notification');
+        await loadRiskDashboard();
+      } catch (error) {
+        alert(error.message);
+      }
     }
 
     // Login Modal Controls & Tabs
@@ -1180,6 +2230,19 @@
       const modal = document.getElementById('login-modal');
       modal.classList.add('hidden');
       modal.classList.remove('flex');
+    }
+
+    async function logoutUser() {
+      try {
+        await apiFetch('/api/v1/auth/revoke-all', { method: 'POST' });
+        sessionStorage.removeItem('eduguard_logout_error');
+      } catch (error) {
+        sessionStorage.setItem('eduguard_logout_error', error.message);
+      } finally {
+        localStorage.removeItem('eduguard_token');
+        localStorage.removeItem('eduguard_user');
+        window.location.reload();
+      }
     }
 
     function switchLoginTab(tab) {
@@ -1222,7 +2285,7 @@
           if (roles.includes('StudentParent')) {
             switchTab('student-portal');
           } else if (roles.includes('Teacher')) {
-            switchTab('attendance');
+            switchTab('overview');
           } else {
             switchTab('overview');
           }
@@ -1230,20 +2293,7 @@
           alert('Login failed: ' + (json.message || 'Invalid credentials'));
         }
       } catch (err) {
-        console.warn('API Offline, running in client demo mode:', err);
-        const demoMap = {
-          student: { fullName: 'Priya Kumari', roles: ['StudentParent'], avatar: 'PK' },
-          teacher: { fullName: 'Sunil Sharma', roles: ['Teacher'], avatar: 'SS' },
-          counselor: { fullName: 'Dr. Ananya Roy', roles: ['Counselor'], avatar: 'AR' },
-          admin: { fullName: 'System Administrator', roles: ['SuperAdmin'], avatar: 'SA' }
-        };
-        const demoUser = demoMap[username] || demoMap.admin;
-        currentUser = demoUser;
-        updateUserDisplay(demoUser);
-        closeLoginModal();
-        if (username === 'student') switchTab('student-portal');
-        else if (username === 'teacher') switchTab('attendance');
-        else switchTab('overview');
+        showToast(`Sign-in failed because the authentication service is unavailable: ${err.message}`, 'error');
       }
     }
 
@@ -1325,16 +2375,34 @@
     // Update Header and View based on User Identity
     function updateUserDisplay(user) {
       if (!user) return;
-      document.getElementById('user-display-name').innerText = user.fullName || 'User';
       const role = (user.roles && user.roles.length > 0) ? user.roles[0] : 'User';
+      const studentRole = (user.roles || []).includes('StudentParent');
       const roleEl = document.getElementById('user-display-role');
-      roleEl.innerText = role;
+      if (roleEl) roleEl.innerText = role;
 
       const initials = (user.fullName || 'SA').split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
-      document.getElementById('user-avatar').innerText = user.avatar || initials;
+      const avatar = document.getElementById('user-avatar');
+      if (avatar) avatar.innerText = user.avatar || initials;
+      const profile = document.getElementById('settings-user');
+      if (profile) profile.innerText = `${user.fullName || 'User'} · ${role}`;
+      const dashboardTitle = document.getElementById('dashboard-title');
+      if (dashboardTitle) {
+        dashboardTitle.textContent = role === 'Teacher' ? 'Teacher Dashboard · Assigned Classes' :
+          studentRole ? 'Student Early Warning Portal' : 'Admin Retention Dashboard';
+      }
+      const dashboardSubtitle = document.getElementById('dashboard-subtitle');
+      if (dashboardSubtitle) {
+        dashboardSubtitle.textContent = role === 'Teacher'
+          ? 'Attendance, learning progress, and support alerts for your assigned students.'
+          : 'Live indicators from recorded attendance, academic results, and student support data.';
+      }
+      document.querySelectorAll('.side-link').forEach(link => {
+        link.classList.toggle('hidden', studentRole && !['student-portal', 'settings'].includes(link.dataset.tab));
+      });
+      refreshAdminOnlyVisibility();
 
       // Color code role pill
-      roleEl.className = 'font-mono text-[11px] px-1.5 py-0.5 rounded ' + 
+      if (roleEl) roleEl.className = 'font-mono text-[11px] px-1.5 py-0.5 rounded ' + 
         (role === 'SuperAdmin' ? 'bg-purple-800 text-purple-200' :
          role === 'Teacher' ? 'bg-blue-800 text-blue-200' :
          role === 'Counselor' ? 'bg-amber-800 text-amber-200' :
@@ -1358,42 +2426,113 @@
       renderAdminGrievanceTable();
       renderStudentGrievanceList();
       updateGrievanceKPIs();
+      if (studentRole) loadStudentPortal();
+    }
+
+    async function loadStudentPortal() {
+      const studentId = currentUser && currentUser.studentId;
+      const meta = document.getElementById('student-portal-meta');
+      if (!studentId) {
+        if (meta) meta.textContent = 'This account is not linked to a student record. Contact your school administrator.';
+        return;
+      }
+      try {
+        const [studentResult, attendanceResult, reportResult, marksResult] = await Promise.all([
+          apiFetch(`/api/v1/students/${encodeURIComponent(studentId)}`),
+          apiFetch(`/api/v1/attendance/student/${encodeURIComponent(studentId)}/summary`),
+          apiFetch(`/api/v1/academics/analytics/report-card/${encodeURIComponent(studentId)}`),
+          apiFetch(`/api/v1/academics/marks/student/${encodeURIComponent(studentId)}`)
+        ]);
+        const student = studentResult.data;
+        const attendance = attendanceResult.data;
+        const report = reportResult.data;
+        const marks = marksResult.data || [];
+        if (!student || !attendance || !report) throw new Error('Student profile or academic summary is unavailable.');
+
+        document.getElementById('student-portal-name').textContent = `Student Portal: ${student.fullName}`;
+        document.getElementById('student-portal-school').textContent = student.schoolName || 'School not recorded';
+        document.getElementById('student-portal-meta').textContent =
+          `Admission No: ${student.admissionNumber} · ${student.currentClassName || 'Class not assigned'}`;
+        document.getElementById('student-factor-badges').innerHTML = [
+          student.isBPL ? 'Financial support indicator' : '',
+          student.distanceToSchoolKm > 5 ? `${student.distanceToSchoolKm} km commute` : '',
+          student.isFirstGenerationLearner ? 'First-generation learner' : '',
+          student.hasSpecialNeeds ? 'Accessibility support recorded' : '',
+          student.isSingleParentOrOrphan ? 'Family support indicator' : ''
+        ].filter(Boolean).map(label => `<span class="px-2.5 py-1 rounded-full bg-white/20 font-medium">${escapeHtml(label)}</span>`).join('');
+        document.getElementById('student-attendance-rate').textContent = `${attendance.attendancePercentage.toFixed(1)}%`;
+        document.getElementById('student-attendance-days').textContent = `${attendance.daysPresent} / ${attendance.totalWorkingDays}`;
+        document.getElementById('student-absence-streak').textContent = `${attendance.consecutiveAbsentDays} days`;
+        document.getElementById('student-attendance-tier').textContent = attendance.attendanceHealthTier;
+        document.getElementById('student-academic-gpa').textContent = `GPA: ${report.gpa.toFixed(2)} / 4.0`;
+        document.getElementById('student-academic-summary').innerHTML = marks.length
+          ? marks.map(mark => `
+            <div class="flex justify-between items-center p-2 rounded-lg bg-slate-50 border border-slate-100">
+              <div><span class="font-bold text-slate-800">${escapeHtml(mark.subjectName)}${mark.isCoreSubject ? ' (Core)' : ''}</span>
+              <span class="text-slate-400 text-[11px] block">${escapeHtml(mark.assessmentTitle)}</span></div>
+              <div class="text-right"><span class="font-bold text-slate-800">${mark.isAbsent ? 'Absent' : `${mark.marksObtained} / ${mark.maxMarks}`}</span>
+              <span class="ml-2 font-bold px-1.5 py-0.5 rounded bg-indigo-50 text-indigo-800 text-[11px]">${escapeHtml(mark.gradeLetter)}</span></div>
+            </div>`).join('')
+          : '<p class="text-slate-500">No marks have been recorded yet.</p>';
+      } catch (error) {
+        if (meta) meta.textContent = `Could not load your student records: ${error.message}`;
+        showToast(`Student portal could not load: ${error.message}`, 'error');
+      }
+    }
+
+    function escapeHtml(value) {
+      return String(value ?? '').replace(/[&<>"']/g, character => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+      })[character]);
+    }
+
+    async function loadGrievances() {
+      try {
+        const [response, studentResponse] = await Promise.all([
+          apiFetch('/api/v1/analytics/helpdesk-requests'),
+          apiFetch('/api/v1/students?page=1&pageSize=100')
+        ]);
+        grievances = (response.data || []).map(item => ({
+          ...item,
+          studentAdm: item.admissionNumber,
+          studentClass: item.className || 'Class not recorded',
+          reportedAt: new Date(item.createdAtUtc).toLocaleString()
+        }));
+        let students = studentResponse.data?.items || [];
+        if ((currentUser?.roles || []).includes('StudentParent')) {
+          students = currentUser.studentId ? students.filter(student => student.id === currentUser.studentId) : [];
+        }
+        ['portal-grievance-student', 'modal-grievance-student'].forEach(id => {
+          const select = document.getElementById(id);
+          if (!select) return;
+          const previous = select.value;
+          select.innerHTML = '<option value="">Select a registered student</option>' + students.map(student =>
+            `<option value="${escapeHtml(student.id)}">${escapeHtml(student.fullName)} (${escapeHtml(student.admissionNumber)})</option>`
+          ).join('');
+          if (students.some(student => student.id === previous)) select.value = previous;
+        });
+        renderAdminGrievanceTable();
+        renderStudentGrievanceList();
+        updateGrievanceKPIs();
+      } catch (error) {
+        showToast(`Could not load helpdesk requests: ${error.message}`, 'error');
+      }
     }
 
     // Global Grievance Modal Controls
-    function openGrievanceModal() {
+    async function openGrievanceModal() {
       const modal = document.getElementById('grievance-modal');
       const studentSelectGroup = document.getElementById('grievance-student-select-group');
       const roles = (currentUser && currentUser.roles) || [];
-      
-      if (roles.includes('StudentParent')) {
-        // Self-submitting student
-        if (studentSelectGroup) {
-          studentSelectGroup.innerHTML = `
-            <label class="block text-xs font-semibold text-slate-700 mb-1">Submitting As *</label>
-            <div class="p-2.5 bg-slate-50 border border-slate-200 rounded-lg text-xs font-semibold text-slate-800 flex items-center justify-between">
-              <span>🎓 ${currentUser.fullName || 'Priya Kumari'}</span>
-              <span class="text-slate-500 font-normal">ADM-2025-001 | Grade 9-A</span>
-            </div>
-          `;
-        }
-      } else {
-        // Admin / Counselor / Teacher submitting on behalf of any student or walk-in
-        if (studentSelectGroup) {
-          studentSelectGroup.innerHTML = `
-            <label class="block text-xs font-semibold text-slate-700 mb-1">Select Student or Walk-In Candidate *</label>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-              <select id="modal-grievance-student" onchange="toggleWalkInStudent(this.value)" class="w-full text-xs px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:border-indigo-500 bg-white">
-                <option value="ADM-2025-001|Priya Kumari|Grade 9-A">Priya Kumari (ADM-2025-001 - Grade 9-A)</option>
-                <option value="ADM-2025-002|Sunita Kumari|Grade 9-A">Sunita Kumari (ADM-2025-002 - Grade 9-A)</option>
-                <option value="walk-in">+ Walk-In / Unregistered Student</option>
-              </select>
-              <input id="modal-grievance-walkin-name" type="text" placeholder="Enter Student Full Name &amp; Class" class="w-full text-xs px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:border-indigo-500 hidden">
-            </div>
-          `;
-        }
+      if (studentSelectGroup) {
+        studentSelectGroup.innerHTML = `
+          <label class="block text-xs font-semibold text-slate-700 mb-1">${roles.includes('StudentParent') ? 'Student record *' : 'Select registered student *'}</label>
+          <select id="modal-grievance-student" required class="w-full text-xs px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:border-indigo-500 bg-white">
+            <option value="">Loading student records…</option>
+          </select>
+        `;
       }
-
+      await loadGrievances();
       modal.classList.remove('hidden');
       modal.classList.add('flex');
     }
@@ -1403,134 +2542,54 @@
       modal.classList.add('hidden');
       modal.classList.remove('flex');
       document.getElementById('global-grievance-form').reset();
-      const walkinInput = document.getElementById('modal-grievance-walkin-name');
-      if (walkinInput) walkinInput.classList.add('hidden');
     }
 
-    function toggleWalkInStudent(val) {
-      const walkinInput = document.getElementById('modal-grievance-walkin-name');
-      if (!walkinInput) return;
-      if (val === 'walk-in') {
-        walkinInput.classList.remove('hidden');
-        walkinInput.required = true;
-        walkinInput.focus();
-      } else {
-        walkinInput.classList.add('hidden');
-        walkinInput.required = false;
-      }
-    }
-
-    function handleGlobalGrievanceSubmit(e) {
+    async function handleGlobalGrievanceSubmit(e) {
       e.preventDefault();
-      const roles = (currentUser && currentUser.roles) || [];
-      let sName = 'Priya Kumari';
-      let sAdm = 'ADM-2025-001';
-      let sClass = 'Grade 9-A';
-
-      if (roles.includes('StudentParent')) {
-        sName = currentUser.fullName || 'Priya Kumari';
-        sAdm = 'ADM-2025-001';
-        sClass = 'Grade 9-A';
-      } else {
-        const studentSelect = document.getElementById('modal-grievance-student');
-        if (studentSelect && studentSelect.value === 'walk-in') {
-          const walkinName = document.getElementById('modal-grievance-walkin-name').value.trim();
-          sName = walkinName || 'Walk-In Student';
-          sAdm = 'WALK-IN-' + Math.floor(1000 + Math.random() * 9000);
-          sClass = 'Walk-In Candidate';
-        } else if (studentSelect) {
-          const parts = studentSelect.value.split('|');
-          sAdm = parts[0] || 'ADM-2025-001';
-          sName = parts[1] || 'Priya Kumari';
-          sClass = parts[2] || 'Grade 9-A';
-        }
+      const category = document.getElementById('modal-grievance-category');
+      try {
+        await apiFetch('/api/v1/analytics/helpdesk-requests', {
+          method: 'POST',
+          body: JSON.stringify({
+            studentId: document.getElementById('modal-grievance-student').value,
+            category: category.value,
+            categoryLabel: category.options[category.selectedIndex].text,
+            urgency: document.getElementById('modal-grievance-urgency').value,
+            description: document.getElementById('modal-grievance-desc').value.trim()
+          })
+        });
+        closeGrievanceModal();
+        await loadGrievances();
+        showToast('Support request submitted.');
+      } catch (error) {
+        showToast(`Request could not be submitted: ${error.message}`, 'error');
       }
-
-      const cat = document.getElementById('modal-grievance-category').value;
-      const urg = document.getElementById('modal-grievance-urgency').value;
-      const desc = document.getElementById('modal-grievance-desc').value.trim();
-
-      if (!desc) return;
-
-      const catLabels = {
-        CommuteDistance: '🚌 Commute Hardship (>5km)',
-        FinancialDistress: '💰 Financial Hardship (BPL/Fees)',
-        MedicalHealth: '🏥 Health & Medical Leave',
-        AcademicRemedial: '📚 Academic Learning Difficulty',
-        SafetyConcern: '⚠️ School Safety & Bullying',
-        OtherHardship: '📝 Other Personal / Welfare Request'
-      };
-
-      const newGrievance = {
-        id: grievances.length + 1,
-        studentName: sName,
-        studentAdm: sAdm,
-        studentClass: sClass,
-        category: cat,
-        categoryLabel: catLabels[cat] || cat,
-        urgency: urg,
-        description: desc,
-        reportedBy: `${currentUser ? currentUser.fullName : 'User'} (${roles[0] || 'Staff'})`,
-        reportedAt: 'Just Now',
-        status: 'Under Review',
-        resolutionNotes: ''
-      };
-
-      grievances.unshift(newGrievance);
-      renderAdminGrievanceTable();
-      renderStudentGrievanceList();
-      updateGrievanceKPIs();
-
-      closeGrievanceModal();
-      alert(`✅ Request submitted successfully for ${sName}!\nCase logged in EduGuard longitudinal record and queued for counselor review.`);
     }
 
     // Student In-Page Grievance Submit
-    function submitGrievance(e) {
+    async function submitGrievance(e) {
       e.preventDefault();
-      const cat = document.getElementById('grievance-category').value;
-      const urg = document.getElementById('grievance-urgency').value;
-      const desc = document.getElementById('grievance-description').value.trim();
+      const category = document.getElementById('grievance-category');
       const isUrgent = document.getElementById('grievance-urgent-check').checked;
-
-      if (!desc) return;
-
-      const catLabels = {
-        CommuteDistance: '🚌 Commute Hardship (>5km)',
-        FinancialDistress: '💰 Financial Hardship (BPL/Fees)',
-        MedicalHealth: '🏥 Health & Medical Leave',
-        AcademicRemedial: '📚 Academic Learning Difficulty',
-        SafetyConcern: '⚠️ School Safety & Bullying',
-        OtherHardship: '📝 Personal Hardship'
-      };
-
-      const sName = (currentUser && currentUser.fullName) ? currentUser.fullName : 'Priya Kumari';
-
-      const newGrievance = {
-        id: grievances.length + 1,
-        studentName: sName,
-        studentAdm: 'ADM-2025-001',
-        studentClass: 'Grade 9-A',
-        category: cat,
-        categoryLabel: catLabels[cat] || cat,
-        urgency: isUrgent ? 'High' : urg,
-        description: desc,
-        reportedBy: `${sName} (Self)`,
-        reportedAt: 'Just Now',
-        status: 'Under Review',
-        resolutionNotes: ''
-      };
-
-      grievances.unshift(newGrievance);
-      renderAdminGrievanceTable();
-      renderStudentGrievanceList();
-      updateGrievanceKPIs();
-
-      const banner = document.getElementById('grievance-success-banner');
-      if (banner) banner.classList.remove('hidden');
-
-      document.getElementById('grievance-description').value = '';
-      document.getElementById('grievance-urgent-check').checked = false;
+      try {
+        await apiFetch('/api/v1/analytics/helpdesk-requests', {
+          method: 'POST',
+          body: JSON.stringify({
+            studentId: document.getElementById('portal-grievance-student').value,
+            category: category.value,
+            categoryLabel: category.options[category.selectedIndex].text,
+            urgency: isUrgent ? 'High' : document.getElementById('grievance-urgency').value,
+            description: document.getElementById('grievance-description').value.trim()
+          })
+        });
+        document.getElementById('form-grievance').reset();
+        const banner = document.getElementById('grievance-success-banner');
+        if (banner) banner.classList.remove('hidden');
+        await loadGrievances();
+        showToast('Support request submitted.');
+      } catch (error) {
+        showToast(`Request could not be submitted: ${error.message}`, 'error');
+      }
     }
 
     // Action / Resolve Grievance Modal
@@ -1542,7 +2601,7 @@
       document.getElementById('action-modal-category').innerText = g.categoryLabel;
       document.getElementById('action-modal-desc').innerText = `"${g.description}"`;
       document.getElementById('action-notes').value = g.resolutionNotes || '';
-      document.getElementById('action-status').value = g.status === 'Under Review' ? 'Resolved' : g.status;
+      document.getElementById('action-status').value = g.status;
 
       const modal = document.getElementById('action-modal');
       modal.classList.remove('hidden');
@@ -1556,18 +2615,25 @@
       activeActionGrievanceId = null;
     }
 
-    function handleResolveGrievance(e) {
+    async function handleResolveGrievance(e) {
       e.preventDefault();
       if (!activeActionGrievanceId) return;
       const g = grievances.find(x => x.id === activeActionGrievanceId);
       if (g) {
-        g.resolutionNotes = document.getElementById('action-notes').value.trim();
-        g.status = document.getElementById('action-status').value;
-        renderAdminGrievanceTable();
-        renderStudentGrievanceList();
-        updateGrievanceKPIs();
-        closeActionModal();
-        alert(`✅ Grievance #${g.id} for ${g.studentName} updated to [${g.status}]!`);
+        try {
+          await apiFetch(`/api/v1/analytics/helpdesk-requests/${encodeURIComponent(g.id)}`, {
+            method: 'PUT',
+            body: JSON.stringify({
+              status: document.getElementById('action-status').value,
+              resolutionNotes: document.getElementById('action-notes').value.trim()
+            })
+          });
+          closeActionModal();
+          await loadGrievances();
+          showToast('Support request updated.');
+        } catch (error) {
+          showToast(`Request could not be updated: ${error.message}`, 'error');
+        }
       }
     }
 
@@ -1613,17 +2679,17 @@
       tbody.innerHTML = filtered.map(g => `
         <tr class="hover:bg-slate-50/80 transition">
           <td class="px-4 py-3">
-            <div class="font-bold text-slate-800">${g.studentName}</div>
-            <div class="text-[11px] text-slate-400 font-mono">${g.studentAdm} | ${g.studentClass}</div>
+            <div class="font-bold text-slate-800">${escapeHtml(g.studentName)}</div>
+            <div class="text-[11px] text-slate-400 font-mono">${escapeHtml(g.studentAdm)} | ${escapeHtml(g.studentClass)}</div>
           </td>
           <td class="px-4 py-3 max-w-xs">
-            <div class="font-semibold text-slate-700">${g.categoryLabel}</div>
-            <div class="text-[11px] text-slate-500 truncate" title="${g.description}">${g.description}</div>
-            ${g.resolutionNotes ? `<div class="text-[10px] text-emerald-700 mt-1 font-medium bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200 inline-block">Action: ${g.resolutionNotes}</div>` : ''}
+            <div class="font-semibold text-slate-700">${escapeHtml(g.categoryLabel)}</div>
+            <div class="text-[11px] text-slate-500 truncate" title="${escapeHtml(g.description)}">${escapeHtml(g.description)}</div>
+            ${g.resolutionNotes ? `<div class="text-[10px] text-emerald-700 mt-1 font-medium bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200 inline-block">Action: ${escapeHtml(g.resolutionNotes)}</div>` : ''}
           </td>
           <td class="px-4 py-3 text-slate-500 text-[11px]">
-            <div>${g.reportedBy}</div>
-            <div class="text-slate-400">${g.reportedAt}</div>
+            <div>${escapeHtml(g.reportedBy)}</div>
+            <div class="text-slate-400">${escapeHtml(g.reportedAt)}</div>
           </td>
           <td class="px-4 py-3">
             <span class="px-2 py-0.5 rounded-full text-[10px] font-bold ${g.urgency === 'High' ? 'bg-rose-100 text-rose-800 border border-rose-200' : 'bg-slate-100 text-slate-700'}">
@@ -1640,7 +2706,7 @@
             </span>
           </td>
           <td class="px-4 py-3 text-right">
-            <button onclick="openActionModal(${g.id})" class="px-2.5 py-1 rounded bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-bold text-[11px] border border-indigo-200 transition">
+            <button onclick="openActionModal('${escapeHtml(g.id)}')" class="px-2.5 py-1 rounded bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-bold text-[11px] border border-indigo-200 transition">
               🛠️ Action / Resolve
             </button>
           </td>
@@ -1654,12 +2720,12 @@
       list.innerHTML = grievances.map(g => `
         <div class="p-3 bg-slate-50 rounded-lg border border-slate-200 text-xs flex justify-between items-center">
           <div>
-            <span class="font-bold text-slate-800">${g.categoryLabel}: ${g.description.substring(0, 50)}...</span>
-            <span class="text-slate-400 block text-[11px]">For ${g.studentName} | ${g.reportedAt} | Urgency: ${g.urgency}</span>
-            ${g.resolutionNotes ? `<span class="text-[10px] text-emerald-700 font-semibold block mt-0.5">Counselor Action: ${g.resolutionNotes}</span>` : ''}
+            <span class="font-bold text-slate-800">${escapeHtml(g.categoryLabel)}: ${escapeHtml(g.description.substring(0, 50))}${g.description.length > 50 ? '…' : ''}</span>
+            <span class="text-slate-400 block text-[11px]">For ${escapeHtml(g.studentName)} | ${escapeHtml(g.reportedAt)} | Urgency: ${escapeHtml(g.urgency)}</span>
+            ${g.resolutionNotes ? `<span class="text-[10px] text-emerald-700 font-semibold block mt-0.5">Counselor Action: ${escapeHtml(g.resolutionNotes)}</span>` : ''}
           </div>
           <span class="px-2 py-0.5 rounded-full ${g.status === 'Resolved' ? 'bg-emerald-100 text-emerald-800' : (g.urgency === 'High' ? 'bg-rose-100 text-rose-800' : 'bg-amber-100 text-amber-800')} font-semibold text-[11px]">
-            ${g.status === 'Resolved' ? '✅ Resolved' : '⏳ Under Review'}
+            ${g.status === 'Resolved' ? '✅ Resolved' : g.status === 'In Progress' ? '🔄 In Progress' : '⏳ Under Review'}
           </span>
         </div>
       `).join('');
@@ -1692,9 +2758,81 @@
       modal.classList.remove('flex');
     }
 
+    function applyTheme(theme) {
+      document.body.classList.toggle('dark-theme', theme === 'dark');
+      localStorage.setItem('eduguard_theme', theme);
+      const button = document.getElementById('theme-toggle');
+      if (button) {
+        button.textContent = theme === 'dark' ? '☀' : '☾';
+        button.title = theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme';
+      }
+      renderDashboardCharts();
+      if (dashboardChartData?.academicPerformance) renderAcademicsChart(dashboardChartData.academicPerformance);
+    }
+
+    function toggleTheme() {
+      const nextTheme = document.body.classList.contains('dark-theme') ? 'light' : 'dark';
+      applyTheme(nextTheme);
+    }
+
     // Default connection on load: initialize with Admin persona
     window.addEventListener('DOMContentLoaded', () => {
-      loginAsRole('admin', 'AdminPassword123!');
+      applyTheme(localStorage.getItem('eduguard_theme') || 'light');
+      if (localStorage.getItem('eduguard_sidebar_collapsed') === 'true' && !window.matchMedia('(max-width: 639px)').matches)
+        document.body.classList.add('sidebar-collapsed');
+
+      const searchInput = document.getElementById('global-search');
+      const searchResults = document.getElementById('search-results');
+      searchInput.addEventListener('input', () => {
+        clearTimeout(searchDebounce);
+        const query = searchInput.value;
+        searchDebounce = setTimeout(() => loadGlobalSearch(query), 180);
+      });
+      searchInput.addEventListener('keydown', event => {
+        if (event.key === 'Escape') {
+          searchInput.value = '';
+          loadGlobalSearch('');
+        }
+        if (event.key === 'Enter') {
+          const firstResult = searchResults.querySelector('.search-result');
+          if (firstResult) firstResult.click();
+        }
+      });
+      document.getElementById('clear-search').addEventListener('click', () => {
+        searchInput.value = '';
+        searchInput.focus();
+        loadGlobalSearch('');
+      });
+      document.addEventListener('click', event => {
+        if (!event.target.closest('.top-search')) searchResults.classList.remove('open');
+        if (document.body.classList.contains('mobile-menu-open') &&
+            !event.target.closest('.app-sidebar') && !event.target.closest('.sidebar-toggle'))
+          document.body.classList.remove('mobile-menu-open');
+      });
+
+      loadSystemHealth();
+      const logoutError = sessionStorage.getItem('eduguard_logout_error');
+      if (logoutError) {
+        sessionStorage.removeItem('eduguard_logout_error');
+        showToast(`Signed out locally; server revocation failed: ${logoutError}`, 'error');
+      }
+      const savedToken = localStorage.getItem('eduguard_token');
+      const savedUser = localStorage.getItem('eduguard_user');
+      if (savedToken && savedUser) {
+        try {
+          currentUser = JSON.parse(savedUser);
+          updateUserDisplay(currentUser);
+          const roles = currentUser.roles || [];
+          switchTab(roles.includes('StudentParent') ? 'student-portal' : 'overview');
+        } catch (error) {
+          localStorage.removeItem('eduguard_token');
+          localStorage.removeItem('eduguard_user');
+          showToast(`Saved sign-in could not be restored: ${error.message}`, 'error');
+          openLoginModal();
+        }
+      } else {
+        openLoginModal();
+      }
     });
   </script>
 </body>

@@ -3,6 +3,7 @@ using EduGuard.Application.DTOs.Enrollments;
 using EduGuard.Application.Interfaces;
 using EduGuard.Domain.Enums;
 using EduGuard.WebApi.Attributes;
+using EduGuard.WebApi.Security;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EduGuard.WebApi.Controllers;
@@ -11,10 +12,12 @@ namespace EduGuard.WebApi.Controllers;
 public class EnrollmentsController : BaseApiController
 {
     private readonly IEnrollmentService _enrollmentService;
+    private readonly StudentAccessPolicy _accessPolicy;
 
-    public EnrollmentsController(IEnrollmentService enrollmentService)
+    public EnrollmentsController(IEnrollmentService enrollmentService, StudentAccessPolicy accessPolicy)
     {
         _enrollmentService = enrollmentService;
+        _accessPolicy = accessPolicy;
     }
 
     /// <summary>
@@ -104,6 +107,8 @@ public class EnrollmentsController : BaseApiController
     [ProducesResponseType(typeof(ApiResponse<List<EnrollmentDto>>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetStudentEnrollments(Guid studentId, CancellationToken cancellationToken)
     {
+        if (!await CanAccessStudentAsync(studentId, cancellationToken))
+            return Forbid();
         var result = await _enrollmentService.GetStudentEnrollmentsAsync(studentId, cancellationToken);
         return Ok(result);
     }
@@ -115,7 +120,13 @@ public class EnrollmentsController : BaseApiController
     [ProducesResponseType(typeof(ApiResponse<List<EnrollmentDto>>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetSectionEnrollments(Guid sectionId, CancellationToken cancellationToken)
     {
+        if (CurrentRoles.Contains(UserRoleType.StudentParent, StringComparer.OrdinalIgnoreCase) ||
+            !await _accessPolicy.CanAccessSectionAsync(sectionId, CurrentUserId, CurrentRoles, cancellationToken))
+            return Forbid();
         var result = await _enrollmentService.GetSectionEnrollmentsAsync(sectionId, cancellationToken);
         return Ok(result);
     }
+
+    private Task<bool> CanAccessStudentAsync(Guid studentId, CancellationToken cancellationToken)
+        => _accessPolicy.CanAccessStudentAsync(studentId, CurrentUserId, CurrentStudentId, CurrentRoles, cancellationToken);
 }

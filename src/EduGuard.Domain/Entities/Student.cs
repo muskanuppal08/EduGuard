@@ -39,6 +39,7 @@ public class Student : BaseEntity
     public virtual Section? CurrentSection { get; set; }
 
     public StudentStatus CurrentStatus { get; set; } = StudentStatus.Active;
+    public StudentStatus? ArchivedFromStatus { get; set; }
 
     public virtual ICollection<Enrollment> Enrollments { get; set; } = new List<Enrollment>();
     public virtual ICollection<StudentHistory> HistoryTimeline { get; set; } = new List<StudentHistory>();

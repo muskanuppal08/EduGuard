@@ -8,6 +8,7 @@ public class UserProfileDto
     public string FullName { get; set; } = string.Empty;
     public string? PhoneNumber { get; set; }
     public Guid? SchoolId { get; set; }
+    public Guid? StudentId { get; set; }
     public string? Designation { get; set; }
     public string? Department { get; set; }
     public string? AvatarUrl { get; set; }
@@ -17,6 +18,11 @@ public class UserProfileDto
     public List<string> Roles { get; set; } = new();
     public DateTime CreatedAtUtc { get; set; }
     public DateTime? LastLoginAtUtc { get; set; }
+}
+
+public class LinkStudentAccountDto
+{
+    public Guid StudentId { get; set; }
 }
 
 public class UpdateProfileDto

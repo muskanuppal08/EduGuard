@@ -226,4 +226,24 @@ public class SchoolStudentTests
         var timeline = await _historyService.GetStudentHistoryTimelineAsync(student.Id);
         Assert.Contains(timeline.Data!, h => h.Title == "Home Visit Report");
     }
+
+    [Fact]
+    public async Task StudentService_ArchivedStudentsAreHiddenByDefaultAndFilterable()
+    {
+        var student = await _dataStore.GetStudentByAdmissionNumberAsync("ADM-2025-001");
+        Assert.NotNull(student);
+        student!.CurrentStatus = StudentStatus.Archived;
+        student.ArchivedFromStatus = StudentStatus.Active;
+        await _dataStore.UpdateStudentAsync(student);
+
+        var currentStudents = await _studentService.GetStudentsAsync(new StudentFilterDto { PageSize = 100 });
+        var archivedStudents = await _studentService.GetStudentsAsync(new StudentFilterDto
+        {
+            Status = StudentStatus.Archived,
+            PageSize = 100
+        });
+
+        Assert.DoesNotContain(currentStudents.Data!.Items, item => item.Id == student.Id);
+        Assert.Contains(archivedStudents.Data!.Items, item => item.Id == student.Id);
+    }
 }

@@ -3,11 +3,13 @@ using EduGuard.Infrastructure.Persistence;
 using EduGuard.Infrastructure.Security;
 using EduGuard.Infrastructure.Services;
 using EduGuard.WebApi.Middleware;
+using EduGuard.WebApi.Security;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container
 builder.Services.AddControllers();
+builder.Services.AddScoped<StudentAccessPolicy>();
 
 // Core Services
 builder.Services.AddSingleton<IEduGuardDataStore, InMemoryEduGuardDataStore>();
@@ -36,6 +38,7 @@ builder.Services.AddScoped<IAbsencePatternDetector, AbsencePatternDetector>();
 builder.Services.AddScoped<IAcademicService, AcademicService>();
 builder.Services.AddScoped<IMarksService, MarksService>();
 builder.Services.AddScoped<IPerformanceAnalyticsService, PerformanceAnalyticsService>();
+builder.Services.AddSingleton<IStudentRiskService, StudentRiskService>();
 
 // Configure CORS for web frontends
 builder.Services.AddCors(options =>
@@ -81,7 +84,10 @@ app.MapGet("/api/health", () => new
         "Module 1: Authentication & User Management (Active)",
         "Module 2: School & Student Management (Active)",
         "Module 3: Attendance Management (Active)",
-        "Module 4: Academic Performance & Learning Loss Monitoring (Active)"
+        "Module 4: Academic Performance & Learning Loss Monitoring (Active)",
+        "Dropout Risk Analytics & ML-Style Prediction (Active)",
+        "Early Warning, Interventions & Follow-ups (Active)",
+        "Risk Reports & Notifications (Active)"
     }
 });
 

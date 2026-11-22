@@ -39,6 +39,7 @@ public class AssessmentFilterDto
 {
     public Guid? SchoolId { get; set; }
     public Guid? SectionId { get; set; }
+    public IReadOnlyCollection<Guid>? SectionIds { get; set; }
     public Guid? SubjectId { get; set; }
     public Guid? AcademicYearId { get; set; }
     public AssessmentCategory? Category { get; set; }

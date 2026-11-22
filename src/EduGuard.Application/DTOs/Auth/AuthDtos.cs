@@ -14,6 +14,7 @@ public class UserInfoDto
     public string Email { get; set; } = string.Empty;
     public string FullName { get; set; } = string.Empty;
     public Guid? SchoolId { get; set; }
+    public Guid? StudentId { get; set; }
     public List<string> Roles { get; set; } = new();
     public List<string> Permissions { get; set; } = new();
 }

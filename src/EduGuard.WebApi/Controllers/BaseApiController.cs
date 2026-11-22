@@ -7,6 +7,8 @@ namespace EduGuard.WebApi.Controllers;
 [Route("api/v1/[controller]")]
 public abstract class BaseApiController : ControllerBase
 {
+    protected new IActionResult Forbid() => StatusCode(StatusCodes.Status403Forbidden);
+
     protected Guid? CurrentUserId
     {
         get
@@ -32,6 +34,15 @@ public abstract class BaseApiController : ControllerBase
         {
             var schoolIdClaim = User.FindFirst("school_id")?.Value;
             return Guid.TryParse(schoolIdClaim, out var id) ? id : null;
+        }
+    }
+
+    protected Guid? CurrentStudentId
+    {
+        get
+        {
+            var studentIdClaim = User.FindFirst("student_id")?.Value;
+            return Guid.TryParse(studentIdClaim, out var id) ? id : null;
         }
     }
 

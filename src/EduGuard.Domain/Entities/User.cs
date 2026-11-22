@@ -11,6 +11,7 @@ public class User : BaseEntity
     public string PasswordSalt { get; set; } = string.Empty;
     public string? PhoneNumber { get; set; }
     public Guid? SchoolId { get; set; }
+    public Guid? LinkedStudentId { get; set; }
     public bool IsActive { get; set; } = true;
     public bool IsLockedOut { get; set; } = false;
     public DateTime? LockoutEndUtc { get; set; }

@@ -101,6 +101,7 @@ public class AuthService : IAuthService
                 Email = user.Email,
                 FullName = user.FullName,
                 SchoolId = user.SchoolId,
+                StudentId = user.LinkedStudentId,
                 Roles = roles,
                 Permissions = permissions
             }
@@ -157,6 +158,7 @@ public class AuthService : IAuthService
                 Email = user.Email,
                 FullName = user.FullName,
                 SchoolId = user.SchoolId,
+                StudentId = user.LinkedStudentId,
                 Roles = roles,
                 Permissions = permissions
             }
@@ -263,6 +265,7 @@ public class AuthService : IAuthService
             Email = newUser.Email,
             FullName = newUser.FullName,
             SchoolId = newUser.SchoolId,
+            StudentId = newUser.LinkedStudentId,
             Roles = new List<string> { role.Name },
             Permissions = permissions
         };
@@ -357,6 +360,7 @@ public class AuthService : IAuthService
                 Email = newUser.Email,
                 FullName = newUser.FullName,
                 SchoolId = newUser.SchoolId,
+                StudentId = newUser.LinkedStudentId,
                 Roles = roles,
                 Permissions = permissions
             }

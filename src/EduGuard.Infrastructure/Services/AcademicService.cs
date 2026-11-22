@@ -166,6 +166,7 @@ public class AcademicService : IAcademicService
         var assessments = await _dataStore.QueryAssessmentsAsync(a =>
             (!filter.SchoolId.HasValue || a.SchoolId == filter.SchoolId.Value) &&
             (!filter.SectionId.HasValue || a.SectionId == filter.SectionId.Value) &&
+            (filter.SectionIds == null || filter.SectionIds.Contains(a.SectionId)) &&
             (!filter.SubjectId.HasValue || a.SubjectId == filter.SubjectId.Value) &&
             (!filter.AcademicYearId.HasValue || a.AcademicYearId == filter.AcademicYearId.Value) &&
             (!filter.Category.HasValue || a.Category == filter.Category.Value),

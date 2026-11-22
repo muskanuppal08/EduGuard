@@ -55,6 +55,9 @@ public class TokenService : ITokenService
             { "permissions", permList }
         };
 
+        if (user.LinkedStudentId.HasValue)
+            payload["student_id"] = user.LinkedStudentId.Value.ToString();
+
         if (user.SchoolId.HasValue)
         {
             payload["school_id"] = user.SchoolId.Value.ToString();
@@ -124,6 +127,9 @@ public class TokenService : ITokenService
             if (root.TryGetProperty("sub", out var sub))
                 claims.Add(new Claim(ClaimTypes.NameIdentifier, sub.GetString() ?? ""));
 
+            if (root.TryGetProperty("exp", out var expiresAt) && expiresAt.TryGetInt64(out var expSeconds))
+                claims.Add(new Claim("exp", expSeconds.ToString()));
+
             if (root.TryGetProperty("unique_name", out var uname))
                 claims.Add(new Claim(ClaimTypes.Name, uname.GetString() ?? ""));
 
@@ -135,6 +141,9 @@ public class TokenService : ITokenService
 
             if (root.TryGetProperty("school_id", out var schoolId))
                 claims.Add(new Claim("school_id", schoolId.GetString() ?? ""));
+
+            if (root.TryGetProperty("student_id", out var studentId))
+                claims.Add(new Claim("student_id", studentId.GetString() ?? ""));
 
             if (root.TryGetProperty("roles", out var roles) && roles.ValueKind == JsonValueKind.Array)
             {

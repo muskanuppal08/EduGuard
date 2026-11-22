@@ -1,8 +1,10 @@
 using EduGuard.Application.DTOs.Academics;
 using EduGuard.Application.DTOs.Common;
 using EduGuard.Application.Interfaces;
+using EduGuard.Domain.Entities;
 using EduGuard.Domain.Enums;
 using EduGuard.WebApi.Attributes;
+using EduGuard.WebApi.Security;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EduGuard.WebApi.Controllers;
@@ -13,15 +15,21 @@ public class AcademicsController : BaseApiController
     private readonly IAcademicService _academicService;
     private readonly IMarksService _marksService;
     private readonly IPerformanceAnalyticsService _analyticsService;
+    private readonly IEduGuardDataStore _store;
+    private readonly StudentAccessPolicy _accessPolicy;
 
     public AcademicsController(
         IAcademicService academicService,
         IMarksService marksService,
-        IPerformanceAnalyticsService analyticsService)
+        IPerformanceAnalyticsService analyticsService,
+        IEduGuardDataStore store,
+        StudentAccessPolicy accessPolicy)
     {
         _academicService = academicService;
         _marksService = marksService;
         _analyticsService = analyticsService;
+        _store = store;
+        _accessPolicy = accessPolicy;
     }
 
     /// <summary>
@@ -77,6 +85,9 @@ public class AcademicsController : BaseApiController
     [ProducesResponseType(typeof(ApiResponse<AssessmentDto>), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> CreateAssessment([FromBody] CreateAssessmentDto request, CancellationToken cancellationToken)
     {
+        if (!await CanAccessSectionAsync(request.SectionId, cancellationToken))
+            return Forbid();
+
         var result = await _academicService.CreateAssessmentAsync(request, cancellationToken);
         if (!result.Success)
         {
@@ -92,6 +103,10 @@ public class AcademicsController : BaseApiController
     [ProducesResponseType(typeof(ApiResponse<List<AssessmentDto>>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAssessments([FromQuery] AssessmentFilterDto filter, CancellationToken cancellationToken)
     {
+        var accessibleSections = await AccessibleSectionIdsAsync(cancellationToken);
+        if (accessibleSections != null)
+            filter.SectionIds = accessibleSections;
+
         var result = await _academicService.GetAssessmentsAsync(filter, cancellationToken);
         return Ok(result);
     }
@@ -109,6 +124,8 @@ public class AcademicsController : BaseApiController
         {
             return NotFound(result);
         }
+        if (result.Data != null && !await CanAccessSectionAsync(result.Data.SectionId, cancellationToken))
+            return Forbid();
         return Ok(result);
     }
 
@@ -120,6 +137,12 @@ public class AcademicsController : BaseApiController
     [ProducesResponseType(typeof(ApiResponse<ExamRosterDto>), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> GetAssessmentRoster(Guid id, CancellationToken cancellationToken)
     {
+        if (CurrentRoles.Contains(UserRoleType.StudentParent, StringComparer.OrdinalIgnoreCase))
+            return Forbid();
+        var assessment = await _store.GetAssessmentByIdAsync(id, cancellationToken);
+        if (assessment == null || !await CanAccessSectionAsync(assessment.SectionId, cancellationToken))
+            return Forbid();
+
         var result = await _marksService.GetExamRosterAsync(id, cancellationToken);
         if (!result.Success)
         {
@@ -137,6 +160,10 @@ public class AcademicsController : BaseApiController
     [ProducesResponseType(typeof(ApiResponse<int>), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> RecordMarksBatch([FromBody] RecordMarksBatchDto request, CancellationToken cancellationToken)
     {
+        var assessment = await _store.GetAssessmentByIdAsync(request.AssessmentId, cancellationToken);
+        if (assessment == null || !await CanAccessSectionAsync(assessment.SectionId, cancellationToken))
+            return Forbid();
+
         var result = await _marksService.RecordMarksBatchAsync(request, CurrentUserId, cancellationToken);
         if (!result.Success)
         {
@@ -154,6 +181,10 @@ public class AcademicsController : BaseApiController
     [ProducesResponseType(typeof(ApiResponse<StudentMarkDto>), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> UpdateStudentMark(Guid markId, [FromBody] UpdateStudentMarkDto request, CancellationToken cancellationToken)
     {
+        var mark = await _store.GetMarkByIdAsync(markId, cancellationToken);
+        if (mark != null && !await CanAccessStudentAsync(mark.StudentId, cancellationToken))
+            return Forbid();
+
         var result = await _marksService.UpdateStudentMarkAsync(markId, request, cancellationToken);
         if (!result.Success)
         {
@@ -169,6 +200,12 @@ public class AcademicsController : BaseApiController
     [ProducesResponseType(typeof(ApiResponse<List<StudentMarkDto>>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetMarksByAssessment(Guid assessmentId, CancellationToken cancellationToken)
     {
+        if (CurrentRoles.Contains(UserRoleType.StudentParent, StringComparer.OrdinalIgnoreCase))
+            return Forbid();
+        var assessment = await _store.GetAssessmentByIdAsync(assessmentId, cancellationToken);
+        if (assessment == null || !await CanAccessSectionAsync(assessment.SectionId, cancellationToken))
+            return Forbid();
+
         var result = await _marksService.GetMarksByAssessmentAsync(assessmentId, cancellationToken);
         if (!result.Success)
         {
@@ -184,6 +221,9 @@ public class AcademicsController : BaseApiController
     [ProducesResponseType(typeof(ApiResponse<List<StudentMarkDto>>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetMarksByStudent(Guid studentId, CancellationToken cancellationToken)
     {
+        if (!await CanAccessStudentAsync(studentId, cancellationToken))
+            return Forbid();
+
         var result = await _marksService.GetMarksByStudentAsync(studentId, cancellationToken);
         if (!result.Success)
         {
@@ -201,6 +241,9 @@ public class AcademicsController : BaseApiController
     [ProducesResponseType(typeof(ApiResponse<StudentReportCardDto>), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> GetStudentReportCard(Guid studentId, [FromQuery] Guid? academicYearId, CancellationToken cancellationToken)
     {
+        if (!await CanAccessStudentAsync(studentId, cancellationToken))
+            return Forbid();
+
         var result = await _analyticsService.GenerateReportCardAsync(studentId, academicYearId, cancellationToken);
         if (!result.Success)
         {
@@ -218,6 +261,9 @@ public class AcademicsController : BaseApiController
     [ProducesResponseType(typeof(ApiResponse<AcademicTrajectoryDto>), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> GetAcademicTrajectory(Guid studentId, CancellationToken cancellationToken)
     {
+        if (!await CanAccessStudentAsync(studentId, cancellationToken))
+            return Forbid();
+
         var result = await _analyticsService.GetAcademicTrajectoryAsync(studentId, cancellationToken);
         if (!result.Success)
         {
@@ -235,6 +281,12 @@ public class AcademicsController : BaseApiController
     [ProducesResponseType(typeof(ApiResponse<FailingStudentsSummaryDto>), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> GetFailingStudents(Guid assessmentId, CancellationToken cancellationToken)
     {
+        if (CurrentRoles.Contains(UserRoleType.StudentParent, StringComparer.OrdinalIgnoreCase))
+            return Forbid();
+        var assessment = await _store.GetAssessmentByIdAsync(assessmentId, cancellationToken);
+        if (assessment == null || !await CanAccessSectionAsync(assessment.SectionId, cancellationToken))
+            return Forbid();
+
         var result = await _analyticsService.GetFailingStudentsForAssessmentAsync(assessmentId, cancellationToken);
         if (!result.Success)
         {
@@ -252,6 +304,35 @@ public class AcademicsController : BaseApiController
     public async Task<IActionResult> GetAtRiskAcademicStudents(Guid schoolId, CancellationToken cancellationToken)
     {
         var result = await _analyticsService.GetAtRiskAcademicStudentsBySchoolAsync(schoolId, cancellationToken);
+        var visibleStudentIds = await _accessPolicy.GetVisibleStudentIdsAsync(CurrentUserId, CurrentStudentId, CurrentRoles, cancellationToken);
+        if (visibleStudentIds != null && result.Data != null)
+            result.Data = result.Data.Where(student => visibleStudentIds.Contains(student.StudentId)).ToList();
         return Ok(result);
+    }
+
+    private Task<bool> CanAccessStudentAsync(Guid studentId, CancellationToken cancellationToken)
+        => _accessPolicy.CanAccessStudentAsync(studentId, CurrentUserId, CurrentStudentId, CurrentRoles, cancellationToken);
+
+    private Task<bool> CanAccessSectionAsync(Guid sectionId, CancellationToken cancellationToken)
+        => _accessPolicy.CanAccessSectionAsync(sectionId, CurrentUserId, CurrentRoles, cancellationToken);
+
+    private async Task<HashSet<Guid>?> AccessibleSectionIdsAsync(CancellationToken cancellationToken)
+    {
+        if (CurrentRoles.Any(StudentAccessPolicy.IsAdministrator) ||
+            CurrentRoles.Contains(UserRoleType.Counselor, StringComparer.OrdinalIgnoreCase))
+            return null;
+
+        if (CurrentRoles.Contains(UserRoleType.Teacher, StringComparer.OrdinalIgnoreCase) && CurrentUserId.HasValue)
+            return (await _store.GetSectionsByTeacherUserIdAsync(CurrentUserId.Value, cancellationToken))
+                .Select(section => section.Id)
+                .ToHashSet();
+
+        if (CurrentRoles.Contains(UserRoleType.StudentParent, StringComparer.OrdinalIgnoreCase) && CurrentStudentId.HasValue)
+        {
+            var student = await _store.GetStudentByIdAsync(CurrentStudentId.Value, cancellationToken);
+            return student?.CurrentSectionId is Guid sectionId ? new HashSet<Guid> { sectionId } : new HashSet<Guid>();
+        }
+
+        return new HashSet<Guid>();
     }
 }

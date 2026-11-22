@@ -7,5 +7,6 @@ public enum StudentStatus
     Repeater,
     Transferred,
     DroppedOut,
-    Graduated
+    Graduated,
+    Archived
 }

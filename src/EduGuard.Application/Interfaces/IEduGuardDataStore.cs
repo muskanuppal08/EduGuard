@@ -60,6 +60,7 @@ public interface IEduGuardDataStore
     // Sections
     Task<Section?> GetSectionByIdAsync(Guid id, CancellationToken cancellationToken = default);
     Task<List<Section>> GetSectionsByGradeAsync(Guid gradeId, Guid? academicYearId = null, CancellationToken cancellationToken = default);
+    Task<List<Section>> GetSectionsByTeacherUserIdAsync(Guid teacherUserId, CancellationToken cancellationToken = default);
     Task AddSectionAsync(Section section, CancellationToken cancellationToken = default);
     Task UpdateSectionAsync(Section section, CancellationToken cancellationToken = default);
 

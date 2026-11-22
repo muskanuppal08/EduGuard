@@ -84,6 +84,23 @@ public class AuthTests
     }
 
     [Fact]
+    public async Task TokenService_GetPrincipalFromValidAccessToken_ShouldPreserveExpirationClaim()
+    {
+        var result = await _authService.LoginAsync(new LoginRequestDto
+        {
+            UsernameOrEmail = "admin",
+            Password = "AdminPassword123!"
+        });
+
+        var principal = _tokenService.GetPrincipalFromExpiredToken(result.Data!.AccessToken);
+
+        Assert.NotNull(principal);
+        Assert.True(long.TryParse(principal.FindFirst("exp")?.Value, out var expiresAt));
+        Assert.True(expiresAt > DateTimeOffset.UtcNow.ToUnixTimeSeconds());
+        Assert.Contains(UserRoleType.SuperAdmin, principal.FindAll(ClaimTypes.Role).Select(claim => claim.Value));
+    }
+
+    [Fact]
     public async Task AuthService_Login_WithInvalidPassword_ShouldFail()
     {
         // Act

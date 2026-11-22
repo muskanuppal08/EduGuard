@@ -324,6 +324,14 @@ public class InMemoryEduGuardDataStore : IEduGuardDataStore
         return Task.FromResult(items);
     }
 
+    public Task<List<Section>> GetSectionsByTeacherUserIdAsync(Guid teacherUserId, CancellationToken cancellationToken = default)
+    {
+        var items = _sections.Values
+            .Where(section => section.ClassTeacherUserId == teacherUserId)
+            .ToList();
+        return Task.FromResult(items);
+    }
+
     public Task AddSectionAsync(Section section, CancellationToken cancellationToken = default)
     {
         _sections[section.Id] = section;

@@ -10,10 +10,12 @@ namespace EduGuard.WebApi.Controllers;
 public class UsersController : BaseApiController
 {
     private readonly IUserProfileService _userProfileService;
+    private readonly IEduGuardDataStore _store;
 
-    public UsersController(IUserProfileService userProfileService)
+    public UsersController(IUserProfileService userProfileService, IEduGuardDataStore store)
     {
         _userProfileService = userProfileService;
+        _store = store;
     }
 
     /// <summary>
@@ -103,5 +105,25 @@ public class UsersController : BaseApiController
             return BadRequest(result);
         }
         return Ok(result);
+    }
+
+    [HttpPut("{userId:guid}/student-link")]
+    [RequirePermission(SystemPermission.UsersManage)]
+    public async Task<IActionResult> LinkStudentAccount(Guid userId, [FromBody] LinkStudentAccountDto request, CancellationToken cancellationToken)
+    {
+        var user = await _store.GetUserByIdAsync(userId, cancellationToken);
+        if (user == null) return NotFound(ApiResponse.FailResult("User account not found."));
+        var roles = await _store.GetRolesForUserAsync(userId, cancellationToken);
+        if (!roles.Contains(UserRoleType.StudentParent, StringComparer.OrdinalIgnoreCase))
+            return BadRequest(ApiResponse.FailResult("Only student or parent accounts can be linked to a student record."));
+
+        var student = await _store.GetStudentByIdAsync(request.StudentId, cancellationToken);
+        if (student == null) return NotFound(ApiResponse.FailResult("Student record not found."));
+
+        user.LinkedStudentId = student.Id;
+        user.SchoolId = student.SchoolId;
+        await _store.UpdateUserAsync(user, cancellationToken);
+        var profile = await _userProfileService.GetUserProfileByIdAsync(userId, cancellationToken);
+        return Ok(profile);
     }
 }

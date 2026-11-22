@@ -148,6 +148,7 @@ public class UserProfileService : IUserProfileService
             FullName = user.FullName,
             PhoneNumber = user.PhoneNumber,
             SchoolId = user.SchoolId,
+            StudentId = user.LinkedStudentId,
             Designation = profile?.Designation,
             Department = profile?.Department,
             AvatarUrl = profile?.AvatarUrl,

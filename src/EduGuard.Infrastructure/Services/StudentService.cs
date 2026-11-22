@@ -136,10 +136,21 @@ public class StudentService : IStudentService
 
         Func<Student, bool> predicate = s =>
         {
+            if (!filter.IncludeArchived && filter.Status != StudentStatus.Archived &&
+                s.CurrentStatus == StudentStatus.Archived)
+                return false;
+
             if (filter.SchoolId.HasValue && s.SchoolId != filter.SchoolId.Value)
                 return false;
 
             if (filter.SectionId.HasValue && s.CurrentSectionId != filter.SectionId.Value)
+                return false;
+
+            if (filter.StudentId.HasValue && s.Id != filter.StudentId.Value)
+                return false;
+
+            if (filter.SectionIds != null &&
+                (!s.CurrentSectionId.HasValue || !filter.SectionIds.Contains(s.CurrentSectionId.Value)))
                 return false;
 
             if (filter.Status.HasValue && s.CurrentStatus != filter.Status.Value)

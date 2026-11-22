@@ -2,6 +2,7 @@ using EduGuard.Application.DTOs.Classes;
 using EduGuard.Application.DTOs.Common;
 using EduGuard.Application.Interfaces;
 using EduGuard.Domain.Entities;
+using EduGuard.Domain.Enums;
 
 namespace EduGuard.Infrastructure.Services;
 
@@ -197,6 +198,12 @@ public class ClassService : IClassService
             if (teacher == null)
             {
                 return ApiResponse.FailResult("Teacher user not found.");
+            }
+            if (!teacher.IsActive ||
+                !(await _dataStore.GetRolesForUserAsync(teacher.Id, cancellationToken))
+                    .Contains(UserRoleType.Teacher, StringComparer.OrdinalIgnoreCase))
+            {
+                return ApiResponse.FailResult("The selected account is not an active teacher.");
             }
         }
 
